@@ -60,7 +60,7 @@ import { useState } from 'react';
 
 
 //  # state 
-//    : 해당 페이지 안에서만 쓸 지역변수로서의 목적을 가지고 선언한 get, set 로직이 적용된 변수 + state 변경시 해당 html 재rendering 
+//    : 해당 페이지 안에서만 쓸 지역변수로서의 목적을 가지고 선언한 get, set 로직이 적용된 변수 + state값의 변경이 감지시 해당 html 재rendering 
 //      (= 해당 component에서 값이 변경되었을때, html에 자동으로 내용이 반영되고 rendering되게하고 싶을 떄? state를 사용 ㅇㅋ) 
 
 //    [state 사용법]
@@ -72,24 +72,46 @@ import { useState } from 'react';
 //         - getter함수의 별칭
 //            : 해당 state값을 조회하고 싶을때 사용하는 변수명
 
-//               ex) getter함수의 별칭[index]
-//                     -> state 배열을 사용했을 경우는 'getter함수의 별칭[index]'로 원하는 state요소에 접근 가능
+//               (state getter함수의 사용법) 
+//                 : getter함수의 별칭
+//                    -> state 배열을 사용했을 경우?
+//                        : 'getter함수의 별칭[index]'로 원하는 state요소에 접근 가능
+
 
 //         - setter함수의 별칭
 //            : 해당 state값을 수정 + 변경된 state값을 반영한 html영역을 다시 rendering 하도록 조치하고 싶을때 사용하는 변수명
 
-//               ex) setter함수의 별칭[index](state가 될 value or 연산식 or 변수명);
-//                    -> state 배열을 사용했을 경우는 'setter함수의 별칭[수정내용1, 수정내용2 , ... ]'로 원하는 state요소를 순차적으로 일괄 변경도 가능함
-//                        -> But! 이렇게 state 배열을 사용하면서 setter 또한 배열로 parameter를 주어 사용하면, 유지보수나 확장성이 아예 병신이 되므로 추천은 하지 않음
+//               (state setter함수의 사용법) 
+//                 : setter함수의 별칭(state가 될 value or 연산식 or 변수명);
+//                    -> (중요) set함수를 쓰지 않아도, state를 바꿀수는 있지만...
+//                              자동 rendering의 작동 트리거는 set함수를 통해 state를 변경하는 것이기에 state에 set을 안쓰는건 react를 사용할 의미가 없다는 점과 같음을 명심하자
 
+//                    -> (중요) state 배열을 사용했을 경우? 
+//                        : 'setter함수의 별칭(배열변수 or 배열 그 자체)' 와 같이 parameter로 배열이 들어가게 해야함
+//                            -> 이 또한 js의 구조분해 할당 문법의 원리로 작동
+//                               (= '주는쪽 배열의 요소개수 != 받는 쪽 배열의 요소개수'  ->   대입이 가능한 index에 해당하는 요소들만 대입하고, 나머지 index는 관련 X)
 
-//            ex) let [states, setStates] = useState(['내용1', '내용2', '내용3']);
-//                 -> 여기서 states라는 state는 state배열로 선언되었음  
-//                    (= component에 2번째 요소인 '내용2'에 대한 부분을 담고 싶은 html 태그가 있다면)
-//                        -> { states[1] }; 이런식으로 작성함
-//                        -> { setStates[1]('변경2') } 이런식으로 set 함수를 통해 변경 
-//                             -> (중요) set함수를 쓰지 않아도, state를 바꿀수는 있지만...
-//                                자동 rendering의 작동 트리거는 set함수를 통해 state를 변경하는 것이기에 state에 set을 안쓰는건 react를 사용할 의미가 없다는 점과 같음을 명심하자
+//                            1. setter함수의 별칭(배열 그 자체)를 통한 state 배열 수정
+//                                : 'setter함수의 별칭[수정내용1, 수정내용2 , ... ]'로 배열 그 자체를 parameter로 투입해서 원하는 state요소를 순차적으로 일괄 변경도 가능함
+//                                    -> But! 이렇게 state 배열을 사용하면서 setter 또한 배열로 parameter를 줘서 사용하면.. 유지보수나 확장성이 아예 병신이 되므로 추천은 하지 않음
+
+//                            2. setter함수의 별칭(배열변수)를 통한 state 배열 수정
+//                                : let 배열명 = [...타 배열변수명]'로 스프레드 문법(spread syntax)을 통한 state 배열을 깊은복사를 한 뒤,
+//                                  배열명[index] = '원하는 value값' 과 같은 식으로 새로 선언된 배열의 원하는 index의 요소에 원하는 값을 대입하고,
+//                                  'setter함수의 별칭(배열명)' 과 같은 식으로 원하는데로 값이 수정된 state배열로 수정 
+//         
+
+//                               ex) let [states, setStates] = useState(['내용1', '내용2', '내용3']);
+//                                    : 여기서 states라는 state는 state배열로 선언되었고, component에 2번째 요소인 '내용2'에 대한 부분을 담고 싶은 html 태그가 있다면?
+//                                        -> getter의 경우 : { states[1] }; 이런식으로 작성함
+//                                        -> setter의 경우 : 
+//                                            1. 배열 그 자체 parameter로
+//                                                : { setStates(['내용1', '내용4', '내용3']); } 이런식으로 set 함수를 통해 변경 
+
+//                                            2. 깊은복사한 배열변수 parameter로 
+//                                                : let copyArray = [... state]; 로 스프레드 문법(spread syntax)을 통한 state 배열을 깊은복사를 한 뒤
+//                                                  copyArray[1] = '내용4';
+//                                                  setStates(copyArray); 이런식으로 작성
 
 
 // react 사전이해에 필요한 JS지식
@@ -102,10 +124,14 @@ import { useState } from 'react';
 //       ex) 배열 구조 분해 할당
 //           const numbers = [1, 2, 3, 4, 5];
 //           const [a, b, ...rest] = numbers;         <- numbers의 배열요소의 값들을 각 개별변수에 일괄적으로 대입 가능
+//           const [e, f] = numbers;                  <- (중요) 값을 제공하는 배열 numbers의 요소의 개수 > 값을 받는 배열의 개수?
+//                                                         : 이 경우는 1, 2만 e, f에 대입
 
 //           console.log(a);    // 1
 //           console.log(b);    // 2
 //           console.log(rest); // [3, 4, 5]
+//           console.log(e);    // 1
+//           console.log(f);    // 2
 
 //        ex) 객체 구조 분해 할당
 //           const person = { name: 'John', age: 30, city: 'New York' };
@@ -115,12 +141,39 @@ import { useState } from 'react';
 //           console.log(age);  // 30
 //           console.log(city); // 'New York'
 
+
+//  @ 스프레드 문법(spread syntax)
+//     : '...배열명 or 객체명'을 통해, 배열(array)이나 객체(object)에 존재하는 각 요소 또는 멤버변수들을 해당 컨테이너명을 사용하여 개별적인 값으로 쉽게 확장하는 작성하는 역할을 수행하는 문법
+//        (= 이걸 쓰면 귀찮게 배열, 객체의 각 모든 요소들을 일일히 기입하지 않아도 되며, 함수의 선언부에 parameter의 갯수에 따른 오버로딩 또한 노가다 없이 rest parameter형식으로 작성가능하게 해줌)
+//            -> 다시 말해 배열, 객체의 깊은 복사가 쉬워짐
+
+//               ex) const numbers = [1, 2, 3];
+//                   const copiedNumbers = [...numbers];
+
+//                   console.log(copiedNumbers); // [1, 2, 3]
+
+//                   const person = { name: 'John', age: 30 };
+//                   const copiedPerson = { ...person };
+
+//                   console.log(copiedPerson); // { name: 'John', age: 30 }
+
+
 //  @ html 이벤트핸들러 속성
 //    : js의 이벤트핸들러를 html에서 사용가능하게 속성으로 구현한 것.. 속성값으로는 행동 function명이나, 익명함수로 원하는 로직을 입력함녀 됨. onClick이 대표적
+
 
 //  @ 일급 객체 function
 //    : js의 function이란 변수에 대입이 가능하며, 다른 함수의 return으로 가능한 대상이자, 다른 함수의 parameter로도 사용이 가능함
 //      (= 특정 변수에 익명함수를 입력해서 저장시키거나, 다른 함수를 대입하는 것도 가능하며, callback 함수를 사용가능한 근원이 되는 js의 특성임)
+
+
+//  @ array/object를 다룰 때의 주의사항
+//    1. 배열명 / 객체명 그들 자신 자체는 reference 타입의 변수
+//       (= 배열요소 / 객체맴버변수 데이터를 보존하는게 아니라, 해당 배열이나 객체가 어떤 메모리 주소에 위치해 있는지에 대한 위치값(= 포인터)을 가지고 있음)
+//           -> 그래서, 'let 변수명 = 배열/객체명;' 과 같은 식의 코드는 의도대로 배열이나 객체의 값이 변수명에 복사되지 않고, 배열/객체명의 메모리 주소를 대입하는 '얕은 복사'가 실행됨
+
+//    2. 배열 / 객체는 다룰 때 원본을 보존하는 것이 좋기에, 완전히 다른 메모리주소를 할당한 후 값을 할당하는 '깊은 복사'를 쓰는게 좋음    
+
 
 
 function App() {
@@ -148,9 +201,14 @@ function App() {
       <div className="black-nav">
         <h4 id={post} style={ {color : 'red' , fontSize : '16px'} }>ReactBlog</h4>
       </div>
+
+      <button onClick = { () => { let copy = [... 글제목]; 
+                                  copy.sort();
+                                  글제목변경(copy); }       }>한글 오름차순 정렬(숙제)</button>
+
       <div className="list">
         <h4>
-          { /* { 글제목[0] }  */ 숙제 } 
+          { /* { 글제목[0] }  */ 글제목[0] } 
           <span onClick = { () => { 따봉변경(따봉 + 1);} } >👍</span> 
           { 따봉 }
         </h4>
@@ -164,8 +222,11 @@ function App() {
         <h4>{ 글제목[2] }</h4>
         <p>2월 17일 발행</p>
       </div>
-      {/* <button onClick = { () => { 글제목변경(['여자 코트 추천', '강남 우동 맛집', 'React 독학...']); } } >숙제용</button> */}
-      <button onClick = { () => { 숙제변경('여자 코트 추천'); } } >숙제용</button>
+      {/* <button onClick = { () => { 글제목변경(['여자 코트 추천', '강남 우동 맛집', 'React 독학...']); } } >예시1</button> */}
+      {/* <button onClick = { () => { 숙제변경('여자 코트 추천'); } } >숙제용</button> */}
+      <button onClick = { () => { let copy = [...글제목]; 
+                                  copy[0] = '여자코드 추천'; 
+                                  글제목변경(copy); }       } >예시2</button>
     </div>
 
   );
