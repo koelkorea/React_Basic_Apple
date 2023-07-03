@@ -114,6 +114,32 @@ import { useState } from 'react';
 //                                                  setStates(copyArray); 이런식으로 작성
 
 
+//  # component 란?
+//     : react 라이브러리에서 JSX(JavaScript XML) 문법을 사용해서, 웹페이지의 상태(state)와 속성(properties)와 이벤트 핸들링을 수행하는 User Interface에서 rendering의 기본 단위로서 기능하는 독립적인 모듈
+//        -> 쉽게 말해.. 다음과 같은 성질을 전부 가짐
+//            1. component는 js를 기반으로 작성된 일종의 HTML 요소로서, react에서는 rendering 기본 블록같은 단위를 의미
+//            2. component는 그 자체가 상태(state)와 속성(properties)을 가지고 이벤트헨들링까지 독립적(stand alone)으로 수행 가능함
+//            3. React.Component를 기반으로 그 자식 class로서 구체적인 component가 작성될 수도 있지만, 함수처럼 호출하면 즉시 관련 component를 return해주는 방식으로 사용도 가능
+//            4. JSX(JavaScript XML) 문법 라는 특수 문법으로 구현
+//            5. component는 독립적으로 동작 가능 =  일단 만들어두면 다른 component에 가져다 붙여서 확장 가능 (= component tree 구조)
+//                -> 코드의 재사용성과 유지보수성을 높여줌 + 확장성이 뛰어나서, 복잡한 UI를 구현할 수 있음
+//            6. 다른 component에 호출된 하위 component는 부모-자식 관계를 가지며, 부모 component로부터 속성(= props)만 전달받아 공유 가능함
+
+//  # component 사용의 주의점
+//     1. component는 일종의 rendering 가능한 html 요소 단위로서 1개의 component는 단 1개의 최상위 선조격 div만 가지고 있어야 함
+//       (= 애초에 component를 왜 쓰는지에 대한 semantic한 부분을 생각하고, 해당 component를 개발자가 왜 조각으로 만드는지 생각해야 함) 
+//           -> 굳이 써야 한다면? 빈 태그( <> <compoenent></compoenent> </>)로 나머지를 감싸는 fragment 문법을 쓰자
+//     2. component간 상태(state)는 공유 불가능이며, 부모-자식 간의 속성(properties)만 전달이 가능할 뿐임
+//        (= 쓸데없이 component를 쪼갰다가, 개발자 입장에서 인지 불가능한 수준으로 스파게티코드를 맛볼 수 있음)
+
+//  # component는 언제 쓸까?
+//     1. 반복적으로 잘 쓰이는 html요소
+//     2. 값이 자주 변경되어, state와 props가 필히 필요해서 관리해줘야 하는 html 요소들
+//        (= 너무 component를 잘게 쪼게면, 관리 단위로서 component가 의미가 없으며, state관리가 더 복잡해짐)
+//     3. 페이지가 큰 html 요소 
+
+
+
 // react 사전이해에 필요한 JS지식
 
 //  @ 구조 분해 할당(destructuring assignment)?
@@ -175,7 +201,7 @@ import { useState } from 'react';
 //    2. 배열 / 객체는 다룰 때 원본을 보존하는 것이 좋기에, 완전히 다른 메모리주소를 할당한 후 값을 할당하는 '깊은 복사'를 쓰는게 좋음    
 
 
-
+// react 프로젝트를 시작하면, 기본적으로 생성되는 component
 function App() {
 
   let post = '강남 우동 맛집';
@@ -202,9 +228,7 @@ function App() {
         <h4 id={post} style={ {color : 'red' , fontSize : '16px'} }>ReactBlog</h4>
       </div>
 
-      <button onClick = { () => { let copy = [... 글제목]; 
-                                  copy.sort();
-                                  글제목변경(copy); }       }>한글 오름차순 정렬(숙제)</button>
+
 
       <div className="list">
         <h4>
@@ -222,17 +246,37 @@ function App() {
         <h4>{ 글제목[2] }</h4>
         <p>2월 17일 발행</p>
       </div>
+
+      <button onClick = { () => { let copy = [... 글제목]; 
+                                  copy.sort();
+                                  글제목변경(copy); }       }>한글 오름차순 정렬(숙제)</button>
       {/* <button onClick = { () => { 글제목변경(['여자 코트 추천', '강남 우동 맛집', 'React 독학...']); } } >예시1</button> */}
       {/* <button onClick = { () => { 숙제변경('여자 코트 추천'); } } >숙제용</button> */}
       <button onClick = { () => { let copy = [...글제목]; 
                                   copy[0] = '여자코드 추천'; 
                                   글제목변경(copy); }       } >예시2</button>
+
+      {/* <Modal></Modal> */}
+      <Modal/>
+
     </div>
 
   );
 }
 
+// 새로운 component 문법 작성 (function 방식 component)
+//  -> (주의) div로 시작하면 div에서 끝나야하며, component의 최고선조 div는 1개만 있어야 함 
+//     (= 애초에 블록처럼 쓰려고 조립하는걸 기억하자)
+function Modal() {
 
+  return(
+    <div class = "modal">
+    <h4>제목</h4>
+    <p>날짜</p>
+    <p>상세내용</p>
+  </div>
+  );
+}
 
 
 export default App;
