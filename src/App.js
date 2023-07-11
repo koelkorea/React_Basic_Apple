@@ -7,7 +7,10 @@
 
 import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react';
+import React, { useState } from 'react';
+
+// [functional component를 기준으로 작성된 설명임을 밝힘]
+//   -> class component도 하단에 언급함.... 추후 class -> function으로 넘어가기까지의 역사나 hooks에 관련된 역사적 부분까지 정리할 예정
 
 // react 라이브러리 사용시 jsx 형식을 사용하며, 그 내부에서 사용자지정 HTML 태그와 같은 <App>으로 명명되는 HTML conponent를 제작.. 
 //  -> react 라이브러리는 index.js에서 ReactDOM.createRoot(document.getElementById('root')).render 함수 안에 이런 conponent를 조립해서 블록으로 장난감 만들듯 구성한 페이지를 코딩하면 
@@ -69,6 +72,9 @@ import { useState } from 'react';
 //  : 해당 페이지 안에서만 쓸 지역변수로서의 목적을 가지고 선언한 get, set 로직이 적용된 변수 + state값의 변경이 감지시 해당 html 재rendering 
 //    (= 해당 component에서 값이 변경되었을때, html에 자동으로 내용이 반영되고 rendering되게하고 싶을 떄? state를 사용 ㅇㅋ) 
 
+//  # (중요) state 과거사
+//     : state도 원래는 props와 마찬가지로 object 속성이며, functional component 기준으로 구조분해 할당과 useState 함수를 통해 만들어진 개별 state들은 state객체의 멤버속성임
+
 //  # state 사용법
 //     1. 변수타입 [getter함수의 별칭, setter함수의 별칭] = useState('변수가 담을 value값'); 작성
 //         -> 참고로 parameter로 들어갈 내용을 []을 통해 여러개 담아도 사용가능함
@@ -86,6 +92,7 @@ import { useState } from 'react';
 
 //         - setter함수의 별칭
 //            : 해당 state값을 수정 + 변경된 state값을 반영한 html영역을 다시 rendering 하도록 조치하고 싶을때 사용하는 변수명
+//               -> 이 setter 역할의 함수는 비동기방식(= 병렬로 다음코드를 계속 처리)으로 재rendering 처리되어서, rendering의 결과가 당장에 반영되지 않고, 화면에는 늦게 반영됨
 
 //               (state setter함수의 사용법) 
 //                 : setter함수의 별칭(state가 될 value or 연산식 or 변수명);
@@ -181,6 +188,7 @@ import { useState } from 'react';
 
 //    2. (중요!) 반드시 '부모 -> (개별) 자식' 으로만 일방적으로 전달됨
 //         -> 자식 -> 부모, 형제끼리 props객체 전송 같은건 불가능
+//             -> 따라서, 어떤 state를 사용하는 component그룹이 있다면, 거기서 가장 상위의 선조 component에게 state를 선언해두는게 좋음
 
 //    3. 각 props객체를 구성하는 멤버변수들은 개별 component만을 기준으로 일종의 지역변수 개념으로 작성됨
 //       (= component만 다르면 속성명 겹쳐도 상관 없음)  
@@ -232,6 +240,7 @@ import { useState } from 'react';
 //       (= 애초에 component 호출을 통한 접점 관계를 부모 - 자식이라 명명함 + 형제관계나 자식 - 부모 관계는 그렇게 값을 전달할 방법이 로직적으로 존재하지 않음)
 
 
+
 // component 란?
 //  : react 라이브러리에서 JSX(JavaScript XML) 문법을 사용해서, 웹페이지의 상태(state)와 속성(properties)와 이벤트 핸들링을 수행하는 User Interface에서 rendering의 기본 단위로서 기능하는 독립적인 모듈
 //     -> 쉽게 말해.. 다음과 같은 성질을 전부 가짐
@@ -258,12 +267,21 @@ import { useState } from 'react';
 //        ex) [<div>안녕</div>, <div>안녕</div>, <div>안녕</div>]       <- js에서 가능
 //            [<Modal/>, <Modal/>,  <Modal/>]                          <- jsx에서만 가능
 
+//     4. (중요) objects are not valid as a react child (found: object with keys { 문제있는 key명 }) 오류 주의!
+//          : react에서는 component를 rendering 하는 과정에서, 화면에 출력할 때 필요한 state나 props객체의 멤버변수가 가지고 있는 값이 '객체(object)' 자료형일 경우 rendering을 하지 못하고 오류를 뿜음
+//             -> 문제의 핵심은 현재 rendering하라고 던져준 변수가 key : value 형식의 object라, react 상에서 뭘 화면에 띄어줘야 할지 모르는것에 있음
+//                (= error 메시지가 어떤 key명이 문제의 쟁점인지 파악 후, 그런 key를 가지고 있을법한 object 객체를 가진 component가 무엇인지 찾아서, 그 객체가 자신의 value만 온전히 띄울수 있도록 object를 다른 타입으로 형변환 시킴)
+
+//                   ex) <h4>{ 글입력배열[i] }</h4>   ->   <h4>{ 글입력배열[i].입력값 }</h4>
+//                         : 글입력배열[i] 자체가 key : value를 가진 object라, 이를 문자열인 value만 가져올 수 있도록 '배열.key명' 문법으로 객체의 멤버변수를 지정함
+
 
 //  # component는 언제 쓸까?
 //     1. 반복적으로 잘 쓰이는 html요소
 //     2. 값이 자주 변경되어, state와 props가 필히 필요해서 관리해줘야 하는 html 요소들
 //        (= 너무 component를 잘게 쪼게면, 관리 단위로서 component가 의미가 없으며, state관리가 더 복잡해짐)
 //     3. 페이지가 큰 html 요소 
+
 
 
 // react를 통해 동적인 UI를 만들려면?
@@ -334,6 +352,31 @@ import { useState } from 'react';
 //             )
 
 //           }
+
+
+// (중요) class component
+//  : 원래 react의 component를 작성할때는 객체지향관점에서 class 자료형으로 component를 작성하고 이를 객체화하여 호출함
+//    (= React class의 Component라는 class를 상속받음)
+
+
+//  # class component가 도태 된 이유?
+//     : 더 쓰기 편하면서, 직관적이면서, 코드량도 적은 functional component가 class component가 할수 있는 모든 기능을 가지고 있기 때문
+//       -> 정확히는 16.8에서 functional component도 state나 여러기능을 쉽게 사용하게 하는 react hook의 등장으로 functional 방식으로 코딩하는게 유리해졌기에 class component는 구식이 됨
+
+
+//  # class component를 통해 유추가능한 중대한 사실들
+//     1. (중요) props도 객체지만, state도 원래는 객체
+//        (= functional component에서 구조분해할당 문법을 통해 생성해 준 개별 state명들은 사실 state객체의 객체 안의 1개의 멤버변수)
+//           -> 그래서, functional component에서 만든 state에서 hooks문법인 usestate() 안에 제대로 된 자료형을 안 넣으면, 자동으로 그 state는 object 형식으로 지정되는 것...
+
+//     2. setState 함수는 개별적으로 존재하며, 그 목표는 state라는 객체 자신의 멤버변수를 변경하는 것이기에, '멤버명 : 값' 형식으로 parameter를 지정함
+//        (= functional component에서 구조분해할당 문법을 통해 생성해 준 개별 setState함수들은 사실 일종의 alias(별칭)으로서, 'setState(지정 state멤버변수)'와 비슷하게 치환될 수 있다고 추정 + 내부적으로 작동되는 로직이 있다는걸 유추 가능)
+
+//     3. 조상인 Component class의 render 함수를 해당 component에 맞춰 override함
+//        (= Component render 기능의 인터페이스화는 이미 class component 시절부터 시작된 전통임)
+//            -> render 함수는 해당 html DOM요소를 브라우저에서 쉽게 랜더링이 가능하도록 react 차원에서 jsx형식을 우리가 아는 그 형식으로 푸는 함수로 interface화 되어있음
+
+
 
 // react 사전이해에 필요한 JS지식
 
@@ -438,6 +481,27 @@ import { useState } from 'react';
 //               });
 
 
+//  @ HTML 이벤트핸들러 속성
+//     : HTML에는 자체적인 명세서에 동적인 웹페이지를 구성하도록 하기 위한, js의 자주 쓰이는 이벤트핸들러들을 DOM 속성 형식으로 쉽게 쓸 수 있기 지원함
+//        -> 이벤트핸들러가 전역변수로 노출 + 복수 이벤트핸들러를 설정하는 문법이 X + 사용자 정의 이벤트를 설정 불가능.. 이 3콤보로 요즘은 사장..
+//            -> 그렇지만 react에서는 이러한 형식의 친숙함을 차용하여, react방식의 매커니즘에서도 dom조작 없이 state의 변경을 통한 이벤트를 구현하였음
+//                -> 단! 이미 html DOM기반 이벤트핸들러는 존재하기에, 기존에 존재한 이벤트핸드러 속성을 'camalCase' 형식으로 표기하여 동일한 속성을 피함
+//                    -> 물론! 그렇다고, onClick으로 구현한 react의 유사 이벤트핸들러의 구현이 onclick과 절대 같지는 않음
+//                       (= 아마, 형식만 html DOM기반 이벤트핸들러 형식으로 작성된 react 이벤트 속성이 감지되면, 내부적으로 구현되는 로직이 존재할듯)
+
+
+//  @ 이벤트 객체 e
+//     : 이벤트핸들러에 들어가는 함수에 넣는 parameter로, 이는 객체로서 현재 발생하는 이벤트와 관련한 유용한 기능들을 제공하는 일종의 변수로 생각하면 됨
+
+//        - e.target            : 현재 이벤트가 발생한 곳을 알려줌
+//        - e.target.value      : 현재 이벤트가 발생한 곳의 값을 출력함
+//        - e.preventDefault()  : 해당 이벤트의 기본 동작을 막아줌
+//        - e.stopPropagation() : 가장 최상단의 조상 HTML DOM요소부터 해당 HTML DOM요소에 접근하는 호출 stack을 구성해 위치를 찾은 후, stack을 해제하는 과정에서 접근하게 되는 부모 HTML요소도 같은 이벤트핸들러의 내용을 작동시키게 되는 버블링을 막아줌
+
+//  @ 이벤트버블링
+//     : 어떤 HTML 요소에 이벤트가 발생하여 이벤트핸들러가 동작하고, 이어서 부모 요소부터 가장 최상단의 조상 요소에 이르기까지 같은 종류의 이벤트핸들러가 동작하는 개념을 의미
+//        -> HTML 요소 접근을 위한 stack 회수 과정에서 구현하였기에, 편도행에는 문제가 생기게 하지 않을 수 있다고 생각함
+//           (= e.stopPropagation()을 통해, 본 이벤트 발생 이후의 다른 HTML DOM요소들의 이벤트의 통제 또한 가능함)
 
 
 // react 프로젝트를 시작하면, 기본적으로 생성되는 component
@@ -468,13 +532,51 @@ function App() {
   // Modal component를 통제하기 위한 flag역할의 state변수 모달
   let [모달, 모달변경] = useState(false);
 
+  // (숙제) 클릭한 게시물 제목에 맞춰 모달창을 뜨게 만들어라
+  //  -> state배열인 글제목의 index를 가져오기 위한 state를 설정하고, 이를 자식 component인 <Modal>에 props 문법으로 보내서 동적으로 반응하도록 만들겠음
+  let [인덱스, 인덱스변경] = useState(0);
+
+  // input에 입력되는 값들을 state로 저장할 목적으로 만들어진 state변수 입력값
+  let [입력값, 입력값변경] = useState(null);
+
+  // (숙제1) input창 옆의 버튼을 클릭하게 되면, 상단의 state변수 입력값의 내용을 상단에 띄워지는 기능을 만들어라 
+  //   -> 글입력배열 state배열을 만들고, 초기값은 빈배열로 설정 후, 버튼 클릭을 기점으로 input창의 내용들을 배열의 요소로서 동적으로 추가하기 위한 state배열
+  let [글입력배열, 글입력배열추가]  = useState([]);
+
+  let [글작성날짜, 글작성날짜추가] = useState(['2월 17일', '2월 20일', '2월 27일']);
 
   // -------------------------------------------[본격 jsx 영역의 시작 = 해당 line 위는 아직 js의 영역이라 js의 문법이 통함]-------------------------------------------------------------------
   return (
 
     <div className="App">
       <div className="black-nav">
-        <h4 id={post} style={ {color : 'red' , fontSize : '16px'} }>ReactBlog</h4>
+        
+        {
+          // (숙제) 글입력배열에 아무런 입력값이 없다면? 타이틀에 해당하는 부분을 띄어라
+          글입력배열.length == 0 ? 
+          /* (설명) jsx에서의 {}는 jsp에서 java영역을 따로 지정해서, 자바 명령어를 입력하듯, js영역으로 인도함
+          /   -> 이를 통해 상단의 js영역에서 선언된 state변수를 끌어온다던가, js와 같이 지역변수를 선언하여 로직을 전개도 할 수 있음  */
+          <h4 id={post} style={ {color : 'red' , fontSize : '16px'} }>ReactBlog</h4>
+
+          /* (숙제) 글입력배열에 아무런 입력값 감지되면? 해당 내용들을 순차적으로 화면에 띄움
+              -> react의 virtual DOM이 새로 추가되는 부분만, 친절하게 rendering 해줌 
+                  -> (주의) state변수 자체가 배열의 push되면, key : value 형식의 object가 되는데, 이 경우는 react상에서 rendering이 불가능함
+                       -> 따라서, 자료형이 object인 변수를 component 구성에 쓴다면? 반드시 타 자료형으로 형변환하거나, 그렇지 않은 변수를 선언해서 기입해야 함   */
+          : 글입력배열.map(function(a, i){
+            return (
+              (
+                <div style={ {background : 'white' , color : 'black'} } key = {i}>
+                  <h4>{ /* (숙제) 글입력배열에 들어간 배열 요소 자체는 object(기존 state명 : 값)로 들어가있기에 key값 지정으로 value만을 출력해야함 */
+                        글입력배열[i].입력값  }</h4>
+                  <p>2월 17일 발행</p>
+                </div>
+              )
+
+            );
+          })
+
+        }
+
       </div>
 
 
@@ -508,7 +610,10 @@ function App() {
                                       // () => { 모달 == true ? 모달변경(false) : 모달변경(true) } 
 
                                       // 2. 모범
-                                      () => { 모달변경(!모달) } }  >
+                                      () => { 모달변경(!모달);
+
+                                              // (숙제) 모달창 게시물 제목에 맞게 반응하도록 구현하기 위한 인덱스란 state변수를 클릭하는 게시물의 index로 변경하고자 setstate적용 
+                                              인덱스변경(i);      } }  >
 
                         { // (설명) {}에서는, state 배열의 요소도 가져올 수 있음 
                           // 글제목[1]
@@ -520,26 +625,64 @@ function App() {
                           a
                           // 글제목[i]
                         }
-                      <span onClick = { () => { let copy = [... 따봉]; 
-                                                copy[i] = Number(copy[i]) + 1;
-                                                따봉변경(copy);         } } >👍</span> 
+                      <span onClick = { (e) => {  e.stopPropagation();
+                                                  let copy = [... 따봉]; 
+                                                  copy[i] = Number(copy[i]) + 1;
+                                                  따봉변경(copy);                 } } >👍</span> 
                       { // (설명) component의 html영역에서 {}은 js의 지역영역을 의미하며, 이를 통해 상단의 state로 선언된 변수들의 값을 가져올 수 있기에 '따봉'이란 state의 값을 가져옴
                         따봉[i]
                       }
+
+                      {/* (숙제) 버튼을 클릭시, 게시글 제목에 해당하는 라인이 전부 사라지게 구현하고, 버튼은 오른쪽에 배치하라 */}
+                      <button style ={{ float : "right"}} onClick = { (e) => {  e.stopPropagation();
+                                                                                let copy = [... 글제목]; 
+                                                                                copy.splice(i, 1)
+                                                                                글제목변경(copy);         } } >게시글 삭제(숙제)</button>
                       </h4>
-                      <p>2월 17일 발행</p>
+                      {/* (설명) 글작성날짜 state변수도 띄우기 */}
+                      <p>{글작성날짜[i]}</p>
                     </div>
                   )
         })
 
       }
 
+      <div>
+        {/* (설명) input창의 내용이 변하는게 감지되면, 이벤트객체 e를 통해 변화된 값을 받아서, 입력값변경이라는 setstate를 실행하여 입력값 state를 수정함 */}
+        <input style={ {display:"inline-block"} } onChange = {(e) => { 입력값변경(e.target.value);  console.log(typeof {입력값}); } } />
+
+        <button onClick = {() => {  /* (숙제1) input 옆의 버튼을 누르면, 입력값 state가 빈칸이거나 null이 아닌 경우, 
+                                        -> 글입력배열state배열을 복사후, 그 입력값 state를 마지막 배열요소로 끼워놓어서, 글입력배열 setstate함수를 통해 갱신함 */
+                                    // let copy1 = [...글입력배열];
+                                    // (입력값 == " " || 입력값 == null) ?
+                                    // null :
+                                    // copy1.push( {입력값} );
+                                    // 글입력배열추가(copy1);               
+                                    
+                                    /* (숙제2) input 옆의 버튼을 누르면, 입력값 state가 빈칸이거나 null이 아닌 경우, 새로운 게시글을 추가시켜라 + 따봉 기능도 정상 작동하도록 조치 + 현재시간 추가
+                                        -> 글제목state배열을 복사후, 그 입력값 state를 마지막 배열요소로 끼워놓어서, 글배열 setstate함수를 통해 갱신함
+                                        -> 따봉도 마찬가지로... 단 추가영역 state를 1번째 배열요소로 끼워놓음 */
+                                    let copy2 = [...글제목];
+                                    let copy3 = [...따봉];
+                                    let copy4 = [...글작성날짜];
+                                    let writeDate = new Date();
+
+                                    (입력값 == " " || 입력값 === null) ?
+                                    null :  copy2.unshift( 입력값 );
+                                            copy3.unshift( 0 );
+                                            copy4.unshift( (writeDate.getMonth() + 1) + "월 " + writeDate.getDate() + "일 " + writeDate.getHours() + "시" );
+                                            글제목변경(copy2);
+                                            따봉변경(copy3); 
+                                            글작성날짜추가(copy4);             } } >글입력</button>
+      </div>
+
       {
         // (설명) 모달이란 state의 상태에 따라 Modal이란 component를 보여주고 안 보여주고를 통제가 가능한 3항 연산자
         //   -> 자식 component인 <Modal>에 props객체로 전달할 멤버변수로서 color라는 속성에는 'skyblue'라는 문자열과 글제목전달이라는 속성에 '글제목'이란 부모 component의 state를 대입해서 전달
-        모달 == true ? /* <Modal></Modal> */ <Modal color = "skyblue" 글제목전달 = {글제목} 글제목함수 = {글제목변경} /> : null
+        모달 == true ? /* <Modal></Modal> */ <Modal color = "skyblue" 글제목전달 = {글제목} 글제목함수 = {글제목변경} 인덱스전달 = {인덱스} /> : null
       }
 
+      <ClassModal/>
     </div>
 
   );
@@ -559,14 +702,50 @@ function Modal(props) {
     //   -> props로 개별적으로 전달된 state와 setstate 함수라고 해도, 바로 사용 가능함
     //      (= 전달된 setstate는 부모 component의 state값을 직빵으로 업데이트 하고, 그렇게 바뀐 state를 통해 react는 재rendering을 시작함)
     <div className = "modal" style = {{background : props.color}}>
-      <h4>{props.글제목전달[0]}</h4>
+      <h4>{/* (숙제) 모달창이 게시물 index에 따라 다른 제목을 띄우도록 하는 부분 props객체에 전달 하여 사용 */ props.글제목전달[props.인덱스전달]}</h4>
       <p>날짜</p>
       <p>상세내용</p>
-      <button onClick = { () => { let copy = [...props.글제목전달]; 
+
+      <button onClick = { () => { // (설명) props객체에 setstate 함수를 받아와서, 자식 component에서 해당 내용을 수정하게 하는 함수 숙제 구현
+                                  let copy = [...props.글제목전달]; 
                                   copy[0] = '여자코트 추천'; 
                                   props.글제목함수(copy); }       } >남자코트 추천 to 여자코트 추천(예시2)</button>
     </div>
   );
+}
+
+// class component
+//  : 원래 react의 component를 작성할때는 객체지향관점에서 class 자료형으로 component를 작성하고 이를 객체화하여 호출함
+//    (= React class의 Component라는 class를 상속받음)
+//       -> 하지만 16.8에서 functional component도 state나 여러기능을 쉽게 사용하게 하는 react hook의 등장으로 functional 방식으로 코딩하는게 유리해짐
+class ClassModal extends React.Component{
+
+  // 멤버객체로는 props, state(얘도 기본이 객체)를 가지고 있으며, 생성자(constructor)를 통해서만 이들을 통제할 수 있는 private한 접근자를 가지고 있음
+  //  -> 부모 component로부터 전달받은 props객체는 parameter를 받는 형식으로 구현함
+  //  -> state는 해당 component class 객체의 멤버객체이므로, this를 통해 접근하게 함
+  constructor(props){
+    super(props);
+    this.state = {
+      name : 'lee',
+      age : 20
+    }
+  }
+
+  // 조상인 Component class의 render 함수를 해당 component에 맞춰 override함
+  //  -> render 함수는 해당 html DOM요소를 브라우저에서 쉽게 랜더링이 가능하도록 react 차원에서 jsx형식을 우리가 아는 그 형식으로 푸는 함수로 interface화 되어있음
+  //      -> state와 props는 this와 js영역을 나타내는 {}를 통해 사용
+  //          -> 알고보면 functional component의 state에서의 개별 state명은 state 객체 안의 1개의 멤버변수였다는 사실을 알수 있으며, 구조분해할당을 통한 state명 setState명을 정하는건 개발자의 직관성을 늘리는 효과 존재
+  //             (= setState 함수도 마찬가지로 this를 통해 접근하며, 그 목표는 state라는 객체 자신의 멤버변수를 변경하는 것이기에, '멤버명 : 값' 형식으로 parameter를 지정함 )
+  render(){
+    return(
+      <div>안녕~! 안녕~! 안녕~! {this.state.name} {this.state.age} {/* this.props */}
+        <button onClick = {() => {
+          this.setState({name : 'kim'});
+          this.setState({age : this.state.age + 1});
+        }}>버튼</button>
+      </div>
+    )
+  }
 }
 
 
