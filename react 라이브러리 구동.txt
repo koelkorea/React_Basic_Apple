@@ -1,0 +1,46 @@
+- 외부 react 라이브러리 
+ : react 라이브러리를 통한 개발을 쉽게 하기 위한, 외부의 개발자가 개발한 라이브러리들.. 
+    -> 원하는 기능들의 구현을 더 쉬운 패턴으로 가능하게 하는 기능이나 함수등이 추가됨
+
+      # (중요) 어떤 라이브러리를 쓰고 싶으면, 그냥 검색해서 나오는 튜토리얼 or get started를 보면 대충 친절하게 설명되어 있음
+          -> 명령어가 바뀌는 경우도 있으니, 안 된다 싶으면 설치 명령어는 다시 확인해볼 것을 추천함 
+
+
+- 외부 react 라이브러리 리스트 및 사용법
+
+ 1. react-bootstrap
+     : (UI 복붙하는 식으로) react의 component를 만들기 귀찮을때, 사전 제작된 component를 쉽게 가져다 쓰기 위한 목적으로 제작된, react 전용 외부 라이브러리
+        -> 단! 이미 만들어져 있는 스타일은 그대로 다양한 웹페이지의 디자인에 적용하기에는.. 미적으로 굉장히 호환성이 떨어지는 경우가 많고 경우의 수가 적음
+        -> 또한! 복붙한 component는 또 variant라는 bootstrap에만 통용되는 전용 속성에 근거하고 미리 적용된 스타일이라, 어차피 원하는데로 쓸거면 또 CSS에 스타일링을 적용해야 함
+           (= 유연성도 ㅈ같고, 사실상 현업에서는 잘 안 쓰임)
+
+      # react-bootstrap 설치법
+        1) 설치 명령어
+           : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install react-bootstrap bootstrap 입력 
+
+        2) 특정 스타일을 기입시, 오류 발생에 대비해서 react-bootstrap 실행에 필요한 style 전부 모여있는 Bootstrap CSS을 연결시킴
+            -> (방법1) index.html 파일의 <head> 태그 안에 <link> 태그로 되어 있는 다음의 Bootstrap CSS를 끼워서 넣음
+
+                ex) <link
+                      rel="stylesheet"
+                      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+                      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+                      crossorigin="anonymous" />
+
+            -> (방법2) index.js or App.js 파일에 다음의 Bootstrap CSS에 해당하는 모듈명을 입력함
+
+                ex) import 'bootstrap/dist/css/bootstrap.min.css';
+
+      # react-bootstrap 사용법
+        1) 원하는 html 요소명에 해당하는 component를 import하는 명령어를 원하는 component 상단에 입력해줌
+
+           ex) import Button from 'react-bootstrap/Button';
+               import { Button } from 'react-bootstrap';
+
+        2) 홈페이지의 검색어에 원하는 html 요소명을 입력 후 검색
+
+           ex) button, input, nav, responsive grid(반응형으로 움직이는 grid를 짤 때 사용하면 유용) ...
+
+        3) 검색어에 해당하는 html 요소들에 대한 스타일링 예제들의 미리보기와 해당하는 소스코드가 존재할텐데, 원하는 소스코드를 복사해서 붙여넣자
+            -> 단순한 button 스타일링부터, state를 사용하여 동적인 UI까지 구현한 경우까지 꽤 다양함
+
