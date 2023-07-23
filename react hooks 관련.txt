@@ -1,0 +1,25 @@
+- react hooks
+ : functional component에서 기존에 하지 못했던 상태 관리와 lifecycle 관리 및 부수 효과 처리(side effect 처리) 등 다양한 리액트 기능들을 useXXXX()라는 함수들로 사용할 수 있게하는 위한 함수들의 집합
+   (= 쉽게 말해, 기존 class component에서만 작동하는 함수집합 lifecycle method들을 functional component에서도 작동하도록 구현한 함수집합이 react hooks)
+    -> 이를 통해 기존의 lifeCycle method을 안 써도 되기에, 불편하고 비직관적인 class component를 쓰지 않아도 되게 만든 일등공신이라 할수 있음
+
+    # react hooks라고 불리는 이유?
+       : functional component에서 React의 기능을 "갈고 닦는" 도구(hooks)들이라는 의미 
+          <-> lifecycle hook과는 1도 관계 X
+
+    # react 오리지널 hooks
+      1) useState() (= setState() 대체)
+          : 함수형 컴포넌트에서 상태(state)를 관리하기 위한 Hook입니다. 상태 변수와 해당 상태를 갱신하는 함수를 반환합니다.
+  
+      
+      2) useEffect() (= componentDidMount, componentDidUpdate 대체)
+         : component의 lifeCycle hook 중 rendering 시점 후에 실행될 작업을 수행하기 위한 function 내부의 함수
+  
+      3) useContext: 컨텍스트(Context)를 사용하기 위한 Hook입니다. 컨텍스트를 구독하고 해당 컨텍스트 값을 가져올 수 있습니다.
+      4) useRef: DOM 요소나 컴포넌트의 인스턴스를 참조하기 위한 Hook입니다. useRef를 사용하여 DOM 조작이나 외부 라이브러리와의 상호작용을 처리할 수 있습니다.
+      5) useCallback: 콜백 함수를 메모이제이션하는 Hook입니다. 의존성 배열에 변경되지 않으면 이전에 생성한 함수를 반환하여 성능을 최적화할 수 있습니다.
+      6) useMemo: 계산 비용이 많은 연산의 결과 값을 메모이제이션하는 Hook입니다. 의존성 배열이 변경되지 않으면 이전에 계산한 값을 반환하여 성능을 최적화할 수 있습니다.
+
+    # react router 라이브러리에 존재하는 hooks
+      1) useParam:
+      2) useNavigate : Link component와 유사하면서도, 확장기능을 수행하는 react hooks와 유사한 react router에 존재하는 react hooks 함수의 일종

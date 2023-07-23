@@ -12,11 +12,11 @@
      : (UI 복붙하는 식으로) react의 component를 만들기 귀찮을때, 사전 제작된 component를 쉽게 가져다 쓰기 위한 목적으로 제작된, react 전용 외부 라이브러리
         -> 단! 이미 만들어져 있는 스타일은 그대로 다양한 웹페이지의 디자인에 적용하기에는.. 미적으로 굉장히 호환성이 떨어지는 경우가 많고 경우의 수가 적음
         -> 또한! 복붙한 component는 또 variant라는 bootstrap에만 통용되는 전용 속성에 근거하고 미리 적용된 스타일이라, 어차피 원하는데로 쓸거면 또 CSS에 스타일링을 적용해야 함
-           (= 유연성도 ㅈ같고, 사실상 현업에서는 잘 안 쓰임)
+           (= 유연성도 ㅈ같고, 사실상 현업에서 쓰는 건 취향에 가까운 영역)
 
       # react-bootstrap 설치법
         1) 설치 명령어
-           : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install react-bootstrap bootstrap 입력 
+           : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install react-bootstrap 입력 
 
         2) 특정 스타일을 기입시, 오류 발생에 대비해서 react-bootstrap 실행에 필요한 style 전부 모여있는 Bootstrap CSS을 연결시킴
             -> (방법1) index.html 파일의 <head> 태그 안에 <link> 태그로 되어 있는 다음의 Bootstrap CSS를 끼워서 넣음
@@ -44,3 +44,331 @@
         3) 검색어에 해당하는 html 요소들에 대한 스타일링 예제들의 미리보기와 해당하는 소스코드가 존재할텐데, 원하는 소스코드를 복사해서 붙여넣자
             -> 단순한 button 스타일링부터, state를 사용하여 동적인 UI까지 구현한 경우까지 꽤 다양함
 
+
+ 2. react-router-dom
+     : react를 이용한 웹페이지에서 새로고침을 통한 전체 html요소를 가져오지 않고 virtual dom을 통해 필요한 html요소만 가져와서 routing 기능을 쉽게 구현하게 하는 react 전용 외부 라이브러리
+       (= react-router가 없어도, routing 기능을 구현할 수는 있음)
+
+      # routing 기능?
+         : 웹 애플리케이션에서 다른 페이지 간의 이동과 주소(url) 관리를 사용자가 요청한 URL을 구분점으로 삼아 가능하게 해주는 기능
+           (= 사용자가 요청하는 URL을 기반으로 웹 애플리케이션의 특정 페이지를 rendering 할 수 있도록 하는 일종의 표식시스템이라 생각하자)
+
+            - 일반적 html, js를 통한 routing 기능 구현과정
+               1) 새로운 html을 만듦
+               2) a태그나 아니면, 여타 프레임워크의 패턴에 따른 방식으로 url을 요청하면, 1)에서 제작한 html을 내보냄
+
+            - react를 통한 routing 기능 구현과정
+               1) component를 생성하고, 만든 component들을 블록쌓듯 부모 component를 구현하는데 사용함
+                   -> (중요) react에서 화면을 렌더링하는 방식은 html은 index.html 1개만 사용하고, 거기에 component 호출이 달라질 때마다 새로운 component를 갱신하는 방식으로 이뤄지게 때문
+               2) 여타 프레임워크나 react-router-dom과 같은 라이브러리를 통해 패턴에 따른 방식으로 url을 요청하면, 1)에서 제작한 component를 내보냄
+
+
+      # API (Application Programming Interface)
+         : 웹 애플리케이션과 외부 서비스 또는 다른 애플리케이션 간의 통신을 위한 인터페이스를 의미
+           (= 서로 다른 시스템과의 데이터를 통한 상호작용을 가능하게 한다는 것이 핵심 개념)
+
+
+      # routing 기능 VS API (Application Programming Interface)
+         1) request와 return의 대상이 내부인가(routing) or 외부인가(API) 여부가 다름의 핵심
+         2) 무엇을 받아오기 위한 통신인가?
+             -> routing : 같은 웹페이지에서의 다른 페이지
+             -> API     : 다른 시스템에서 보내주는 데이터
+
+
+      # react에서 html의 a태그를 쓰지 않는 이유?
+         : a태그는 새로고침을 통해, 무조건 해당 페이지의 전체 html 요소를 로딩함
+           (= react의 virtual dom을 통한 필요한 html 요소만을 서버로부터 받아오고 로딩하여 효율적인 rendering을 하는 메카니즘과 기능 구현에 react는 맞지 않음)
+
+
+      # react-router-dom 설치 명령어
+         : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install react-router-dom@6(원하는 라이브러리 버전) 입력 
+
+
+      # react-router-dom 사용법
+        1) BrowserRouter component를 통한, router 기능을 적용할 component 범위 정하기
+
+           a. react-router-dom 라이브러리의 BrowserRouter component에 해당하는 부분을 ES module 방식으로 불러와서, import하는 명령어를 원하는 component 상단에 입력해 줌
+              -> 이를 통해 BrowserRouter 컴포넌트를 JSX 코드 내에서 사용할 수 있게 됨    
+
+                  ex) import { BrowserRouter } from 'react-router-dom';
+           
+           b. conponent 파일(jsx)에서 rouing 기능이 필요한 component영역에 <BrowserRouter></BrowserRouter> 라는 component를 호출하고, 그 안에서 routing 기능 구현코드를 짜면 됨           
+
+        2) router 기능을 적용할 component 내부에 router 코드 구현하기
+
+           a. react-router-dom 라이브러리의 Routes, Route, Link component에 해당하는 부분을 ES module 방식으로 불러와서, import하는 명령어를 원하는 component 상단에 입력해 줌
+              -> 이를 통해 Routes, Route, Link 컴포넌트를 JSX 코드 내에서 사용할 수 있게 됨      
+
+                  ex) import { Routes, Route, Link } from 'react-router-dom';
+
+           b. <BrowserRouter></BrowserRouter> 안의 component 중에 routing 기능이 필요한 component를 골라서, 
+               -> url 조건 에 따라 다른 내용의 component를 출력할 위치에 <Routes>와 <Route>를 통해 조건부로 다르게 rendering 될 html 내용을 구성하고
+               -> 해당 url에 접근하게 해줄 하이퍼링크 역할을 수행하는 <Link>를 통해, 버튼을 클릭하면 url주소를 매개로 원하는 부분의 Route와 연결되어 원하는 component 내용을 rendering 하도록 함
+
+                  ex) const root = ReactDOM.createRoot(document.getElementById('root'));
+                      root.render(
+                        <React.StrictMode>
+                          <BrowserRouter>
+                          <example />
+                          </BrowserRouter>
+                        </React.StrictMode>
+                      );           
+                  
+                      funtion example(){
+
+                        return(
+                            <Link to = "/">홈</Link>
+                            <Link to = "/detail">상세페이지</Link>
+
+                            <Routes>
+                              <Route path = "/" element = { 
+                                <>
+                                  <div className="main-bg"></div>
+                                  <Container>
+                                    <Row> </Row>
+                                  </Container>
+                                </>
+                              }/>
+                              <Route path = "/detail" element = { <div>상세 페이지임</div> }/>
+                            </Routes>
+                        )
+                      }
+
+
+      # Nested Route(중첩 라우트) 사용법
+         : React Route 라이브러리에서 어떤 Route component의 url과 중복된 내용을 가진 다른 Route component를 부모-자식 관계로 정의함으로서, 계층적으로 중첩된 route를 선언하는 구성 
+            -> 이를 통해 페이지를 더 작은 단위로 나누어 관리하기가 직관적이고, 코드의 재사용성과 유지보수성 또한 향상되는 효과를 가져옴
+
+           1. 메인 Route가 될 상위 Route component를 정하고, 하위 Route component가 될 녀석들을 상위 component 안에 넣음
+
+               ex) <Route path = "/about" element = { <About /> } >                        <Route path = "/about" element = { <About /> } />
+                     <Route path = "member" element = { <div>멤버</div> } />                <Route path = "/about/member" element = { <div>멤버</div> } />
+                     <Route path = "location" element = { <div>위치</div> } />       =>     <Route path = "/about/location" element = { <div>위치</div> } /> 
+                   </Route>
+           
+           2. 상위 Route component의 내용(component 함수 자신의 return 내용이나, element 속성값이던 상관없음)에 하위 Route component의 내용이 rendering되길 원하는 위치에 <Outlet />을 기입함
+              (= 이를 통해 Nested Route에 해당하는 url이 요청되면, 상위 Route component의 내용을 먼저 rendering 한 후 하위 Route component의 내용이 알맞게 배치되고 rendering 됨)
+                  -> (중요!) 이는 1번의 과정에서 정해진 Nested Route 방식으로 Route 구성을 하지 않었더라도, 똑같이 작동됨
+
+                      ex) function About(){
+                            return(
+
+                              <div>                                                         <Route path = "/about" element = { <div>
+                                <h4>회사정보</h4>                                    =>                                           <h4>회사정보</h4> 
+                                <Outlet></Outlet>                                                                                <Outlet></Outlet>
+                              </div>                                                                                           </div> } />
+                                                                                            
+                            )
+                          }
+
+
+      # react-router-dom 의 component 및 속성 설명
+
+         1) BrowserRouter
+             : react-router를 통해 브라우저의 URL을 기반으로 페이지를 라우팅하는 기능을 사용할 component들의 범위를 정하는 component로.. 이 component 영역 안에 없는 component는 react-router 라이브러리 사용불가
+                (= react-router-dom의 다른 component와는 상위 component로서 이들이 활동할 수 있는 영역을 정해주는 역할을 함)
+
+         2) Routes
+              : 해당 component에서 웹페이지의 다른 개별 페이지들의 url 정보를 담는 path 속성과 내용에 대한 element라는 속성을 가지고 있는 Route라는 component들을 navigation처럼 묶어줘서 관리하는 일종의 container역할을 하는 component
+                (= Route component와는 상위 component로서 이들을 묶는 역할을 함)
+
+         3) Route
+              : 해당 웹페이지 내부의 다른 개별 페이지들의 정보를 담고 있는 component 
+                (= Routes component의 하위 component로서 Routes의 item역할을 수행)
+
+                 - path 속성
+                    : url 정보를 가지는 속성
+                       -> path = "*" 의 의미는 요청된 url이 다른 Route component에서 선언한 url이 아닌 모든 경우를 통칭하는 의미
+                          (= 그렇기에 보통 예외나 오류 페이지를 구성하는데 사용하기도 함)
+
+                 - element 
+                    : 해당 내부 페이지가 가지는 component 정보
+         4) Link  
+              : react-router-dom 라이브러리에서 일종의 a태그와 비슷한 역할을 하는 component
+                 -> 그렇다고, 화면 rendering 방식까지 무조건 새로고침식으로 다시 로딩하는 a태그랑은 다름
+
+                 - to : 해당 Link component를 클릭 시, 연결되어야 하는 Route component의 url정보를 가지는 속성
+
+
+         ex) const root = ReactDOM.createRoot(document.getElementById('root'));
+             root.render(
+               <React.StrictMode>
+
+                 <BrowserRouter>
+
+                   <div>
+                   
+                     <Link to = "/">홈</Link>
+                     <Link to = "/detail">상세페이지</Link>
+
+                     <Routes>
+                       <Route path = "/"       element = { <div>메인 페이지임</div> }/>
+                       <Route path = "/detail" element = { <div>상세 페이지임</div> }/>
+                     </Routes>
+
+                   </div>
+
+                 </BrowserRouter>
+
+               </React.StrictMode>
+             );           
+                  
+
+      # react-router-dom 의 react hooks 메서드 설명
+
+         1) useNavigate() 함수
+             : Link component와 유사하면서도, 확장기능을 수행하는 react router에 존재하는 react hooks 함수의 일종
+                -> Link component와의 차이점
+                    : Link는 그 자체가 하나의 html 요소가 되는 component로서 실체가 존재 <-> useNavigate() 함수는 parameter가 주어지는데로 기능을 수행하는 함수이기에 이벤트핸들러를 통해 사용됨
+
+               - useNavigate 문법
+                  1. useNavigate('url주소')
+                      : <Link to = "url주소" /> 와 유사
+
+                         ex) <div onClick={ () => navigate('/detail') }>Home</div>
+
+                  2. useNavigate(+ or -)
+                     : +는 횟수만큼 브라우저의 앞페이지로 돌아가기, -는 횟수만큼 브라우저의 뒤로가기 실행과 같음
+   
+                        ex) <div onClick={ () => navigate(1) }>forward</div>
+   
+
+         2) useParam() 함수
+             : Route component의 path 속성값에 들어간 url 파라미터가 존재하고 전달될 때, 해당 Route의 component로서 구성되는 component가 그 전달된 url 파라미터 값을 전달받고 사용할 수 있게 해주는 react router에 존재하는 react hooks 함수의 일종
+               (= useParam()은 존재부터가 Route component의 path속성값에 url 파라미터가 존재해야 한다는 전제가 깔림)
+
+
+               - useParam 사용법
+                  1. 원하는 Route component의 path 속성값에 ':url파라미터명'을 포함하여 입력해 줌
+                      -> (참고) ':url파라미터명' 은 <Route path = "/detail/:id/:age/:ss" /> 와 같이 여러개를 넣어도 상관은 없음
+
+                          ex) <Route path = "/detail/:id" element = { <Detail shoes={shoes} /> } />
+
+                  2. 해당 Route의 element를 구성하는 component가 존재하는 jsx 파일에 react-router-dom 라이브러리의 useParams에 해당하는 부분을 ES module 방식으로 불러와서, import하는 명령어를 원하는 component 상단에 입력해 줌
+                      -> 이를 통해 useParams 컴포넌트를 JSX 코드 내에서 사용할 수 있게 됨      
+
+                          ex) import { useParams } from 'react-router-dom';
+
+
+                  3. 해당 Route의 element를 구성하는 component에 useParam() 함수를 통해 url 파라미터 값을 받을 수 있도록 변수를 선언하고, 그 변수를 component 구성에 사용함 
+   
+                        ex) function Detail(props){
+
+                              let {id} = useParams();
+                              let findShoes = props.shoes.find( (wantShoes) => wantShoes.id == id );
+
+                              return (
+                                    <div className="container">
+                                      <h4 className="pt-5">{findShoes.title}</h4>
+                                      <p>{findShoes.content}</p>
+                                      <p>{findShoes.price}원</p>
+                                    </div> 
+                                );
+                            }
+
+
+ 3. styled-components
+     : React를 기반으로 하기에 component의 기준 단위로 스타일을 CSS-in-JS 방식으로 작동하는 styled API를 통해서, component의 style을 관리하는 라이브러리
+       (= CSS-in-JS 방식을 쓴다는 점에서, 해당 라이브러리의 Styled API를 사용하면 React 외에 다른 JavaScript 프레임워크나 라이브러리와 함께 사용할 수도 있음)
+           -> 대충 styled API를 사용시, 귀찮게 style 속성을 jsx 문법으로 2중 3중 {} 써가며 쓸 필요가 없기에 사용하는 라이브러리..
+
+      # (중요!) CSS-in-JS 방식
+         : JavaScript 코드 내에서 스타일을 생성하고, 해당 스타일이 component와 동적으로 연결되는 방식
+            (= CSS를 작성할 때 일반적인 CSS 파일을 따로 생성하지 않고, JavaScript 파일 내에서 통제가 된다는 걸 의미)
+               -> 결론부터 말하자면, CSS-in-JS 방식을 쓰기 때문에, component style에 대한 정의를 js 영역에서 마무리를 짓기 더 쉬워지고, 심지어 CSS 변수명에 대해서도 자유로워 관리도 쉽다 이거
+
+
+
+      # (중요!) styled-components 라이브러리 사용시의 장점    
+        1) CSS-in-JS 방식 = CSS파일 안 열어도 됨
+
+        2) styled-API로 component의 style을 작성시, 해당 component의 영역인 {} 범위를 기준으로 오직 styled-API로 작성한 스타일만 적용되는 절대 영역이 생성! = 다른 전역변수들의 간섭이 차단됨
+          (= component의 style이 지역변수화가 되어 다른 CSS나 js파일들에 의해 간섭 X)
+              -> 전역 변수나 다름없는 CSS의 여러 변수들과 compoenent의 style 간의 의존관계를 끊어버림을 의미
+                  -> CSS에서의 예상지 않은 충돌을 방지 가능!
+
+        3) 해당 component의 style을 작성시, 특정 속성값에 ${ props => props.속성명 }과 같은 양식으로 props 객체를 통해 속성값을 전달할 수 있도록 작성하면, 코드를 재사용하고 CSS 변수명을 의식하지 않아도 되기에 component의 더욱 유연하게 구성 가능
+           (= styled API를 통해 생성된 component에 선언 당시 적었던 '속성명'에 값을 주어서, 부모 component에서 props 객체를 이용하여 값을 전달하여 호환성이 높은 모듈화된 스타일을 유지할 수 있음)
+               -> styled-API로 만들어진 component도 엄연히 component이기에 props 객체를 이용해서, 자식 component에 값을 줄 수가 있음
+
+                  - 과정1. styled API를 통한 component 모듈화하기
+                      : styled API를 통한 component에서 props 객체로 부터 값을 전달받을 수 있는 영역을 지정하여, props객체가 가져온 멤버속성에 따라 style이 달라지는 component 선언하기
+                         -> ${} 안에는 조건문도 삼항 연산자로 사용 가능함
+
+                        ex) let ColoredButton = styled.button`
+                              background : ${ props => props.color };
+                            `
+
+                  - 과정2. 모듈화 된 styled component에 props객체를 통해 속성값을 전달하여 완성하기
+                      : 모듈화 된 styled component를 부모 component에서 호출하면, 거기에 '과정1'에서 적었던 'props.속성명'과 값을 props 쓰듯이 사용하면 됨
+
+                        ex) <ColoredButton color="blue">파란 버튼</ColoredButton>
+                            <ColoredButton color="orange">오랜지 버튼</ColoredButton>
+
+        4) component의 style 코드를 작성하는 것은 곧 또 하나의 component를 작성하는 것을 의미
+            -> style과 component 로직이 함께 관리되어 코드의 가독성과 유지보수성이 향상
+
+        5) 웹페이지 로딩시간이 단축됨
+            -> CSS파일을 별도로 만드는게 아니라, HTML style 속성으로 들어가는 것을 의미함 = 새로운 페이지를 로딩시 CSS로딩하지 않고 필요한 style값만 가져올수도 있기 때문 
+               (= 직전에 보고 있는 페이지를 기반으로 필요한 HTML요소만 받아오고 로딩하고 rendering하는 virtual DOM과 좋은 연관이 될 수 있음)
+
+
+      # (중요!) styled-components 라이브러리 사용시의 단점
+        1) js 영역이 복잡해짐
+
+        2) component가 이게 styled API로 제작한 component인지, 일반 component인지 햇갈릴 소지가 있음
+           (= 다시 말해, 코드 구조를 ㅈ같이 짰으면, 프로그래머 입장에서 코드 만지기가 ㅈ같아진다 이거임)
+
+        3) 다른 jsx파일에서도 해당 styled API로 제작한 component를 쓰고 싶다면? 짤없이 import해야 함
+           (= 커지면 커질수록, 내가 어디에서 작성한 styled API로 제작한 component인지 찾기도 ㅈ같고, import를 얼마나 빠뜨렸나 찾기도 ㅈ같음)
+               -> 차라리 파일 1개에서 관리하는 전통적 CSS방식이 나을수도 있다는..?
+
+        4) 협업 할 때, CSS 부분에서 작업 스타일이나 효율같은 부분에서 문제가 발생할 소지가 있음
+
+
+      # styled-components 설치법
+         : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install styled-components 입력 
+
+
+      # styled-components 사용법
+        1) styled-components 라이브러리의 style이라는 객체(object)에 해당하는 부분을 ES module 방식으로 불러와서, import하는 명령어를 원하는 component 상단에 입력해 줌
+            -> 이를 통해 style이라는 객체(object)만 import해서 해당 파일의 js영역에서 사용 가능하게 가져다 줌
+
+               ex) import styled from 'styled-components';
+
+        2) styled.component유형' 속성명1 : 속성값1; .. 속성명n : 속성값n; ' 형식으로 원하는 유형의 style component를 선언하고, style도 쉽게 적용이 가능함
+            -> (주의!) single quotation(')이 아니라가 아니라반드시 백틱(`)을 써서 범위를 지정해야 함
+
+                ex) let ColoredButton = styled.button`
+                        background : blue;
+                        padding : 10px;
+                    `
+
+        3) 사용을 원하는 component를 부모 component로 하여, 그 안에 2)에서 만든 style component를 일반 component처럼 사용해서, 원하는 위치에 style component를 배치할 수 있음
+
+        4) (중요!) props객체를 사용한 모듈화된 style component 작성하기
+            : props 객체를 통해 style component에 멤버속성값을 전달하면, style component의 구조는 유지한채 쉽게 속성만 바꿀 수도 있음
+
+              - 과정1. styled API를 통한 모듈화된 style component 선언 단계
+                  : styled API를 통한 component에서 props 객체로 부터 값을 전달받을 수 있는 영역을 지정하여, props객체가 가져온 멤버속성에 따라 style이 달라지는 component 선언하기
+                     -> ${} 안에는 조건문도 삼항 연산자로 사용 가능함
+
+                    ex) let ColoredButton = styled.button`
+                          background : ${ props => props.color };
+                        `
+
+              - 과정2. 모듈화 된 styled component에 props객체를 통해 속성값을 전달하여 완성하기
+                  : 모듈화 된 styled component를 부모 component에서 호출하면, 거기에 '과정1'에서 적었던 'props.속성명'과 값을 props 쓰듯이 사용하면 됨
+
+                    ex) <ColoredButton color="blue">파란 버튼</ColoredButton>
+                        <ColoredButton color="orange">오랜지 버튼</ColoredButton>
+
+
+         5) styled.component유형(작성된 style component명); 을 통하 styled.component 복사
+             : style component를 복사하는 방법은 복사하는 style component와 같은 메서드를 쓰고 그 파라미터로 대상이 되는 style component명을 투입하고, 다른 js변수에 대입하면 됨
+
+               ex) let copiedButton = styled.button(ColoredButton);
+
+      # (번외) component명.module.css 형식의 css문서
+         : 이 같은 형식은 해당 CSS문서의 내용이 특정 'component명'의 영역에만 한정하여 지역변수처럼 작동하고, 다른 component에는 적용되지 않도록 하는 일종의 표식
+           (= 기존 CSS작업 방식으로도 styled-components 라이브러리 사용효과처럼, 특정 component에 한정된 지역변수적 CSS를 적용 가능함을 의미)
