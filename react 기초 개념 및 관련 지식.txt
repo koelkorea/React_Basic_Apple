@@ -788,7 +788,7 @@
                4) 한 프로세스(process)의 여러개의 쓰레드(thread)가 존재 가능함
 
                5) 기본적으로 쓰레드는 평행성(Parallelism)을 근거로 한 물리적으로 동시적 프로그래밍 처리를 하는 병렬처리를 위해 만들어짐
-             -> (중요!) 단! 진정한 평행성(Parallelism)은 멀티코어 cpu를 사용한 멀티 프로세서 환경에서 실현됨 = 싱글 프로세서 환경에서는 멀티 쓰레드 해봐야 동시성(concurrency) 기반 작업이 됨
+                   -> (주의!) 단! 진정한 평행성(Parallelism)은 멀티코어 cpu를 사용한 멀티 프로세서 환경에서 실현됨 = 싱글 프로세서 환경에서는 멀티 쓰레드 해봐야 동시성(concurrency) 기반 작업이 됨
 
 
                6) 쓰레드는 한편으로는 동시성(concurrency) 또한 강조한 개념임
@@ -825,7 +825,7 @@
          4) 한 프로세스(process)의 여러개의 쓰레드(thread)가 존재 가능함
 
          5) 기본적으로 쓰레드는 평행성(Parallelism)을 근거로 한 물리적으로 동시적 프로그래밍 처리를 하는 병렬처리를 위해 만들어짐
-             -> (중요!) 단! 진정한 평행성(Parallelism)은 멀티코어 cpu를 사용한 멀티 프로세서 환경에서 실현됨 = 싱글 프로세서 환경에서는 멀티 쓰레드 해봐야 동시성(concurrency) 기반 작업이 됨
+             -> (주의!) 단! 진정한 평행성(Parallelism)은 멀티코어 cpu를 사용한 멀티 프로세서 환경에서 실현됨 = 싱글 프로세서 환경에서는 멀티 쓰레드 해봐야 동시성(concurrency) 기반 작업이 됨
 
          6) 쓰레드는 한편으로는 동시성(concurrency) 또한 강조한 개념임
             (= 여러개의 쓰레드는 프로세스의 context swiching 작업 또한 더 빠르게 처리하여 공유 자원을 또한 더 효율적으로 사용하기에, 비동기 처리 또한 더 빠르게 수행하게 해줌)
@@ -858,58 +858,70 @@
   @ 비동기 작업 VS 동기 작업
      : 요청(request)를 수행할 시, 응답(resonse)을 받을 때까지 다음 코드로 넘어가는가 넘어가지 않는가 여부에 따라 갈림
 
-        1) 동기 작업 (순차적 작업)
-           : 요청(request)과 응답(resonse)은 하나의 작업처리 단위(transaction) 세트로서 동시에 일어나는걸 전제로 하여, 프로세스의 흐름를 1차선적으로 수행하는 것을 동기라고 함
+        1. 동기 작업 (순차적 작업)
+           : 1요청(request)과 1응답(resonse)은 하나의 작업처리 단위(transaction) 세트로서 동시에 일어나는걸 전제로 하여, 프로세스의 흐름를 1차선적으로 수행하는 것을 동기라고 함
               -> 대충 노빠꾸 one way 전략에 위에서 까라면 밑에서는 일방적으로 까는 것과 비슷..
                  (= 2인 3각 릴레이 계주처럼, 한 팀의 작업이 끝날때까지 다른팀들은 보고만 있어야 함)
                      -> 쉽게 설계할 수 있지만, 결과가 주어질 때까지 아무것도 못하고 대기해야 함
   
-        2) 비동기 작업(비순차적 작업) with 동시성(concurrency)
+        2. 비동기 작업(비순차적 작업) with 동시성(concurrency)
            : 요청(request)과 응답(resonse)이 동시에 일어나지 않는 별개의 작업처리 단위(transaction)로서, 동시성(concurrency)을 기반으로 동시 다발적으로 발생가능하고, 다른 작업을 시작할 수 있도록 제어가 반환되어 요청과 응답이 다른 시간대 존재해도 되는 작업 처리 방식을 비동기라고 함
              (= 프로세스의 작업처리 상태값을 가진 컨텍스트(context)를 통해, 비동기 코드를 수행중인 thread들이 어디에 비동기 코드가 있는지와 처리 여부를 체크가능)
                  -> 쉽게 말해, 개별 요청과 응답은 전체프로세스와 별개로 독립적이면서 병렬적으로 수행되며, 어떤 요청단위가 수행되고 나면 응답이 오는거랑 상관없이 다른 프로세스는 진행됨
                     (= 메인 쓰레드가 아닌 다른 쓰레드로 비유 가능한 계열사들이 본사의 의지랑 상관없이 자신의 비즈니스를 수행하고 계약하는 독립채산제나 현실의 회사생활에서 직원을 출장보내도 본사는 굴러가는걸 생각해보면 간단함)
-                        -> (장점) 결과가 주어지는데 시간이 걸리더라도, 동시기에 다른 작업 또한 동시에 할 수 있으므로 자원을 효율적으로 사용
-                        -> (단점) 제대로 신경을 쓰지 않으면, 한 프로세스의 작업처리 단위(transaction)들이 전부 비동기적(= 병렬적)으로 수행되어 일처리가 뒤죽박죽하게 됨
-                                  (= 비동기적 작업방식을 통해 제대로 된 효율을 내기 위해서는 복잡한 설계도 감안해야 함..)
-                                      -> 비동기적 작업처리 프로세스에서도 통제를 위해서는 큰 틀에서 이 비동기 코드들이 용도를 기준으로 그루핑되어 각각 동기적(= 순차적) 방식으로 단계적으로 수행될 수 있도록, 하나의 작업처리 단위(transaction)로서 기능할 수 있도록 분류하는 기준점이 필요하다는 결론 도출                                      
 
 
-      # 비동기적 코드들을 큰 틀에서 동기적(= 순차적)으로 단계적 동작하게 하는 방법(?)
-         : 쉽게 말해, 비동기 코드들에게 작업순서를 기준으로 순번을 부여하고 그 순번을 기준으로 이들을 그룹화해서, 각 그룹의 실행타이밍을 통제함으로서 그룹기준으로 순차적 처리가 가능하게 한다고 생각하면 됨
-            -> 해당 작업흐름(workflow)을 단위들을 기준으로 비동기적 작업처리 프로세스의 작업처리 단위(transaction)들을 분류하고, 그렇게 분류된 비동기적 코드들은 자신이 소속된 작업흐름(workflow)가 실행될 타이밍에 맞춰 동시다발적 수행됨
+      # 비동기 작업처리의 장, 단점    
+         1) 장점
+             : 결과가 주어지는데 시간이 걸리더라도, 동시기에 다른 작업 또한 동시에 할 수 있으므로 자원을 효율적으로 사용
+
+         2) 단점
+             : 제대로 신경을 쓰지 않으면, 한 프로세스의 작업처리 단위(transaction)들이 전부 비동기적으로 수행되어 일처리가 뒤죽박죽하게 됨
+               (= 비동기적 작업방식을 통해 제대로 된 효율을 내기 위해서는 복잡한 설계도 감안해야 함..)
+                  -> 비동기적 작업처리 프로세스 또한 통제를 위해서는.. 개별 비동기 코드들을 작업흐름(workflow) 용도를 기준으로 그루핑을 한 뒤, 그 그룹들이 각각 하나의 작업처리 단위(transaction)로서 하나의 컨텍스트(context)에 근거해 각각 동기적(= 순차적) 방식으로 단계적으로 수행될 수 있어야 한다는 결론 도출  
+                      -> (중요) 여기서의 '컨텍스트(context) 단위'는 프로세스 내부의 업무들을 큰 틀에서 독립성을 가진 기준으로 짜여 있다 생각하자                                    
+
+
+      # 비동기적으로 작동하는 코드들이 큰 틀에서 동기적(= 순차적)으로 단계적 동작하게 하는 방법(?)
+         : 쉽게 말해, 비동기 작업처리 코드로 이뤄진 프로세스의 작동 로직을 기준으로 순번을 책정한 집단들을 컨텍스트(context) 단위로 세우고, 각 그룹에 해당하는 비동기 코드들을 분류 후 컨텍스트(context) 단위로 코드들의 실행타이밍을 통제함으로서, 그룹기준으로 순차적 처리가 가능하게 한다고 생각하면 됨
+            -> 해당 프로세스의 논리적 작업흐름(workflow)의 개별 단위들을 기준으로 실제 프로세스 로직의 작업처리 단위(transaction)들을 분류하고, 그렇게 분류된 작업처리 단위(transaction)에 소속된 컨텍스트(context) 단위들은 자신이 소속된 작업흐름(workflow)가 실행될 타이밍에 맞춰 동시성(concurrency)을 가지고 수행됨
                (= 이를 통해 무질서하게 수행되는 개판 5분전을 방지하고, 비동기 코드의 실행 메커니즘을 인간의 시각을 기준으로 설계할 수 있게 됨)
 
-
-               ex) 페이지 리로드의 비동기식 방식의 workflow 분류
-                    (1단계) -> 필요한 페이지의 html파일들을 다운로드 하는 로직(해당 로직의 코드만 비동기적으로 실행)
-                    (2단계) -> (1단계 완료시) 다운로드 받은 html파일들을 랜더링(해당 로직의 코드만 비동기적으로 실행)
+               ex) 페이지 리로드 기능에 속하는 컨텍스트(context) 단위의 workflow 분류
+                    (1단계) -> 필요한 페이지의 html파일들을 다운로드 하는 로직(해당 로직에 속한 작업처리 단위(transaction) 비동기적으로 실행)
+                    (2단계) -> (1단계 완료시) 다운로드 받은 html파일들을 랜더링(해당 로직에 속한 작업처리 단위(transaction) 비동기적으로 실행)
 
 
          - 세부적 설명
-            1단계) 프로세스 로직을 순차적인 작업흐름(workflow)의 집합으로 간주하고 나눔
-            2단계) 해당 작업흐름(workflow)을 단위(= 시스템 입장에서는 작업처리 단위(transaction)로 간주)들을 기준으로 비동기 코드들을 분류하여 그룹화를 시킴
-            3단계) 각 그룹 내의 모든 비동기 코드들을 1개의 작업처리 단위(transaction)로서 간주, 작업흐름(workflow)의 순서를 기준으로 microtask queue에 넣어 실행타이밍 통제함
+            1단계) 프로세스의 내부 기능들을 업무 독립성 측면에서 분류하여 컨텍스트(context) 단위로 나누고, 해당 프로세스의 개별 컨텍스트(context) 단위의 비동기 코드들을 분류함
+            2단계) 각 컨텍스트(context) 단위에 해당하는 기능별 로직들을 순차적인 작업흐름(workflow)의 집합으로 간주하고 나눔
+            3단계) 해당 작업흐름(workflow)을 단위(= 시스템 입장에서는 작업처리 단위(transaction)로 간주)들을 기준으로 각 컨텍스트(context) 그룹의 비동기 코드들을 2차 그룹화를 시킴
+            4단계) 각 그룹 내의 모든 비동기 코드들을 1개의 작업처리 단위(transaction)로서 간주, 작업흐름(workflow)의 순서를 기준으로 microtask queue에 넣어 실행타이밍 통제함
                    (= 시스템 입장에서의 작업흐름(workflow) 단위 == 작업처리 단위(transaction)로 간주)
              
-
          - 용어 설명
-            1) 작업흐름(workflow) 
-               : 비동기 코드로 이루어진 프로세스의 로직을 업무로 추상화한 내용적 논리로 바라보는 인간의 관점을 분류(catagorize) 기준으로 삼아서, 큰 틀에서 순차적으로 수행되는 업무 단위로 도식화한 결과물 
+            1) 컨텍스트(context) 단위
+               : 프로세스의 내부 기능들을 업무 독립성 측면에서 분류하여, 해당 프로세스의 개별 컨텍스트(context) 단위의 비동기 코드들을 1차적으로 분류하는 집단 기준
+                 (= 대충... Promise 객체의 연쇄 호출에서 Promise 덩어리 전체를 떠올리면 됨)
+                  -> 이를 통해 그 기능의 작업 상태를 하나의 컨텍스트(context)에 근거할 수 있고, 작업처리 단위(transaction) 별로 2차 분류된 비동기 코드들을 통제 가능
 
-            2) 작업처리 단위(transaction)
-               : 도출된 개별 작업흐름(workflow)을 메커니즘적인 작업흐름의 단위로 간주하여, 그 개별 작업흐름(workflow) 단위(unit)를 기준으로 원맨아미 같은 비동기코드들을 분류하여 그룹화 한 결과물의 개별 단위 
+            2) 작업흐름(workflow) 
+               : 비동기적 코드로 이루어진 프로세스의 로직을 업무로 추상화한 내용적 논리로 바라보는 인간의 관점을 분류(catagorize) 기준으로 삼아서, 큰 틀에서 작은 업무 단위들을 구분하여 질서정연하게 순차적으로 수행되는 업무 단위로 도식화한 결과물 
                  (= 작업처리 단위(transaction) == 시스템 입장에서의 보는 작업흐름(workflow) 단위)
-                    -> 같은 분류기준으로 묶였을 경우 원래 한 몸이었던 것처럼 일괄적으로 조작 및 통제가 가능해지기에 작업처리 단위(transaction)라고 부름
-            
 
+            3) 작업처리 단위(transaction)
+               : 도출된 개별 작업흐름(workflow)을 메커니즘적인 작업흐름의 단위로 간주하여, 그 개별 작업흐름(workflow) 단위(unit)를 기준으로 컨텍스트(context) 단위에 속한 원맨아미 같은 비동기 코드들을 2차적으로 분류하는 집단 단위 
+                 (= 대충... Promise 객체의 연쇄 호출에서 개별 then() 단위나, await에 속한 코드를 떠올리면 됨)
+                    -> 같은 분류기준으로 묶였을 경우 원래 한 몸이었던 것처럼 일괄적으로 조작 및 통제가 가능해지기에 작업처리 단위(transaction)라고 부름
+       
+            
          - (중요!) js에서도 이같은 작업흐름(workflow) 개념을 기점으로 비동기 프로세스의 작업처리 단위(transaction) 순서를 통제할 방식이 필요해서 등장한게 promise 객체
             -> Promise 객체의 상태값은 이 작업흐름(workflow)개념을 바탕으로 비동기 프로세스의 내부에서 순차적으로 작업처리 단위(transaction)의 수행되는 각 단위의 업무 처리 현황 및 결과가 기준이 됨
 
 
   @ Promise 객체
-     : ECMA6 이후 JS로 작성된 프로세스의 내부 작업의 비동기 처리를 위해, 프로세스의 비동기 코드 작업 상태에 대한 정보(= 상태값)를 가지는 컨텍스트(context) 역할을 수행하는 promise 객체
-       ->  거대한 비동기 프로세스을 '작업흐름(workflow)을 기준으로 작업처리 단위(transaction)'를 순차적으로 나눈 뒤, 그 영역의 성공/실패 여부를 상태값을 통해 통제/관리 하는 방식으로 의 무분별한 병렬적 코드 실행을 방지하여 비동기 프로세스의 안정적 실행을 가능하게 함
+     : ECMA6 이후 JS로 작성된 프로세스의 내부 작업의 비동기 처리를 위해, 프로세스의 비동기 코드 작업 상태에 대한 정보(= 상태값)를 가지는 컨텍스트(context) 단위의 역할을 수행하는 promise 객체
+        -> 거대한 비동기 프로세스을 '작업흐름(workflow)을 기준으로 작업처리 단위(transaction)'를 순차적으로 나눈 뒤, 그 영역의 성공/실패 여부를 상태값을 통해 통제하는 방식으로 의 무분별한 비동기적 컨텍스트(context)의 생성을 방지하여 프로세스의 안정적 실행을 가능하게 함
            (= 비동기 작업에 따른 상태값의 구현은 내부에서 비동기 작업의 (각 처리단계를) 성공여부를 boolean으로 잡으면.. 그 값에 따라서 Promise 객체 생성자의 parameter로 들어가는 무명함수의 parameter인 2개의 parameter로 놓은 2개의 callback(일반적으로 resolve, reject 불림) 중 하나를 실행하는 방식)
                -> 그렇기에, 순차적으로 동적하는 js에서 ajax 같은 비동기로 각각 병렬적으로 동작하는 기능을 구현이 가능함
                   -> 일반적으로 비동기처리를 통해 전체적인 작업의 처리시간(leading time)을 줄일 수 있음
@@ -959,6 +971,135 @@
          : 추후 ajax 기능을 수행하는 axios와 fetch API 또한 promise 객체의 상태값을 기반으로 동작하는 비동기 작업
            (= js의 비동기적 정보 교환 기법은 각 작업처리 단위(transaction) 수행에 따른 결과값을 가진 Promise 객체를 return함)
             -> (중요) 그들의 요청에 대한 응답 내용 또한 비동기 프로세스의 개별 작업처리 단위 수행 결과의 후속을 처리하는 하단의 then(), catch(), finally()와 async / await을 이용하여 처리할 수 있음
+
+
+  @ Promise API
+     : Promise 객체에는 5가지 정적 멤버함수들이 존재하며, 프로세스 안의 여러개의 비동기 작업 코드들에 대한 통제를 더 의도(semantic)를 가지고 정확하게 할 수 있음
+
+        1. Promise.all( iterable 객체 ) 
+            : (중요) promise 객체들이 여러개 있고, 그들의 작업을 동시성을 가지고 진행시키고, 이들이 끝나기 전까지 다음 작업을 처리하지 않고 기다려야 하는 경우 사용하는 함수
+                -> 쉽게 말해, 각 업무를 기준으로 구분한 비동기 작업 코드로 이뤄진 컨텍스트(context) 집단들 여러개를 더 큰 틀에서 일괄적으로 동시성(concurrency)을 가지고 동작하도록 통제하기 위한 방법
+
+                ex) Promise.all( [promise 객체1, ... promise 객체n])
+                     : (중요) 함수의 결과값은 안에 존재하는 promise 객체들의 처리가 '전부 성공' or '하나라도 실패'의 경우로 나뉨
+
+                         - iterable 객체 안의 promise 객체의 비동기 작업 전부 성공시?
+                             : 각 promise 객체가 가진 작업처리 성공에 대한 결과값의 배열형식으로 변환되어, 새로운 promise 객체의 상태값으로 반환
+
+                               ex) Promise.all의 성공 결과값 예시
+                               
+                                   [promise 객체1 성공상태값, ... , promise 객체n 성공상태값]
+                                     -> (주의) 해당 배열의 순서는 parameter로 들어간 iterable 내부의 index 그대로임
+
+                               ex) 모든 비동기 처리 성공한 Promise.all 예시
+
+                                   // 1, 2, 3이 새로운 promise 객체의 상태값으로 반환
+                                   Promise.all([
+                                     new Promise(resolve => setTimeout(() => resolve(1), 3000)), // 1
+                                     new Promise(resolve => setTimeout(() => resolve(2), 2000)), // 2
+                                     new Promise(resolve => setTimeout(() => resolve(3), 1000))  // 3
+                                   ]).then(alert); 
+
+
+                         - iterable 객체 안의 promise 객체의 비동기 작업 하나라도 실패시?
+                             : 그 즉시 Promise.all 전체가 거부 처리 되어서 .catch 구문이 실행됨...
+                                -> (주의) 그렇다고 다른 promise 객체를 통한 비동기 작업까지 중지되진 않음.. 단지 다른 비동기 처리결과에 따른 promise 객체의 상태값이 그 뒤 어쩄든 상관없이 완전히 무시됨
+
+                               ex) 비동기 처리 중 하나라도 작업처리 실패가 나는 Promise.all 예시
+
+                                   // Error: 에러 발생!
+                                   Promise.all([
+                                     new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+                                     new Promise((resolve, reject) => setTimeout(() => reject(new Error("에러 발생!")), 2000)),
+                                     new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+                                   ]).catch(alert); 
+
+
+            # Promise.all( iterable 객체 ) 특징
+               1) parameter로 들어간 iterable 객체 안의 promise 객체들은 일괄적인 타이밍에 비동기로 실행됨
+               2) (중요) Promise.all() 함수의 결과값은 안에 존재하는 promise 객체들의 처리에 따라 all or nothing같은 개념
+               3) Promise.all() 함수의 결과값이 성공처리 되었는데, iterable 객체에 일반값이 있는경우.. 성공값에 해당하는 배열에 그 일반값이 들어감
+
+                  ex) Promise.all([ new Promise((resolve, reject) => { setTimeout(() => resolve(1), 1000) }), 2, 3 ]).then(alert); 
+                       -> 결과값 : [1, 2, 3]
+
+               4) parameter는 iterable 객체면 뭐든 ㅇㅋ임
+                  (= promise 객체가 아닌 일반값도 넣을 수 있음)
+                      -> 물론 대개는 promise 객체 배열이 들어감
+
+               5) Promise 객체에는 '취소’라는 개념이 없어서, Promise.all도 프라미스를 취소하지 않움
+                  (= catch() 뜨는걸 원하지 않아서, 해당 Promise 객체에 속한 작업을 취소할 수 없다는 말)
+                     -> 만약 각 비동기 작업의 실패/성공 응답을 받고 싶으면 Promise.allSettled을 쓰자
+
+
+        2. Promise.allSettled( [promise 객체1, ... promise 객체n])
+            : Promise.all과 비슷하나... all or nothing 개념이 아니라.. 각 promise의 처리에 대한 결과값을 응답으로 각각 반환해줌
+
+              ex) let urls = [
+                    'https://api.github.com/users/iliakan',
+                    'https://api.github.com/users/Violet-Bora-Lee',
+                    'https://no-such-url'
+                  ];
+                  
+                  Promise.allSettled(urls.map(url => fetch(url)))
+                    .then(results => { 
+                      results.forEach((result, num) => {
+                        if (result.status == "fulfilled") {
+                          alert(`${urls[num]}: ${result.value.status}`);
+                        }
+                        if (result.status == "rejected") {
+                          alert(`${urls[num]}: ${result.reason}`);
+                        }
+                      });
+                    });
+
+                  ------------------------------------------------------------------
+                  [ {status: 'fulfilled', value: ...응답...},
+                    {status: 'fulfilled', value: ...응답...},
+                    {status: 'rejected', reason: ...에러 객체...} ] 형식으로 반환
+                  ------------------------------------------------------------------
+
+              - 응답이 성공할 경우 : {status:"fulfilled", value:result} 형식으로 해당 promise 결과값 리턴
+              - 에러가 발생한 경우 : {status:"rejected", reason:error} 형식으로 해당 promise 결과값 리턴
+
+        3. Promise.race( [promise 객체1, ... promise 객체n])
+            : Promise.all과 비슷하나, 다만 가장 먼저 처리되는 프라미스의 결과(혹은 에러)만을 반환
+
+               ex) 다음 작업은 1번쨰 promise 객체의 비동기 작업이 가장 빨리 나왔기에, 1번쨰 promise의 결과값만 출력
+
+                   Promise.race([
+                     new Promise((resolve, reject) => setTimeout(() => resolve(1), 1000)),
+                     new Promise((resolve, reject) => setTimeout(() => reject(new Error("에러 발생!")), 2000)),
+                     new Promise((resolve, reject) => setTimeout(() => resolve(3), 3000))
+                   ]).then(alert); // 1
+
+        4. Promise.resolve( value )
+            : (async/await 등장 이후 사장) value 에 해당하는 parameter 값으로 작업 상태값이 성공 상태인 promise 객체를 생성
+              -> (중요!) 상단 promise객체 생성과 하단 then() 구문에서 지겹게 보는 무명함수의 1번쨰 parameter인 callback함수명이 이 녀석
+
+        5. Promise.reject( error )
+            : (async/await 등장 이후 사장) error에 해당하는 parameter 값으로 작업 상태값이 실패 상태인 promise 객체를 생성
+              -> (중요!) 상단 promise객체 생성과 하단 then() 구문에서 지겹게 보는 무명함수의 2번쨰 parameter인 callback함수명이 이 녀석
+
+               ex) const promise = new Promise((resolve, reject) => {
+
+                     if (isResolved == true) {
+                       resolve("Success");   <- 성공적으로 처리될 경우 무명함수의 parameter 중 resolve를 callback함수로 호출
+                     } else {
+                       reject("Error");      <- 거부될 경우 무명함수의 parameter 중 reject를 callback함수로 호출
+                     }
+                     
+                   });
+
+                   promise.then(
+        
+                     (result) => {
+                       console.log("Resolved:", result);
+                     },
+                     (error) => {
+                       console.error("Rejected:", error);
+                     }
+                   )
 
 
   @ then(), catch(), finally()
@@ -1153,7 +1294,7 @@
                  
              3) (둘 다 ajax 방식으로 서버와 통신하기에) 받아오는 데이터는 json이나 html종류를 받아옴
              4) (둘 다 ajax 방식으로 서버와 통신하기에) 비동기식으로 병렬적으로 코드를 수행함 = 연달아 들어오는 fetch()나 axios 구문이 있으면, 거의 시간차 없이 수행된다 보면 됨
-                 -> 그래도... 동시에 수행하는건 아니기에.. 어쩄든 진짜 동시에 ajax 요청을 보내기 위해 사용하는게, js의 Promise 객체의 all 메서드임 
+                 -> 그래도... 동시에 수행하는건 아니기에.. 어쩄든 진짜 여러 ajax 요청들을 최대한 동시기에 비동기적으로 보내기 위해 사용하는게, js의 Promise 객체의 정적 함수 임 
         
          2. 차이점
 
@@ -1167,7 +1308,6 @@
              - fetch()
                1) 장점
                    a. ECMA6에서 기본으로 지원되는 함수라서, 별 다른 과정없이 그냥 써먹을 수가 있음
-                   b. 요청 후 받는 데이터를 가공하는 과정에서 then(), catch(), finally() 외에 await 문법을 사용이 가능함
 
                2) 단점
                    a. 받아오는 json 형식의 데이터를 자동으로 array로 변환해주진 않아서, 요청이 성공해서 데이터를 받으면 이를 변환하는 코드가 추가되어야함
@@ -1176,32 +1316,128 @@
 
   @ axios 라이브러리
 
-   - axios 라이브러리 설치 및 모듈 불러오기 명령어
-      : npm install axios
-         import axios from 'axios'
-   
-   
-   - axios로 http 메서드 요청을 보내는 문법
-      : 
-      1) get 메서드 요청
-   
-   axios.get('url명')    <->      axios.post('url명', {name : 'kim'})   <- post는 요청자가 데이터를 보내면, 그걸 서버가 가공한 후 response를 보냄
-      : 해당 url명으로 get요청을 하게하는 axios 라이브러리의 멤버함수
-         -> .then( (결과값명) => {내용} )
-            : 서버를 향한 요청이 성공시 실행할 코드 
-               -> '결과값명'은 임의로 붙일수 있고, 서버가 보낸 모든 값(json이나 html)을 지칭함...
-                     -> (중요!) json으로 돌아온 응답값은 axios에서는 json -> object array 형태로 자동 변경해 줌..
-                        -> 사용자가 바라는 요청데이터 이외에, 어마어마한 상태값을 가지는 멤버변수도 많으니... 
-                           '결과값명.data'로 사용자가 원하는 object array 데이터 꾸러미를 받고, 가공할때는 array에서 멤버객체를 지정해 시작하자
-         -> .catch( () => {내용} )
-            : 요청 실패시 실행할 코드
-         -> finally( () => {내용})
-            : ajax 성공/실패랑 관계없이 무조건 실행하는 코드
+      # axios 라이브러리 설치 및 모듈 불러오기 명령어
+         : npm install axios
+           import axios from 'axios'
 
+
+      # axios 특성
+        1) 장점
+            a. 받아오는 json 형식의 데이터를 사용자가 보기 좋게 자동으로 array로 변환해 줌
+            b. http메서드를 단순히 axios 객체의 멤버함수로 제공해서 쓰게 함으로서, 개발자로 하여금 직관적으로 http 메서드를 사용하게 함
+
+        2) 단점 : 외부 js 라이브러리이기에 어쩄든 개발자가 조금이라도 번거로워지고, 서비스에서 로딩시간 증가에 영향을 줄 소지는 있음
+
+   
+      # axios로 http 메서드 요청을 보내는 문법
+         1) axios.get('url명')  
+             : 해당 url명으로 get요청을 하게하는 axios 라이브러리의 멤버함수
+   
+         2) axios.post('url명', {name : 'kim'})
+             : post는 요청자가 데이터를 보내면, 그걸 서버가 가공한 후 response를 보냄
+   
+         3) 요청에 대한 리턴이 등장하면.. promise 객체의 상태값에 따라 후속 처리를 하면 됨
+             -> 상단의 then(), catch(), finally()나 async, await 구문 참고
+
+
+      # axios 사용시 주의사항
+         1) json으로 돌아온 응답값은 axios에서는 json -> object array 형태로 자동 변경해 줌..
+         2 '결과값명.data'로 사용자가 원하는 object array 데이터 꾸러미를 받고, 가공할때는 array에서 멤버객체를 지정해 시작하자
+             -> 안 그러면, 사용자가 바라는 요청데이터 이외에, 어마어마한 상태값을 가지는 object나 array가 그냥 통쨰로 들어오고 타입에러가 생김
 
   @ fetch()
-     : 비동기 작업으로 네트워크를 통해 리소스를 가져오는 ajax 기능을 수행하는데 사용되는 Promise API를 기반으로 작성된 JS함수, 기본적으로 return의 결과로 Promise를 반환하여 각 비동기 작업들은 결과에 따른 분기 처리도 가능함
-       (= )  
+     : 비동기 작업으로 네트워크를 통해 리소스를 가져오는 ajax 기능을 수행하는데 사용되는 Promise API를 기반으로 작성된 JS함수, 기본적으로 return의 결과로 Promise를 반환하여 각 작업들은 결과에 따른 분기 처리도 가능함
+
+      # fetch() 특성
+         1) 장점
+             a. ECMA6에서 기본으로 지원되는 함수라서, 별 다른 과정없이 그냥 써먹을 수가 있음
+ 
+         2) 단점
+             a. 받아오는 json 형식의 데이터를 자동으로 array로 변환해주진 않아서, 요청이 성공해서 데이터를 받으면 이를 변환하는 코드가 추가되어야함
+             b. axios 라이브러리 처럼, http메서드를 단순히 axios 객체의 멤버함수로 제공해서 쓰게 하는게 아니라... 2번쨰 parameter로 js객체 형식으로 옵션값을 통해 http 메서드의 속성들을 하나하나 지정해줘야 함
+
+      # fetch() 함수 호출로 http 메서드 요청을 보내는 문법구조..
+         : 크게 '요청' -> '응답' -> '결과값으로 가공' 이렇게 3개의 단계를 가지며.. 요청에 대한 응답에서 문제가 생기면, 그냥 catch()를 통한 에러처리..
+       
+         1) fetch() 함수를 사용하여 http '요청' 보내기
+             : 함수의 parameter로 url 주소는 필수로 입력해야 함
+               (= headers나 method와 같은 멤버가 있는 객체타입 파라미터인 options는 필수는 아님)
+
+               - options 객체 parameter의 멤버
+
+                  a. headers 멤버객체
+                      : http요청에 설정할 header 영역 정보 가짐
+
+                  b. method 멤버변수
+                      : get 이외의 메서드 사용시 적어야 함
+
+                  c. body 멤버변수
+                      : post 메서드와 같이 요청시 서버에 '문자열' or Form 데이터, blob 등의 값을 보내는게 있을시 사용 
+                         -> (주의) 본문이 문자열일 때 Content-Type 헤더가 text/plain;charset=UTF-8로 기본 설정 
+                                  (= json같은거로 응답 받으려면, 헤더에 Content-Type 에 대한 값을 'application/json;charset=utf-8'로 작성해 야함 )
+ 
+              ex) fetch('url명', { headers : { 멤버1 : 값1 , ... , 멤버n : 값n} ,
+                                   method  : '메서드명' ,
+                                   body    : '문자열' or Form 데이터, blob 등  });
+
+         2) 서버로 부터 데이터를 받은 '응답' ->'결과값' 가공
+             : 요청에 대한 응답이 도착했으면, then()이나 await 를 사용하여 응답으로 받은 값을 소위 response(이름은 뭘로해도 상관없음.. 단지 요청에 대한 결과를 품는 promise객체를 의미하면 됨) 메서드라는 promise기반 함수를 통해 원하는 타입으로 변경하는 후속처리 감행
+               (= axios는 이 부분에 대해 기본적으로 json() 함수로 변형을 하고, 이걸 또 object array로 자동으로 변형해주는 셈)
+
+               - response 메서드
+                 : 응답값 본문을 원하는 타입으로 바꿔줘서 후속처리를 할 수 있게 도와주는 promise기반 함수
+                    -> (주의) input 자체가 애초에 object만을 대상으로 하기에, response.text().json() 이런식으로 중첩사용이 안 됨
+
+                    a. response.text()        : 응답값을 text로 변환해 반환
+                    b. response.json()        : 응답값을 JSON 형태로 파싱해 변환해 반환
+                    c. response.formData()    : 응답값을 FormData 객체 형태로 변환해 반환
+                    d. response.blob()        : 응답값을 Blob(타입이 있는 바이너리 데이터) 형태로 변환해 반환
+                    e. response.arrayBuffer() : 응답값을 ArrayBuffer(바이너리 데이터를 로우 레벨 형식으로 표현한 것) 형태로 변환해 반환
+                    f. response.body          : 응답값을 본문을 청크 단위로 읽을 수 있음
+                 
+                  ex) await 방식
+    
+                      let response = await fetch('https://api.github.com/repos/javascript-tutorial/ko.javascript.info/commits');
+                      let commits = await response.json();
+                      alert(commits[0].author.login); 
+    
+                  ex) then() 방식
+    
+                      fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits')
+                      .then(response => response.json())
+                      .then(commits => alert(commits[0].author.login));
+
+               - response의 멤버객체 header
+                 : 요청시 option 객체에 header에 대한 멤버변수 정보를 보냈으면, 응답시 해당 header 값에 대한 정보도 같이 나오는데.. 이를 response객체를 통해 호출 가능
+                    -> (참고) 멤버변수 : 멤버값 형식으로 저장되기에 key, value 형식으로 꺼내쓰기도 됨
+
+                  ex) await 방식
+    
+                      let response = await fetch('https://api.github.com/repos/javascript-tutorial/ko.javascript.info/commits');
+                      let header = await response.headers.et('요청할 header명');
+                      alert(header); 
+
+                      for (let [key, value] of response.headers) {
+                        alert(`${key} = ${value}`);
+                      }
+    
+                  ex) then() 방식
+    
+                      fetch('https://api.github.com/repos/javascript-tutorial/en.javascript.info/commits')
+                      .then(response => response.get('요청할 header명'))
+                      .then(header => alert(header));
+
+
+               - 그 외 response의 멤버변수들
+                  a. response.status : 응답의 HTTP 코드
+                  b. response.ok     : 응답 상태가 200과 299 사이에 있는 경우 true           
+
+
+
+                                   
+
+
+           
 
 
 
