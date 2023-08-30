@@ -121,18 +121,6 @@ function App() {
                 })
               }
               </Row>
-              <Row xs='3'>
-              {
-                // (숙제) 서버로부터 받은 값으로 extraShoes state변수를 채울 경우, 반복되는 내용을 component로 구현하게 하는 코드를 구현
-                extraShoes === null ? 
-                null :  
-                extraShoes.map(function(a, i){
-                  return(
-                    <Shoes shoes={extraShoes[i]} key={i}></Shoes>
-                  )
-                })
-              }
-              </Row>
             </Container>
 
             {/* (설명) axios 라이브러리를 통해 가져온 axios 객체의 멤버 함수 get 함수를 통해, 서버에 http 메서드 중 get방식으로 해당 url을 통해 요청을 보내는 버튼을 생성 */}
@@ -157,8 +145,7 @@ function App() {
                 console.log(allResponse.data);
                 // (숙제) 서버로부터 받은 값으로 extraShoes state변수를 채우도록 setState함수 사용
                 setExtraShoes(allResponse.data);
-
-                // (숙제 모범) 기존의 shoe라는 state변수를 이용해서, 거기에 서버값을 끼워서 setState함수로 변경하는 방식 채택
+                
                 let copy = [...shoes, ...allResponse.data];
                 setShoes(copy);
               })

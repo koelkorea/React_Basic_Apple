@@ -6,6 +6,9 @@ import React, { useEffect, useState } from 'react';
 // (설명) styled-components 라이브러리의 style component를 사용하기 위해, ES module로 import 후 style이라는 객체(object)만 import해서 해당 파일의 js영역에서 사용 가능하게 가져다 줌
 import styled from "styled-components";
 
+// (설명) react-bootstrap 웹사이트에 예시로 올라온 component 사용을 위해서, 각 component 명을 {}안에 import해서 해당 jsx에 가져다 줌
+import { Navbar, Nav }  from 'react-bootstrap';
+
 // (설명) styled-components 라이브러리를 통해 button형식의 style component를 만들고 백틱(`)을 통해 style 속성과 속성값을 입력 후, js변수 ColoredButton에 대입하여 component처럼 사용가능하게 조치
 //   -> background, color 속성은 props 객체를 통해 color라는 값을 전달 받을 수 있게 코드가 짜여있고, color 속성은 삼항연산자를 적용하여 속성값을 다르게 주게 코드가 짜여있음
 let ColoredButton = styled.button`
@@ -45,12 +48,12 @@ function Detail(props){
     //   -> 만약 상품배열이 바뀌더라도, 상품의 id는 상품의 id에 맞는 상품을 찾을 수 있도록 조치해라
     //       -> props 객체 안의 shoes객체 배열이 멤버변수로 있다는 점 이용해서, shoes객체 배열에서 원하는 요소를 찾는 find나 filter 함수를 통해 구현
 
-    // 숙제 일반 function version
+    // (숙제 일반 function version)
     // let findShoes = props.shoes.find( function(wantShoes){
     //     return wantShoes.id == id;
     // });
 
-    // 숙제 arrow function version
+    // (숙제 arrow function version)
     //  : 배열.find( (item 파라미터명, index 파라미터명, array 파라미터명) => 조건문 작성 ) 
     //     -> 조건문에 해당하는 1번째 배열요소만 찾음 
     //        (= 여러개를 찾고 있으면, filter를 걸면 됨)
@@ -135,6 +138,10 @@ function Detail(props){
 
     }, [inputValue])
 
+
+    // (설명) 탭 클릭에 따른 state정보를 저장하기 위한 state 변수
+    let [tabStatus, setTabStatus] = useState(0);
+
     return (
         <div className="container">
 
@@ -167,9 +174,53 @@ function Detail(props){
                 </div>
             </div>
 
+            {/* (목적) tab을 만들고, 그 탭을 클릭하면 다른 내용이 나오게 하자*/}
+            {/* (설명) defalutActiveKey는 해당 탭의 기본으로 눌린 eventKey값을 의미함 */}
+            <Nav variant="tabs" defalutActiveKey="link0">
+                <Nav.Item>
+                    <Nav.Link eventKey="link0" onClick={() => setTabStatus(0)}>버튼0</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="link1" onClick={() => setTabStatus(1)}>버튼1</Nav.Link>
+                </Nav.Item>
+                <Nav.Item>
+                    <Nav.Link eventKey="link2" onClick={() => setTabStatus(2)}>버튼2</Nav.Link>
+                </Nav.Item>
+            </Nav>
+            
+            {/* (목적 구현1) 3항연산자를 사용해서 받아온 tabStatus값을 내용에 연계함 */}
+            { tabStatus != null ?  <div>내용{tabStatus}</div> : null }
+
+            {/* (목적 구현2) if문을 사용할 경우, HTML 영역 바깥쪽에 외부 component를 작성하고, parameter로 준 props값에 따라 다른 html요소가 튀나오게 조건문을 사용함 */}
+            <TabStatus1 tabStatus={tabStatus} />
+
+            {/* (목적 구현3) return문을 HTML 영역에 들어갈 요소들로 구성된 array로 설정해서 parameter로 준 props를 index로 사용하녀 따라 다른 html요소가 튀나오게 조건문을 사용함 */}
+            <TabStatus2 tabStatus={tabStatus} />
         </div> 
     );
 
+
 }
+
+// (목적 구현2) if문으로 작성된 HTML요소를 함수 컴포넌트 TabStatus로 작성해서 props를 통해 state 값을 전달받아 구현이 가능
+//   -> [tip] props 객체를 일일히 써주기 귀찮으면 {props멤버변수명1, props멤버변수명2 ... } 이런식으로 해당 컴포넌트의 parameter로 들어온 props객체의 멤버변수를 {}안에 넣으면, props객체 호출없이 바로 멤버변수를 기입해도 인식함
+function TabStatus1({tabStatus}){
+    
+    // (설명) react에서 3항연산자 아닌 if문을 쓰려면? HTML 작성 영역을 벗어나서 JS영역으로 넘어와야만 가능
+    if(tabStatus == 0){
+        return <div>내용00</div>
+    }else if(tabStatus == 1){
+        return <div>내용01</div>
+    }else if(tabStatus == 2){
+        return <div>내용02</div>
+    }
+}
+
+// (목적 구현3) if문으로 작성된 HTML요소를 함수 컴포넌트 TabStatus로 작성해서 props를 통해 state 값을 전달받아 구현이 가능
+function TabStatus2(props){
+    
+    return [ <div>내용000</div>, <div>내용001</div>, <div>내용002</div> ][props.tabStatus];
+}
+
 
 export default Detail;
