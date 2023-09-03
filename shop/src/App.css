@@ -1,3 +1,25 @@
+.start2{
+  opacity: 0;
+}
+
+.end2{
+  opacity: 1;
+  /* transition 속성 (속성명 시간단위)
+      : 해당 CSS 선택자의 지정된 속성이 이전에 적용된 스타일과 다를경우? 일정시간동안 바꾸는 효과를 주라는 속성 */
+  transition: opacity 0.5s;
+}
+
+.start3{
+  transform: scale(0);
+}
+
+.end3{
+  transform: scale(1);
+  /* transition 속성 (속성명 시간단위)
+      : 해당 CSS 선택자의 지정된 속성이 이전에 적용된 스타일과 다를경우? 일정시간동안 바꾸는 효과를 주라는 속성 */
+  transition: all  0.5s;
+}
+
 .main-bg{
   height: 400px;
   background-image: url('./img/image2.jpg');

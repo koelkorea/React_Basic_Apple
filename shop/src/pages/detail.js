@@ -1,13 +1,16 @@
 // (설명) react router에 존재하는 react hooks 함수의 일종인 useParam 함수를 사용하기 위해, ES module로 import 후 {}안에 useParams만 import해서 해당 jsx에 가져다 줌
 import { useParams } from "react-router-dom";
 
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 // (설명) styled-components 라이브러리의 style component를 사용하기 위해, ES module로 import 후 style이라는 객체(object)만 import해서 해당 파일의 js영역에서 사용 가능하게 가져다 줌
 import styled from "styled-components";
 
 // (설명) react-bootstrap 웹사이트에 예시로 올라온 component 사용을 위해서, 각 component 명을 {}안에 import해서 해당 jsx에 가져다 줌
 import { Navbar, Nav }  from 'react-bootstrap';
+
+// (설명) App 컴포넌트에서 제작한 Context1 컨텍스트와 공유예정인 state값의 사용을 위해서, 선언한 context변수명을 {}안에 import해서 해당 jsx에 가져다 줌
+import { Context1 } from '../App.js';
 
 // (설명) styled-components 라이브러리를 통해 button형식의 style component를 만들고 백틱(`)을 통해 style 속성과 속성값을 입력 후, js변수 ColoredButton에 대입하여 component처럼 사용가능하게 조치
 //   -> background, color 속성은 props 객체를 통해 color라는 값을 전달 받을 수 있게 코드가 짜여있고, color 속성은 삼항연산자를 적용하여 속성값을 다르게 주게 코드가 짜여있음
@@ -142,8 +145,40 @@ function Detail(props){
     // (설명) 탭 클릭에 따른 state정보를 저장하기 위한 state 변수
     let [tabStatus, setTabStatus] = useState(0);
 
+
+    // (숙제) Detail 컴포넌트 로드 시, 화면 전체의 투명도가 0에서 1로 서서히 증가하여 등장하는 애니메이션이 효과가 동작하고록 구현해라?
+    //   -> Detail 컴포넌트는 props로 받아온 값을 근거로 화면이 구성됨...
+    //      (= 연쇄적인 로직구조로 목표한 기능을 수행하기 위해서는 props로 받아온 값을 변화의 감지대상으로 삼아야함)
+
+    // (fade 숙제 구현) 
+    //   : class명에 따라 달라지는 css속성으로.. 태그의 내용이 사라졌다 나타나는 애니메이션을 적용하기 위해, 변화하는 class의 값으로 대입될 목적의 state변수 fade 
+    let[fade, setFade] = useState('');
+
+    // (fade 숙제 구현) 
+    //  : detail 컨포넌트 구현시 전달되는 props객체 중 shoes라는 멤버변수가 변경되는 것이 감지되면.. 1초 후 state값인 fade의 내용이 end2로 변하게 해라
+    //     -> fade값이 end2로 변화하면...? 하단의 HTML 영역의 class속성값이 fade의 내용에 연계되어 변경됨
+    useEffect( () => {
+
+        let timer2 = setTimeout( () => { setFade('end2') }, 1000);
+
+        // (설명) detail 컴포넌트의 cleanup 함수로 props객체 중 shoes라는 멤버변수가 변경되는 것이 감지되면.. 가장 먼저 해당부분이 실행되게 함
+        return () => {
+
+            // (설명) 먼저 1초뒤 실행되는 비동기코드 setFade('end2')를 억제하여
+            clearTimeout(timer2);
+
+            // state값인 fade의 값을 공백으로 변경 
+            setFade('');
+
+            // 그 뒤 let timer = setTimeout( () => { setFade('end2') }, 1000); 파트 실행
+        }
+
+    }, [props.shoes] );
+
     return (
-        <div className="container">
+        // (fade 숙제 구현) 
+        //   : state값인 fade의 값의 변경은 곧 HTML 태그가 가지는 class속성값이 fade의 내용을 반영하도록 jsx {}에 전통적인 ''(quation)을 사용해 제작
+        <div className={'container start2 ' + fade}>
 
             {/* (설명) js영역에 선언한 style component를 호출하고, props 객체에 전달할 멤버속성값인 color의 값을 입력하면, 상단의 style component 선언 부분과 로직이 상호작용하게 됨 */}
             <ColoredButton color="blue">파란 버튼</ColoredButton>
@@ -159,12 +194,12 @@ function Detail(props){
                 </div>
                 <div className="col-md-6">
                     
-                    {/*  */}
+                    {/* (설명) inputValue라는 state 값이 숫자가 아니면, 경고문을 띄우는 코드 */}
                     { isNaN(inputValue) == false
                     ? null
                     : <div style={{backgroundColor : "red", color : "white", display : "inline-block", padding: "10px", margin : "10px"}}>(경고!) 숫자만 입력해달라고!</div>}
                     
-                    {/*  */}
+                    {/* (설명) input값에 값을 적는게 감지되면, 그 값을 inputValue라는 state값에 대입하도록 함 */}
                     <div>숫자입력 <input type="text" onChange = {(e) => { setInputValue(e.target.value);  console.log(typeof {inputValue}); } }/></div>
                     
                     <h4 className="pt-5">{findShoes.title}</h4>
@@ -188,38 +223,127 @@ function Detail(props){
                 </Nav.Item>
             </Nav>
             
-            {/* (목적 구현1) 3항연산자를 사용해서 받아온 tabStatus값을 내용에 연계함 */}
+            {/* (tab 구현1) 3항연산자를 사용해서 받아온 tabStatus값을 내용에 연계함 */}
             { tabStatus != null ?  <div>내용{tabStatus}</div> : null }
 
-            {/* (목적 구현2) if문을 사용할 경우, HTML 영역 바깥쪽에 외부 component를 작성하고, parameter로 준 props값에 따라 다른 html요소가 튀나오게 조건문을 사용함 */}
+            {/* (tab 구현2) if문을 사용할 경우, HTML 영역 바깥쪽에 외부 component를 작성하고, parameter로 준 props값에 따라 다른 html요소가 튀나오게 조건문을 사용함 */}
             <TabStatus1 tabStatus={tabStatus} />
 
-            {/* (목적 구현3) return문을 HTML 영역에 들어갈 요소들로 구성된 array로 설정해서 parameter로 준 props를 index로 사용하녀 따라 다른 html요소가 튀나오게 조건문을 사용함 */}
-            <TabStatus2 tabStatus={tabStatus} />
+            {/* (tab 구현3) return문을 HTML 영역에 들어갈 요소들로 구성된 array로 설정해서 parameter로 준 props를 index로 사용하녀 따라 다른 html요소가 튀나오게 조건문을 사용함 */}
+            {/* (숙제 구현) app - detail - TabStatus2 컴포넌트로 이어진 구조에서, 최선조인 app의 state인 shoes를 손자인 TabStatus2에서 쓸수있게 코딩해라 */}
+            <TabStatus2 tabStatus={tabStatus} shoes={props.shoes}/>
         </div> 
     );
 
 
 }
 
-// (목적 구현2) if문으로 작성된 HTML요소를 함수 컴포넌트 TabStatus로 작성해서 props를 통해 state 값을 전달받아 구현이 가능
+// (tab 구현2) if문으로 작성된 HTML요소를 함수 컴포넌트 TabStatus로 작성해서 props를 통해 state 값을 전달받아 구현이 가능
 //   -> [tip] props 객체를 일일히 써주기 귀찮으면 {props멤버변수명1, props멤버변수명2 ... } 이런식으로 해당 컴포넌트의 parameter로 들어온 props객체의 멤버변수를 {}안에 넣으면, props객체 호출없이 바로 멤버변수를 기입해도 인식함
 function TabStatus1({tabStatus}){
+
+    // (목적) 해당 서비스에 CSS를 이용하여, 애니메이션을 통해 TAB을 누를때마다 내용이 사라졌다 나타나는 효과를 줘보자
+    //   -> HOW? 상황에 따라 해당 태그의 속성값이 변하게 한다면? 그 변화에 따른 css 선택자의 적용 변화로 애니메이션 효과를 누릴수 있음!
+    //      (= state가 변화할때? 그 state의 값이 속성명의 일부가 들어가게 하는 식이면 가능!)
+    //          -> 구체적인 css 구현은 css의 애니메이션 속성(transition, scale, opacity 등)을 참고하면 되겠음
+
+    // (fade 애니메이션 구현) 
+    //   : class명에 따라 달라지는 css속성으로.. 태그의 내용이 사라졌다 나타나는 애니메이션을 적용하기 위해, 변화하는 class의 값으로 대입될 목적의 state변수 fade 
+    let[fade, setFade] = useState('');
+
+    // (fade 애니메이션 구현) 
+    //  : TabStatus1 컨포넌트 구현시 전달되는 props객체의 멤버변수 중, tabStatus라는 멤버변수가 변경되는 것이 감지되면.. 1초 후 state값인 fade의 내용이 end2로 변하게 해라
+    //     -> fade값이 end2로 변화하면...? 하단의 HTML 영역의 class속성값이 fade의 내용에 연계되어 변경됨
+    useEffect( () => {
+
+        // (설명) useEffect에 setTimeout을 통한 시간차 함수 구현 쓰는 이유?
+        //   : react 18부터 'automatic batch'라는 기능이 생겼기 떄문
+        //      -> 'flushSync()' 함수가 이를 피하기 위해 의미적으로 구현된 함수
+
+        // (중요!) automatic batch
+        //   : 1개의 {} 영역에 동일한 State값의 변동이 여러번 적혀있다면? state 변경함수를 다 처리하더라도, 화면은 마지막에 1번만 reRendering 함
+        //     (= 설령 의도는 모든 state의 변경내역을 다 순차적으로 표시하길 원해도? react의 로직은 일반적으로는 서버의 과부하를 피하고 작업 효율성을 위해 마지막 녀석 하나만 랜더링에 적용함)
+        //         -> 진짜로 다 순차적으로 동일한 state값 변경내역이 화면에 표시되길 원하면.. 같은 {}안에 setState를 연달아 쓰면 안됨
+        //            (= setTimeout을 통해, 의도적으로 같은 {}안에 state의 변경을 막아주고, 원하는 작업을 비동기영역을 끌어들여서라도 처리하게 함) 
+        //        -> 'flushSync()' 함수가 이를 피하기 위해 의미적으로 구현된 함수니.. 이걸 써도 됨
+        let timer = setTimeout( () => { setFade('end2') }, 1000);
+
+        // (설명) TabStatus1 컴포넌트의 cleanup 함수로 컨포넌트 구현시 전달되는 props객체의 멤버변수 중, tabStatus라는 멤버변수가 변경되는 것이 감지되면.. 가장 먼저 해당부분이 실행되게 함
+        return () => {
+
+            // (설명) 먼저 1초뒤 실행되는 비동기코드 setFade('end2')를 억제하여
+            clearTimeout(timer);
+
+            // state값인 fade의 값을 공백으로 변경 
+            setFade('');
+
+            // 그 뒤 let timer = setTimeout( () => { setFade('end2') }, 1000); 파트 실행
+        }
+
+    }, [tabStatus] );
     
     // (설명) react에서 3항연산자 아닌 if문을 쓰려면? HTML 작성 영역을 벗어나서 JS영역으로 넘어와야만 가능
     if(tabStatus == 0){
-        return <div>내용00</div>
+        // (fade 애니메이션 구현) 
+        //   : state값인 fade의 값의 변경은 곧 HTML 태그가 가지는 class속성값이 fade의 내용을 반영하도록 jsx {}에 전통적인 ''(quation)을 사용해 제작
+        return <div className={'start2 ' + fade}>내용00</div>
     }else if(tabStatus == 1){
-        return <div>내용01</div>
+        return <div className={'start2 ' + fade}>내용01</div>
     }else if(tabStatus == 2){
-        return <div>내용02</div>
+        return <div className={'start2 ' + fade}>내용02</div>
     }
 }
 
-// (목적 구현3) if문으로 작성된 HTML요소를 함수 컴포넌트 TabStatus로 작성해서 props를 통해 state 값을 전달받아 구현이 가능
+// (tab 구현3) if문으로 작성된 HTML요소를 함수 컴포넌트 TabStatus로 작성해서 props를 통해 state 값을 전달받아 구현이 가능
 function TabStatus2(props){
     
-    return [ <div>내용000</div>, <div>내용001</div>, <div>내용002</div> ][props.tabStatus];
+    // (scale 애니메이션 구현) 
+    //   : class명에 따라 달라지는 css속성으로.. 태그의 내용이 작아졌다 커지게 등장하는 애니메이션을 적용하기 위해, 변화하는 class의 값으로 대입될 목적의 state변수 scale 
+    let[scale, setScale] = useState('');
+
+    // (scale 애니메이션 구현) 
+    //  : TabStatus2 컨포넌트 구현시 전달되는 props객체의 멤버변수 중, tabStatus라는 멤버변수가 변경되는 것이 감지되면.. 1초 후 state값인 fade의 내용이 end3로 변하게 해라
+    //     -> scale값이 end3로 변화하면...? 하단의 HTML 영역의 class속성값이 scaled의 내용에 연계되어 변경됨
+    useEffect( () => {
+
+        let timer = setTimeout( () => { setScale('end3') }, 1000);
+
+        // (설명) TabStatus2 컴포넌트의 cleanup 함수로 컨포넌트 구현시 전달되는 props객체의 멤버변수 중, tabStatus라는 멤버변수가 변경되는 것이 감지되면.. 가장 먼저 해당부분이 실행되게 함
+        return () => {
+
+            // (설명) 먼저 1초뒤 실행되는 비동기코드 setScale('end3')를 억제하여
+            clearTimeout(timer);
+
+            // state값인 scale 값을 공백으로 변경 
+            setScale('');
+
+            // 그 뒤 let timer = setTimeout( () => { setScale('end3') }, 1000); 파트 실행
+        }
+
+    }, [props.tabStatus] );
+
+    // useContext(context명) 함수
+    //  : 특정 컴포넌트 가문이 일종의 static state같이 state를 함수형 프로그래밍 형식으로 사용할 수 있게 react hook로 제작된 Context API
+    //     -> 제작된 context 안에 저장된 state함수를 쓸수 있도록 context객체의 내용을 해체해서, state객체( {state1, .. , n} ) 형식으로 변환해 리턴해서 쉽게 쓰게 해줌
+    //        (= 쉽게말해, context라는 state보관함을 해체해서, state를 보기좋게 꺼내준다 이 말임)
+    let context1 = useContext(Context1);   
+
+    // (설명) state 객체 형식으로 리턴되는 useContext함수는 구조분해 구문으로 멤버별로 변수에 매핑시키는 식의 응용도 가능
+    let {shoes, stock} = useContext(Context1);   
+
+    return (// (scale 애니메이션 구현) 
+            //   : state값인 scale 값의 변경은 곧 HTML 태그가 가지는 class속성값이 scale 내용을 반영하도록 jsx {}에 ``(ecma6의 최신 문물인 백틱)을 사용해 제작
+            <div className={`start3 ${scale}`}>
+                {/* (숙제) app - detail - TabStatus2 컴포넌트로 이어진 구조에서, 최선조인 app의 state인 shoes를 손자인 TabStatus2에서 쓸수있게 코딩해라 */}
+                { [ 
+                    // <div>{props.shoes[0].title}</div>, 
+
+                    // (설명) useContext로 해체한 Context1의 state변수 shoes의 내용을 꺼냄
+                    <div>{shoes[0].title}</div>,
+                    <div>내용001</div>, 
+                    <div>내용002</div> ][props.tabStatus] }
+            </div>
+            );
 }
 
 

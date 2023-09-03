@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { useState } from 'react';
+import { createContext, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -54,6 +54,8 @@ import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 // (설명) ajax를 통해 서버와 통신하게 하는 axios 라이브러리를 모듈로 가져와서, axios object를 사용할 수 있게 함
 import axios from 'axios'
 
+import Cart from './pages/Cart.js'
+
 // (중요) public 폴더의 존재 의의
 //  : 개발이 끝나고, bulid를 하여 소스코드를 압축할 때, src 폴더에 있던 코드와 파일은 다 압축이 되는데 public 폴더에 있는 것들은 그대로 보존
 //    (= 만약 형태를 보존하고 싶은 이미지, txt, json 등 수정이 필요없는 static 파일이 있다면, public 폴더에 넣으면 됨)
@@ -67,10 +69,58 @@ import axios from 'axios'
 //                    -> 'www.lsh.com/goods' 라는 페이지에 해당 image태그를 rendering해야 하는 경우.. 경로명을 고쳐야함
 //                         -> goods 까지 포함해서 <img src="/goods/logo192.png" width="80%" /> 
 
+// (중요) Context API
+//   : props는 컴포넌트의 계층구조가 깊어지고 넓어지면 사용하는게 노가다에 가깝다는 것을 해결하기 위한 방책 중 하나로 react에서 기본제공하는 API
+//      -> 대충 공유한 state정보를 저장하는 context 객체를 생성하고 나면, 그 context객체에 접근가능한 component를 지정하고 state의 종류를 지정해서, 해당 컴포넌트의 후손들이 자유롭게 state에 접근가능하게 함
+
+//   # 사용법
+//      1) createContext()로 context 제작
+//      2) 해당 context를 사용할 component를 <context명.Provider> 태그로 감쌈
+//      3) <context명.Provider> 안에 value 속성을 추가하고, 공유할 state들을 js {}안에 속성 객체형식으로 나열해 작성함
+//      4) 제작한 context를 export 처리하고, 사용할 component 파일에서 해당 context가 저장된 변수를 import함
+//      5) useContext(context명)라는 reacthooks 함수를 사용하여, 제작된 context1안의 state 들을 state 객체 형식으로 변환해서 반환함
+//      6) 5번을 통해.. props 문법 없이 해당 component와 후손들이 context안에서 공유하기로 한 state값들을 static 값 마냥 가져다 씀 
+
+//         ex) export let Context1 = createContext();
+
+//             <Context1.Provider value={{ stock, shoes }}>
+//                <Detail shoes = {shoes} /> 
+//             </Context1.Provider>
+
+//             ------------(다른 component가 있는 jsx 모듈 안에서...)-----------
+//             import { Context1 } from '파일경로';
+
+//             ------------(원하는 Detail가문 내 compoent안에서..)--------------
+//             let example = useContext(Context1);
+//               -> example.state명[index번호] 식으로 사용
+
+//   # (주의) Context API를 잘 안쓰는 이유
+//       -> (중요!) 결론 : 이 2가지 이슈들 문제로... 아예 전역으로 쓸 state를 나열하고, 별 문제없이 가져다 쓰게하자는 외부 라이브러리 'redux'를 쓰게 됨
+
+//       1) Context랑 연관된 전체 component 가문들의 경우 무지성적 rerendering 이슈
+//          : 해당 context의 state를 안쓰는 component들도 만약 context를 쓰기로 한 component의 가문 안에 소속된 경우...
+//             -> context의 state들을 쓰던말던 걔들이 변경될때마다, 모든 가문구성원 component들은 일괄적으로 rerendering 됨...
+//                (= 비효율적인 rendering 이행으로 인해, 컴퓨터 자원 낭비가 심하고, 성능으로 말이 안 나올수가 없음)
+
+//       2) Context를 직접 사용한 component는 재사용이 어려움
+//          : 어차피 component에서 context를 가져다 쓸거면, 또 모듈로 context, useContext를 모듈로 가져와야 하는데? 
+//              -> 그렇게 API가 적용된 component를 또 다른 모듈에서도 재사용을 하게 되어 중첩되기 시작하면?
+//                  -> 결국 기존 props처럼 프로그래머의 노가다를 요구하게 되고, 사람의 실수로 인한 비효율적 문제가 터져나오게 됨
+
+
+// createContext 함수
+//  : state를 저장해주고, 이를 어떤 component에서라도 가져다 쓸수 있게 하는 context(= context API와 연관)를 제작해주는 함수
+//    (= state변수를 전역적으로 쓸수 있게 하는 매개체인 context객체를 제작해주고, 그 메모리 레버런스 위치를 반환해준다 이거)
+export let Context1 = createContext();
+
 function App() {
 
   // state변수 shoes는 data.js를 모듈로 삼아 상품정보를 담은 object형식의 자료형을 배열로 담은 data를 초기값으로 입력받음
   let [shoes, setShoes] = useState(data);
+
+  // (설명) Context1이라는 변수에 담은 context를 통해 손자건 증손자건 모든 component에서 가져다 쓰는걸 유도하는 state변수
+  //   -> 하단의 context1.provider 태그에 detail 컴포넌트의 후손들에게 공유될 state로 쓰일 예정
+  let [stock, setStock]= useState([10, 11, 12]);
 
   // useNavigate 함수
   //  : Link component와 유사하면서도, 확장기능을 수행하는 react hooks와 유사한 react router에 존재하는 react hooks 함수의 일종
@@ -159,7 +209,14 @@ function App() {
 
         {/* (설명) 'id'라는 url 파라미터(:id로 표기함)를 가져서, 사용자가 url에 입력하는 id값에 따라 rendering 되는 component의 내용을 다르게 구성할 수 있도록 하는 Route component
               -> 사용자가 넘긴 id값을 어떻게 전달받고 사용하는지는 element의 속성값으로 들어간 Detail 컴포넌트에서 useParam 함수에 대해 알아보면 됨 */}
-        <Route path = "/detail/:id" element = { <Detail shoes = {shoes} /> } />
+        <Route path = "/detail/:id" element = { 
+                                                // (설명) <context명.Provider value={{ state1, ... , stateN}} >
+                                                //   : 생성한 context에 접근하도록 허락하고 싶은 component를 표시해주고, 그 녀석과 후손들까지 접근가능한 state는 무엇인지 value 속성의 속성객체 멤버들을 통해 표기함
+                                                //      -> 여기서는 Detail 컴포넌트로 하여금 context1이라는 context에 접근가능하게 함을 의미
+                                                <Context1.Provider value={{ stock, shoes }}>
+                                                  <Detail shoes = {shoes} /> 
+                                                </Context1.Provider>
+                                              } />
         
 
         {/* (설명) Nested Route(중첩 라우트)라고 불리는 구조
@@ -182,6 +239,10 @@ function App() {
                                           </div> } >
           <Route path = "one" element = { <div>첫 주문시 양배추즙 서비스</div> } />
           <Route path = "two" element = { <div>생일기념</div> } />
+        </Route>
+
+        <Route path="/cart" element={<Cart/>}>
+
         </Route>
 
 

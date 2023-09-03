@@ -195,6 +195,40 @@
        : 애초에 호출된 component을 react팀은 자식 component라 정의하고, 거기에 html 속성 형식으로 사용자가 적은 값들에 대해서는 부모 component가 타 component를 호출하는 것
          (= 애초에 component 호출을 통한 접점 관계를 부모 - 자식이라 명명함 + 형제관계나 자식 - 부모 관계는 그렇게 값을 전달할 방법이 로직적으로 존재하지 않음)
 
+- Context API
+    : props는 컴포넌트의 계층구조가 깊어지고 넓어지면 사용하는게 노가다에 가깝다는 것을 해결하기 위한 방책 중 하나로 react에서 기본제공하는 API
+       -> 대충 공유한 state정보를 저장하는 context 객체를 생성하고 나면, 그 context객체에 접근가능한 component를 지정하고 state의 종류를 지정해서, 해당 컴포넌트의 후손들이 자유롭게 state에 접근가능하게 함 
+
+    # 사용법
+       1) createContext()로 context 제작
+       2) 해당 context를 사용할 component를 <context명.Provider> 태그로 감쌈
+       3) <context명.Provider> 안에 value 속성을 추가하고, 공유할 state들을 js {}안에 속성 객체형식으로 나열해 작성함
+       4) 제작한 context를 export 처리하고, 사용할 component 파일에서 해당 context가 저장된 변수를 import함
+       5) useContext(context명)라는 reacthooks 함수를 사용하여, 제작된 context1안의 state 들을 state 객체 형식으로 변환해서 반환함
+       6) 5번을 통해.. props 문법 없이 해당 component와 후손들이 context안에서 공유하기로 한 state값들을 static 값 마냥 가져다 씀  
+
+          ex) export let Context1 = createContext(); 
+              <Context1.Provider value={{ stock, shoes }}>
+                 <Detail shoes = {shoes} /> 
+              </Context1.Provider> 
+              ------------(다른 component가 있는 jsx 모듈 안에서...)-----------
+              import { Context1 } from '파일경로'; 
+              ------------(원하는 Detail가문 내 compoent안에서..)--------------
+              let example = useContext(Context1);
+                -> example.state명[index번호] 식으로 사용 
+
+    # (주의) Context API를 잘 안쓰는 이유
+        -> (중요!) 결론 : 이 2가지 이슈들 문제로... 아예 전역으로 쓸 state를 나열하고, 별 문제없이 가져다 쓰게하자는 외부 라이브러리 'redux'를 쓰게 됨 
+
+        1) Context랑 연관된 전체 component 가문들의 경우 무지성적 rerendering 이슈
+           : 해당 context의 state를 안쓰는 component들도 만약 context를 쓰기로 한 component의 가문 안에 소속된 경우...
+              -> context의 state들을 쓰던말던 걔들이 변경될때마다, 모든 가문구성원 component들은 일괄적으로 rerendering 됨...
+                 (= 비효율적인 rendering 이행으로 인해, 컴퓨터 자원 낭비가 심하고, 성능으로 말이 안 나올수가 없음) 
+
+        2) Context를 직접 사용한 component는 재사용이 어려움
+           : 어차피 component에서 context를 가져다 쓸거면, 또 모듈로 context, useContext를 모듈로 가져와야 하는데? 
+               -> 그렇게 API가 적용된 component를 또 다른 모듈에서도 재사용을 하게 되어 중첩되기 시작하면?
+                   -> 결국 기존 props처럼 프로그래머의 노가다를 요구하게 되고, 사람의 실수로 인한 비효율적 문제가 터져나오게 됨
 
  - component 란?
     : react 라이브러리에서 JSX(JavaScript XML) 문법을 사용해서, 웹페이지의 상태(state)와 속성(properties)와 이벤트 핸들링을 수행하는 User Interface에서 rendering의 기본 단

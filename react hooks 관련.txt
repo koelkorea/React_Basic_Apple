@@ -15,7 +15,12 @@
       2) useEffect() (= componentDidMount, componentDidUpdate 대체)
          : component의 lifeCycle hook 중 rendering 시점 후에 실행될 작업을 수행하기 위한 function 내부의 함수
   
-      3) useContext: 컨텍스트(Context)를 사용하기 위한 Hook입니다. 컨텍스트를 구독하고 해당 컨텍스트 값을 가져올 수 있습니다.
+      3) useContext() (= context API의 함수형 프로그래밍 버전)
+         : 특정 컴포넌트 가문이 일종의 static state같이 state를 함수형 프로그래밍 형식으로 사용할 수 있게 react hook로 제작된 Context API
+            -> 제작된 context 안에 저장된 state함수를 쓸수 있도록 context객체의 내용을 해체해서, state객체( {state1, .. , n} ) 형식으로 변환해 리턴해서 쉽게 쓰게 해줌
+               (= 쉽게말해, context라는 state보관함을 해체해서, state를 보기좋게 꺼내준다 이 말임)
+                   -> component에서 이 함수의 결과값을 받은 JS변수를 만들면, state처럼 쉽게 꺼내쓸 수 있음   
+      
       4) useRef: DOM 요소나 컴포넌트의 인스턴스를 참조하기 위한 Hook입니다. useRef를 사용하여 DOM 조작이나 외부 라이브러리와의 상호작용을 처리할 수 있습니다.
       5) useCallback: 콜백 함수를 메모이제이션하는 Hook입니다. 의존성 배열에 변경되지 않으면 이전에 생성한 함수를 반환하여 성능을 최적화할 수 있습니다.
       6) useMemo: 계산 비용이 많은 연산의 결과 값을 메모이제이션하는 Hook입니다. 의존성 배열이 변경되지 않으면 이전에 계산한 값을 반환하여 성능을 최적화할 수 있습니다.
