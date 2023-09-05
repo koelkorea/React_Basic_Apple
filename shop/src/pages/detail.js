@@ -12,6 +12,12 @@ import { Navbar, Nav }  from 'react-bootstrap';
 // (설명) App 컴포넌트에서 제작한 Context1 컨텍스트와 공유예정인 state값의 사용을 위해서, 선언한 context변수명을 {}안에 import해서 해당 jsx에 가져다 줌
 import { Context1 } from '../App.js';
 
+// (설명) redux 라이브러리의 hooks인 핵심함수 useDispatch, useSelector를 사용할 수 있도록 모듈 import
+import { useDispatch } from 'react-redux';
+
+// (설명) store.js에서 만들어둔 전역 state함수 setCount를 사용할 수 있도록 모듈 import
+import { addCart } from "./../store.js";
+
 // (설명) styled-components 라이브러리를 통해 button형식의 style component를 만들고 백틱(`)을 통해 style 속성과 속성값을 입력 후, js변수 ColoredButton에 대입하여 component처럼 사용가능하게 조치
 //   -> background, color 속성은 props 객체를 통해 color라는 값을 전달 받을 수 있게 코드가 짜여있고, color 속성은 삼항연산자를 적용하여 속성값을 다르게 주게 코드가 짜여있음
 let ColoredButton = styled.button`
@@ -175,6 +181,12 @@ function Detail(props){
 
     }, [props.shoes] );
 
+    // useDispatch(import한 전역 state함수명)
+    //  : store.js에 만들어 둔 전역 state함수명이 호출되도록, store.js에 요청을 보내는 redux 라이브라리의 react hooks 함수의 일종
+    //     -> 요청을 보내는거지.. 실제 함수의 실행은 store.js에서 해줌
+
+    let disPatch = useDispatch();
+
     return (
         // (fade 숙제 구현) 
         //   : state값인 fade의 값의 변경은 곧 HTML 태그가 가지는 class속성값이 fade의 내용을 반영하도록 jsx {}에 전통적인 ''(quation)을 사용해 제작
@@ -205,7 +217,12 @@ function Detail(props){
                     <h4 className="pt-5">{findShoes.title}</h4>
                     <p>{findShoes.content}</p>
                     <p>{findShoes.price}원</p>
-                    <button className="btn btn-danger">주문하기</button> 
+
+                    {/* (숙제) 주문하기 버튼을 누르면, 장바구니에 해당 상품이 추가되어 전시될 수 있도록 해봐라
+                          -> 힌트 : 장바구니는 특정 component에 소속된 state가 아님을 명심하고, 전역 state로서 구현해야 함 (= store.js에 데이터가 기존 존재하는 redux를 쓰자) */}
+
+                    {/* (숙제 구현) 주문하기 버튼에 전역 state 함수를 onclick 이벤트로 구현 */}
+                    <button className="btn btn-danger" onClick={() => { console.log(findShoes); disPatch(addCart( { id : findShoes.id , name : findShoes.title , count : 1 } )); }}>주문하기</button> 
                 </div>
             </div>
 

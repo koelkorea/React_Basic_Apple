@@ -35,7 +35,7 @@
 
 //     4) store.js 파일에 createSlice({name: state명, initialState: state값}); 함수를 통해 state변수를 생성함
 //         -> (중요) initialState 요소에 들어가는 state값은 아무리 복잡한 형식의 객체배열 or 배열을 멤버로 받는 객체라도 다 받아줌
-//         -> (중요) 만약, setState의 역할을 수행할 함수를 추가하면, reducers라는 멤버객체도 추가되고, 그 안에 멤버함수들을 추가 + 사용할 녀석들을 export 해줘야 함
+//         -> (중요) 만약, setState의 역할을 수행할 함수를 추가하면, reducers라는 멤버객체도 추가되고, 그 안에 멤버함수들을 추가 + 사용할 녀석들을 export state명.action; 해줘야 함
 
 //         ex) let user = createSlice({
 //                 name : 'state명',
@@ -43,8 +43,11 @@
 
 //                 reducers : {
 //                     함수명1(state){ return 'john' + state; },
+//                     함수명2(state){ return { name : 'park', age : 20 }; },
+//                     함수명3(state){ state.name = 'park'; },
 //                     .... , 
-//                     함수명N(state){ return 'john' + state; }
+//                     함수명N(state, action){ state.age += action.payload; }
+
 //                 }
 //             })
 
@@ -86,7 +89,10 @@
 //           @ createSlice()의 parameter 객체 구조
 //              - name         : state의 이름값을 가지는 멤버변수 (이 녀석을 나중에 reducer 안에 등록해서 사용)
 //              - initialState : state의 실질적인 값을 가지는 멤버변수
-//                  -> (중요) initialState 요소에 들어가는 state값은 아무리 복잡한 형식의 객체배열 or 배열을 멤버로 받는 객체라도 다 받아줌
+//                                 -> (중요) initialState 요소에 들어가는 state값은 아무리 복잡한 형식의 객체배열 or 배열을 멤버로 받는 객체라도 다 받아줌
+//              - reducer      : state의 내부함수들을 멤버로 가지는 createSlice()의 parameter 객체
+//                                 -> (중요) state의 내부함수들을 사용하기 위해서는 'state명.action'을 통해 state별로 따로 export처리를 해야함
+//                                 -> 자세한건 state 내부함수 만드는 부분 참고
 
 //     2) useSelector( (parameter명) => { return parameter명 } )
 //        : redux 라이브라리의 함수로 만들어 둔 store를 가져와서, 그 안의 모든 state들을 담아두는 state객체 형식으로 반환해주는 역할하는 react hooks 함수의 일종 (= useContext()와 유사)
@@ -97,10 +103,62 @@
 //         : store.js에서 생성된 전역state변수들이 외부 컴포넌트에서 사용될 수 있도록 등록하는 함수
 //             -> (중요) 외부에서 호출하는 용도로 사용될 전역 state명의 구성은 절대로 소문자로만... 
 //             -> (중요) 전역 state명에 어떤 state변수가 매핑될지는 'state명.reducer'로 결정
+//             -> (중요) state들을 reducer에 등록해도, state별 내부함수는 configureStore() 함수가 아니라, 'state명.action'을 통해 state별로 따로 export처리를 해야함
 
 //     4) useDispatch(import한 전역 state함수명)
 //         : store.js에 만들어 둔 전역 state함수명이 호출되도록, store.js에 요청을 보내는 redux 라이브라리의 react hooks 함수의 일종
 //            -> 요청을 보내는거지.. 실제 함수의 실행은 store.js에서 해줌
+
+
+// # 전역 state변수의 내부함수 만드는 법
+//    : store.js 내부에 존재하는 전역 state를 생성하는 createSlice() 함수의 parameter로 들어가는 무명 객체의 name, initialState 이외의 reduce라는 멤버객체 내부의 멤버함수를 선언하여 생성함 (= 사실상 setState 함수도 이런식으로 만듦)
+//       -> (중요) 생성 함수의 parameter는 2가지가 존재함
+//            1. state
+//                : 해당 state 멤버객체 그 자체를 나타내는 parameter로 this와 용도나 관계가 비슷함
+
+//            2. action
+//                : 실질적으로 들어가게 되는 변화무쌍한 동적타입과 값을 지닌 parameter.. 
+//                  (= 사실상 state객체의 값이 array/object 같이 레버런스 주소값과 연관된 타입일 경우, 이를 함수를 통해 사용자가 의도적으로 가공하기 위한 목적으로 선언하여 사용하는 parameter라고 생각하면 됨)
+//                      -> 내부에 멤버변수들이 많지만, payload라는 멤버변수가 실제로 투입된 값으로서 사용 + type라는 멤버변수는 호출 함수명을 저장하고 있음
+
+//      ex) reducers : {
+
+//          1) 해당 state가 가진 값이 단일 값인 경우
+//              : 개별 전역 state의 내부함수는 정적인 연산 및 값으로 state의 값을 수정하거나, state라는 parameter를 통해 기존의 state 값을 이용하여 state값을 새롭게 수정가능
+
+//                changeNameExample1(state){
+//                    return 'john' + state.name;
+//                },
+
+//          2) 해당 state가 가진 값이 단일 객체인 경우
+//              : 개별 전역 state의 내부함수는 새로운 객체값을 반환하여 해당 state값을 객체 단위로 통째로 수정 가능
+
+//                changeNameExample2(){
+//                    return { name : 'park', age : 20 };
+//                },
+
+//          3) 해당 state가 가진 값이 '배열(array) or 객체(object)'인 경우
+//              : return 문구가 없이도 직접적으로 state값의 멤버변수를 state parameter를 통해 직접 수정해도, 해당 state 값에 수정한 변화가 적용됨
+//                 -> immer.js 라는 redux 라이브러리의 파일 덕분에, return으로 반환되는 array/object가 없어도 됨
+//                    (= immer.js 라이브러리는 자동으로 수정된 state 멤버값이 반영된 array/object를 깊은 복사 생성한 뒤, 함수의 결과값으로 그 수정된 객체를 return해주기 떄문)
+
+//                changeNameExample3(state){
+//                    state.name = 'park';
+//                },
+
+//          4) 해당 state의 값을 의도를 가진 parameter를 기입한 뒤, 이를 이용하여 사용자가 의도한 대로 가공한(연산값 or index로) 값으로 수정하고 싶은 경우
+//              : this 역할하는 state라는 1번째 parameter외에, 사용자가 함수 호출시 기입한 기입한 동적인 타입의 특정값을 의미하는 action이라는 2번째 parameter를 통해 payload라는 멤버변수로 그 값을 불러와 연산 or index 지정을 할 수 있음
+//                 -> 해당 특성은 함수를 parameter나 변수로도 취급가능한 일급시민으로 인정해주는 js의 특성과 연계되어, 다양하고도 복잡하게 응용되어 대부분의 의도를 수행가능함
+
+//                increaseAge(state, action ){
+//                    state.age += action.payload;        <- action을 연산에 사용  = increaseAge(100) : state갑에 100을 더함 
+//                }, 
+
+//                setCount(state, action){
+//                    state[action.payload].count++;      <- action을 index에 사용 = setCount(100) : 101번쨰 데이터의 count라는 멤버변수에 1을 더함
+//                }
+// }
+
 
 //  # (중요) useDispatch를 통해 전역 state의 함수에 요청만 보내는 이유?
 //     1) 각 component에서 전역 state를 건들게 만드는 경우와 다른데, 전역 state에 영향을 미치는 경우를 store.js에만 한정하게 해서, 코드 관리나 디버깅이 쉬움
@@ -110,26 +168,11 @@
 
 // (설명) redux 라이브러리의 튜토리얼 용 코드를 복붙
 //   -> redux toolkit = 기존 redux의 개선버전을 쓰기 위한 module import
-import { configureStore, createSlice } from '@reduxjs/toolkit'
+import { configureStore, createSlice, current } from '@reduxjs/toolkit'
 
-// (설명) createSlice 함수를 통해 user라는 state 생성 (값은 문자열을 가짐)
-let user = createSlice({
-    name : 'user' ,
-    initialState : 'kim' ,
+// (설명) 파일 분화해 모듈화한 store.js를 import함
+import user from './storeModule/userSlice.js'
 
-    // (설명) reducers라는 멤버 안에 해당 state의 멤버함수들을 생성 가능함 (= 사실상 setState 함수도 이런식으로 만듦)
-    //   -> 생성 함수의 parameter는 일반적으로 기존 state변수를 의미 
-    reducers : {
-        changeNameExample(state){
-            return 'john' + state;
-        }
-    }
-
-})
-
-// (설명) user state의 함수인 changeNameExample를 외부 모듈로 쓸수 있게 export함
-export let { changeNameExample } = user.actions;
-export let changeName = user.actions.changeNameExample;
 
 // (설명) createSlice 함수를 통해 stock라는 state 생성 (값은 숫자배열을 가짐)
 let stock = createSlice({
@@ -137,9 +180,9 @@ let stock = createSlice({
     initialState : [10, 11, 12]
 })
 
-// (숙제) 주어진 데이터를 Redux store 안에 보관해두고 -> 이를 Cart.js 페이지에 가져와서 데이터바인딩하여 화면에 표시해라
+// (숙제1) 주어진 데이터를 Redux store 안에 보관해두고 -> 이를 Cart.js 페이지에 가져와서 데이터바인딩하여 화면에 표시해라
 
-// (숙제 구현) createSlice 함수를 통해 cartdata라는 state 생성 (값은 객체배열을 가져도 상관없음)
+// (숙제1 구현) createSlice 함수를 통해 cartdata라는 state 생성 (값은 객체배열을 가져도 상관없음)
 let cartData = createSlice({
     name : 'cartData',
     initialState : [
@@ -149,14 +192,40 @@ let cartData = createSlice({
     // (설명) reducers라는 멤버 안에 해당 state의 멤버함수들을 생성 가능함 (= 사실상 setState 함수도 이런식으로 만듦)
     //   -> 생성 함수의 parameter는 일반적으로 기존 state변수를 의미 
     reducers : {
-        setCount(state){
-            return state.count + 1;
+        setCount(state, action){
+
+            // (숙제2) +버튼을 클릭하면, 해당 데이터에 맞는 count데이터에 +1씩 해주는 걸 만들어봐라
+
+            // (숙제2 구현) object의 내장함수 중 조건에 맞는 객체의 index를 반환하는 findIndex를 통해,
+            //   -> 받아온 id값을 action값으로 쓰고.. 그 id값과 일치하는 객체의 index를 얻으면? 
+            //       -> this 역할의 state와 [index]를 이용해서 대상 객체배열의 객체에 접근해서 원하는걸 이룸
+            const index = state.findIndex( (state) =>  state.id == action.payload );
+            state[index].count++;
+        },
+
+        // (숙제3 중) 주문하기 버튼을 누르면, 장바구니에 해당 상품이 추가되어 전시될 수 있도록 해봐라
+        //   -> 힌트 : 장바구니는 특정 component에 소속된 state가 아님을 명심하고, 전역 state로서 구현해야 함 (= store.js에 데이터가 기존 존재하는 redux를 쓰자)
+        addCart(state, action){
+
+            state.push(action.payload);
+
+            console.log(state);
+            console.log(current(state));
+
+            const array = [...current(state)];
+            const object = {id : action.payload.id, name : action.payload.title, count : 1};
+
+            // array.push(object);
+
+            // console.log(array);
+
+            // return array;
         }
     } 
 })
 
 // (설명) cartData state의 함수인 setCount를 외부 모듈로 쓸수 있게 export함
-export let { setCount } = cartData.actions;
+export let { setCount, addCart } = cartData.actions;
 
 // (설명) stock.js의 state 객체의 멤버변수로 생성햇던 state들인 user, stock, cartdata라는 state를 사용가능하게 등록 
 export default configureStore({
@@ -166,7 +235,7 @@ export default configureStore({
     reducer: {
         user : user.reducer , 
         stock : stock.reducer ,
-        // (숙제 구현) (주의) 외부로 export될 전역 state명은 절대로 소문자로만 구성되어야 함! 
+        // (숙제1 구현) (주의) 외부로 export될 전역 state명은 절대로 소문자로만 구성되어야 함! 
         // cartData : cartData.reducer
         cartdata : cartData.reducer
     }
