@@ -142,7 +142,7 @@ function App() {
           <Navbar.Brand href="#home">LSH's shop!</Navbar.Brand>
           <Nav className="me-auto">
             <Nav.Link onClick={ () => navigate('/') }>Home</Nav.Link>
-            <Nav.Link onClick={ () => navigate('/detail') }>Detail</Nav.Link>
+            <Nav.Link onClick={ () => navigate('/cart') }>Cart</Nav.Link>
           </Nav>
           {/* (설명) public 폴더의 파일은 src속성에 경로를 아무 제한없이 넣어도 되며, react에서는 {process.env.PUBLIC_URL}를 사용하면 서브 도메인의 변경을 신경쓰지 않아도 된다고 공식적으로 권장함 */}
           <img src={process.env.PUBLIC_URL + '/logo192.png'} width="50vh" />

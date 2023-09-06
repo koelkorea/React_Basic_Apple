@@ -109,12 +109,16 @@
 //         : store.js에 만들어 둔 전역 state함수명이 호출되도록, store.js에 요청을 보내는 redux 라이브라리의 react hooks 함수의 일종
 //            -> 요청을 보내는거지.. 실제 함수의 실행은 store.js에서 해줌
 
+//     5) current(state)
+//         : proxy 객체배열인 state의 현재 상태를 볼수 있게 하는 함수
+
 
 // # 전역 state변수의 내부함수 만드는 법
 //    : store.js 내부에 존재하는 전역 state를 생성하는 createSlice() 함수의 parameter로 들어가는 무명 객체의 name, initialState 이외의 reduce라는 멤버객체 내부의 멤버함수를 선언하여 생성함 (= 사실상 setState 함수도 이런식으로 만듦)
 //       -> (중요) 생성 함수의 parameter는 2가지가 존재함
 //            1. state
 //                : 해당 state 멤버객체 그 자체를 나타내는 parameter로 this와 용도나 관계가 비슷함
+//                   -> state 그 자체는 proxy 배열 객체로 현재 값을 알기 위해서는 current(state) 식으로 함수를 이용하면 됨
 
 //            2. action
 //                : 실질적으로 들어가게 되는 변화무쌍한 동적타입과 값을 지닌 parameter.. 
@@ -163,7 +167,7 @@
 //  # (중요) useDispatch를 통해 전역 state의 함수에 요청만 보내는 이유?
 //     1) 각 component에서 전역 state를 건들게 만드는 경우와 다른데, 전역 state에 영향을 미치는 경우를 store.js에만 한정하게 해서, 코드 관리나 디버깅이 쉬움
 //     2) 모든 전역 state 함수의 실행시, 무조건 store.js와 통신이 되어야 함으로.. 서비스 문제가 발생할떄도 원인찾기가 여러모도 수월함
-//     
+
 
 
 // (설명) redux 라이브러리의 튜토리얼 용 코드를 복붙
@@ -203,23 +207,22 @@ let cartData = createSlice({
             state[index].count++;
         },
 
-        // (숙제3 중) 주문하기 버튼을 누르면, 장바구니에 해당 상품이 추가되어 전시될 수 있도록 해봐라
+        // (숙제3) 주문하기 버튼을 누르면, 장바구니에 해당 상품이 추가되어 전시될 수 있도록 해봐라
         //   -> 힌트 : 장바구니는 특정 component에 소속된 state가 아님을 명심하고, 전역 state로서 구현해야 함 (= store.js에 데이터가 기존 존재하는 redux를 쓰자)
         addCart(state, action){
 
-            state.push(action.payload);
+            // (숙제3 모범구현)
+            //   : onClick에서 cart에 추가해 줄 신발의 정보들을 하나하나 조합한 무명객체를 action으로 넣고, 바로 state parameter를 통해 접근 가능한 기존 전역 state 객체에 push() 함수로 객체추가
+            // state.push(action.payload);
 
-            console.log(state);
+            // (숙제3 숙제 구현)  
+            //   : onClick에서 findShoes state 멤버객체를 action parameter로 넣고, state parameter를 통해 접근 가능한 기존 전역 state 객체에 action.payload를 통해 작성한 객체를 push() 함수로 추가
             console.log(current(state));
 
-            const array = [...current(state)];
             const object = {id : action.payload.id, name : action.payload.title, count : 1};
+            state.push(object);
 
-            // array.push(object);
-
-            // console.log(array);
-
-            // return array;
+            console.log(current(state));
         }
     } 
 })

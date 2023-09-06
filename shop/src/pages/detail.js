@@ -218,11 +218,14 @@ function Detail(props){
                     <p>{findShoes.content}</p>
                     <p>{findShoes.price}원</p>
 
-                    {/* (숙제) 주문하기 버튼을 누르면, 장바구니에 해당 상품이 추가되어 전시될 수 있도록 해봐라
+                    {/* (redux 객체배열 추가 숙제) 주문하기 버튼을 누르면, 장바구니에 해당 상품이 추가되어 전시될 수 있도록 해봐라
                           -> 힌트 : 장바구니는 특정 component에 소속된 state가 아님을 명심하고, 전역 state로서 구현해야 함 (= store.js에 데이터가 기존 존재하는 redux를 쓰자) */}
 
-                    {/* (숙제 구현) 주문하기 버튼에 전역 state 함수를 onclick 이벤트로 구현 */}
-                    <button className="btn btn-danger" onClick={() => { console.log(findShoes); disPatch(addCart( { id : findShoes.id , name : findShoes.title , count : 1 } )); }}>주문하기</button> 
+                    {/* (redux 객체배열 추가 숙제 모범 구현)  onClick에서 cart에 추가해 줄 신발의 정보들을 하나하나 조합한 무명객체를 action으로 넣고, 바로 state parameter를 통해 접근 가능한 기존 전역 state 객체에 push() 함수로 객체추가 */}
+                    {/* <button className="btn btn-danger" onClick={() => { disPatch(addCart( { id : findShoes.id , name : findShoes.title , count : 1 } )); }}>주문하기</button>  */}
+
+                    {/* (redux 객체배열 추가 숙제 구현)  onClick에서 findShoes state 멤버객체를 action parameter로 넣고, state parameter를 통해 접근 가능한 기존 전역 state 객체에 action.payload를 통해 작성한 객체를 push() 함수로 추가 */}
+                    <button className="btn btn-danger" onClick={() => { disPatch(addCart( findShoes )); }}>주문하기</button> 
                 </div>
             </div>
 

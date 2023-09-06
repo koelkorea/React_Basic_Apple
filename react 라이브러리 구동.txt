@@ -444,6 +444,7 @@
 
         9) 그렇게 가져온 변수들을 component의 랜더링 return에 사용하자   
 
+
      # redux 관련 함수
         1) createSlice({name: state명, initialState: state값 or [state값1, ... ,  state값N] or {멤버변수1 : 값1, ... , {멤버변수1 : 값1} });
             : store.js에 state를 생성하는 함수..로 parameter는 state를 구성할 내용을 담은 object를 담음   
@@ -466,6 +467,50 @@
             : store.js에 만들어 둔 전역 state함수명이 호출되도록, store.js에 요청을 보내는 redux 라이브라리의 react hooks 함수의 일종
                -> 요청을 보내는거지.. 실제 함수의 실행은 store.js에서 해줌   
 
-     # (중요) useDispatch를 통해 전역 state의 함수에 요청만 보내는 이유?
-        1) 각 component에서 전역 state를 건들게 만드는 경우와 다른데, 전역 state에 영향을 미치는 경우를 store.js에만 한정하게 해서, 코드 관리나 디버깅이 쉬움
-        2) 모든 전역 state 함수의 실행시, 무조건 store.js와 통신이 되어야 함으로.. 서비스 문제가 발생할떄도 원인찾기가 여러모도 수월함
+         5) current(state)
+             : proxy 객체배열인 state의 현재 상태를 볼수 있게 하는 함수   
+
+
+     # 전역 state변수의 내부함수 만드는 법
+        : store.js 내부에 존재하는 전역 state를 생성하는 createSlice() 함수의 parameter로 들어가는 무명 객체의 name, initialState 이외의 reduce라는 멤버객체 내부의 멤버함수를 선언하여 생성함 (= 사실상 setState 함수도 이런식으로 만듦)
+           -> (중요) 생성 함수의 parameter는 2가지가 존재함
+                1. state
+                    : 해당 state 멤버객체 그 자체를 나타내는 parameter로 this와 용도나 관계가 비슷함
+                       -> state 그 자체는 proxy 배열 객체로 현재 값을 알기 위해서는 current(state) 식으로 함수를 이용하면 됨    
+                2. action
+                    : 실질적으로 들어가게 되는 변화무쌍한 동적타입과 값을 지닌 parameter.. 
+                      (= 사실상 state객체의 값이 array/object 같이 레버런스 주소값과 연관된 타입일 경우, 이를 함수를 통해 사용자가 의도적으로 가공하기 위한 목적으로 선언하여 사용하는 parameter라고 생각하면 됨)
+                          -> 내부에 멤버변수들이 많지만, payload라는 멤버변수가 실제로 투입된 값으로서 사용 + type라는 멤버변수는 호출 함수명을 저장하고 있음    
+          ex) reducers : {    
+              1) 해당 state가 가진 값이 단일 값인 경우
+                  : 개별 전역 state의 내부함수는 정적인 연산 및 값으로 state의 값을 수정하거나, state라는 parameter를 통해 기존의 state 값을 이용하여 state값을 새롭게 수정가능    
+                    changeNameExample1(state){
+                        return 'john' + state.name;
+                    },    
+              2) 해당 state가 가진 값이 단일 객체인 경우
+                  : 개별 전역 state의 내부함수는 새로운 객체값을 반환하여 해당 state값을 객체 단위로 통째로 수정 가능    
+                    changeNameExample2(){
+                        return { name : 'park', age : 20 };
+                    },    
+              3) 해당 state가 가진 값이 '배열(array) or 객체(object)'인 경우
+                  : return 문구가 없이도 직접적으로 state값의 멤버변수를 state parameter를 통해 직접 수정해도, 해당 state 값에 수정한 변화가 적용됨
+                     -> immer.js 라는 redux 라이브러리의 파일 덕분에, return으로 반환되는 array/object가 없어도 됨
+                        (= immer.js 라이브러리는 자동으로 수정된 state 멤버값이 반영된 array/object를 깊은 복사 생성한 뒤, 함수의 결과값으로 그 수정된 객체를 return해주기 떄문)    
+                    changeNameExample3(state){
+                        state.name = 'park';
+                    },    
+              4) 해당 state의 값을 의도를 가진 parameter를 기입한 뒤, 이를 이용하여 사용자가 의도한 대로 가공한(연산값 or index로) 값으로 수정하고 싶은 경우
+                  : this 역할하는 state라는 1번째 parameter외에, 사용자가 함수 호출시 기입한 기입한 동적인 타입의 특정값을 의미하는 action이라는 2번째 parameter를 통해 payload라는 멤버변수로 그 값을 불러와 연산 or index 지정을 할 수 있음
+                     -> 해당 특성은 함수를 parameter나 변수로도 취급가능한 일급시민으로 인정해주는 js의 특성과 연계되어, 다양하고도 복잡하게 응용되어 대부분의 의도를 수행가능함    
+                    increaseAge(state, action ){
+                        state.age += action.payload;        <- action을 연산에 사용  = increaseAge(100) : state갑에 100을 더함 
+                    },     
+                    setCount(state, action){
+                        state[action.payload].count++;      <- action을 index에 사용 = setCount(100) : 101번쨰 데이터의 count라는 멤버변수에 1을 더함
+                    }
+     }    
+
+     
+      # (중요) useDispatch를 통해 전역 state의 함수에 요청만 보내는 이유?
+         1) 각 component에서 전역 state를 건들게 만드는 경우와 다른데, 전역 state에 영향을 미치는 경우를 store.js에만 한정하게 해서, 코드 관리나 디버깅이 쉬움
+         2) 모든 전역 state 함수의 실행시, 무조건 store.js와 통신이 되어야 함으로.. 서비스 문제가 발생할떄도 원인찾기가 여러모도 수월함
