@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { createContext, useState } from 'react';
+import { createContext, useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -117,7 +117,7 @@ function App() {
 
   // state변수 shoes는 data.js를 모듈로 삼아 상품정보를 담은 object형식의 자료형을 배열로 담은 data를 초기값으로 입력받음
   let [shoes, setShoes] = useState(data);
-
+  
   // (설명) Context1이라는 변수에 담은 context를 통해 손자건 증손자건 모든 component에서 가져다 쓰는걸 유도하는 state변수
   //   -> 하단의 context1.provider 태그에 detail 컴포넌트의 후손들에게 공유될 state로 쓰일 예정
   let [stock, setStock]= useState([10, 11, 12]);
@@ -133,6 +133,89 @@ function App() {
 
   // (숙제) 버튼을 누르면 서버에서 상품데이터 3개를 가져와서 메인페이지에 상품카드 3개 더 생성시, 서버로부터 받은 데이터를 저장할 state변수 extraShoes
   let [extraShoes, setExtraShoes] = useState(null);
+
+  // (설명) 도메인 당 5mb의 문자열만 넣을 수 있는 localStorage & sessionStorage에 array/object를 저장하기 위한 변수
+  let obj = {name : 'kim'};
+
+  // localStorage & sessionStorage
+  //  : 웹 브라우저에서 데이터를 저장하는 데 사용되는 옵션들
+  //    (= 서버가 아닌 client 쪽에 저장해서 사용할 로직과 이에 필요한 데이터를 저장하는 공간)
+  //        -> state들을 localStorage에 저장하도록들 은근 많이 구현하는 케이스가 많옴
+  //            ex) redux-persist : redux의 전역 state들을 실시간으로 localstorage로 구현하게 하는 라이브러리 녀석
+
+  //   # localStorage & sessionStorage 공통 특징
+  //      1) 문자열만 저장 가능
+  //      2) key, value 형식 저장
+  //      3) 수정 불가 (= 삭제 후 생성 다시 해야..)
+
+  //   # localStorage & sessionStorage 차이점
+  //      1) 데이터 수명
+  //          - localStorage   : 사용자가 정리하기 전까지 유지
+  //          - sessionStorage : 사용자와의 현재 세션이 유지되는 동안만 유지 (= 탭이나 브라우저 종료되면 삭제)
+
+  //      2) 접근 범위
+  //          - localStorage   : 동일한 도메인(사이트) 내의 모든 웹 페이지에서 공유됨 (= 그 이외의 웹페이지에서는 참고 불가)
+  //          - sessionStorage : 사용자와의 현재 세션이 유지되는 동안 모든 탭 간에 공유가 가능
+
+  //      3) 용도
+  //          - localStorage   : 지속적인 상태 정보(ex : 유저 설정, 로그인 정보)
+  //          - sessionStorage : 임시 정보 (ex : 장바구니 정보)
+
+  //      4) 저장 크기
+  //          - localStorage   : 도메인(사이트)마다 5MB
+  //          - sessionStorage : 20MB
+
+  //   # localStorage & sessionStorage 메서드
+  //     - localStorage & sessionStorage.setItem(key값, value값)
+  //        : 브라우저의 localStorage 항목에 key, value를 저장하기 위한 localStorage 객체의 내부함수
+
+  //     - localStorage & sessionStorage.getItem(key값)
+  //        : 브라우저의 localStorage 항목의 해당 key에 있는, value를 추출 위한 localStorage 객체의 내부함수
+
+  //     - localStorage & sessionStorage.removeItem(key값)
+  //        : 브라우저의 localStorage 항목에 해당 key에 해당하는 key, value를 삭제 위한 localStorage 객체의 내부함수
+
+
+  // JSON 전역 객체
+  //  : JS에서 JavaScript Object Notation(JSON)을 분석하거나 값을 JSON으로 변환하는 메서드를 가지는 전역객체
+
+  //   # JavaScript Object Notation(JSON)
+  //      : Javascript 객체 문법을 따르는 문자열 기반의 데이터 포맷으로.. 베이스가 된 문법이 JS의 object일뿐 어디서나 쓸수 있는 범용적 데이터 포맷
+  //         -> JSON의 특성
+  //            1) JSON은 순수히 데이터 포맷 (= 멤버변수 O , 메서드 X)
+  //            2) 프로퍼티와 값을 구분시, 큰 따옴표("") 만 사용해서 구분할 수 있음
+  //            3) JSON은 '문자열'로서 JSON은 그 전체에 해당하며, 이를 파싱(paring)하여 JS Object로 쓸 수 있게 변환함
+  //               (= JSON 형식 데이터 그 자체로는 JS object 마냥 객체명.프로퍼티명 or 객체명['프로퍼티명']; 이런식으로 쓸 수 없음)
+
+  //   # JSON 메서드
+  //     - JSON.stringify(array/object 변수)
+  //        : paramter의 array/object -> JSON 변환하여 문자열로서 저장 가능하게 하는 JSON 객체의 내부 함수
+  //           -> 선택 사항으로 특정 속성만 포함하거나, 사용자 정의 방식으로 속성을 대체 가능
+
+  //     - JSON.parse(JSON 형식 구문)
+  //        : paramter의 JSON 형식 문자열을 JSON으로서 구문 분석하여, JSON구문 -> array/object나 숫자 문자 반환
+  //           -> 선택적으로 분석 결과의 값과 속성을 변환해 반환
+  //               -> BUT! object의 함수는 받아주지 못함
+
+
+  // (설명) localStorage에 key, value를 저장하기 위한 명령어와 parameter
+  //   -> JSON.stringify(객체)를 통해 array/object -> '문자열 형식 나열'로 변환
+  //       -> JSON.stringify(객체)를 쓰지 않으면, [Object object] 라고 value값이 깨져나옴
+  localStorage.setItem('data', JSON.stringify(obj) );
+
+  // (설명) localStorage에 JSON 형식으로 저장한 data라는 key의 value를 log로 보여줌
+  //   -> JSON 형식으로 저장한 데이터는 문자열로서 각 프로퍼티명에 ""가 붙음
+  //       -> JSON.parse(JSON 형식 구문) 를 통해, JS의 데이터 타입으로 변경하면, 객체가 됨
+  console.log(JSON.parse(localStorage.getItem('data') ).name );
+
+  // (localStorage 숙제) 최근 본 상품 UI 기능 구현위해, 상세페이지 진입시 상품id를 localStorage에 순차적으로 저장되게 array형식으로 저장되게 해라
+  //   -> 첫 페이지 접속시, 해당 데이터 저장을 위한 watchHistory라는 key에 저장된 빈 JSON 데이터를 넣어줌
+  useEffect(()=>{
+
+    localStorage.getItem('watchHistory') == null ?
+    localStorage.setItem('watchHistory', JSON.stringify( [] )) : null;
+
+  },[]) 
 
   return (
     <div className="App">
@@ -259,9 +342,20 @@ function App() {
 //   -> 컴포넌트 자체는 블록의 모양을 유지하고, 반복은 부모인 app에서 수행 계획 
 //      (= props를 통해 그 구성을 바꿀수 있게 조정)
 function Shoes(props){
+
+  // useNavigate 함수
+  //  : Link component와 유사하면서도, 확장기능을 수행하는 react hooks와 유사한 react router에 존재하는 react hooks 함수의 일종
+  //     - useNavigate('url주소')
+  //        : <Link to = "url주소" /> 와 유사
+
+  //     - useNavigate(+ or -)
+  //        : +는 횟수만큼 브라우저의 앞페이지로 돌아가기, -는 횟수만큼 브라우저의 뒤로가기 실행과 같음
+  let navigate = useNavigate();
+
   return (
     <>
-      <Col>
+      {/* (설명) 목록의 그림을 클릭하면, 상세조회 화면으로 이동 */}
+      <Col onClick={ () => navigate('/detail/' + props.shoes.id ) }>
         <img src={'https://codingapple1.github.io/shop/shoes' + (props.shoes.id + 1) + '.jpg'} width="80%" />
         <h4>{props.shoes.title}</h4>
         <p>{props.shoes.content}</p>

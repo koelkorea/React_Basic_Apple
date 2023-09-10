@@ -184,8 +184,20 @@ function Detail(props){
     // useDispatch(import한 전역 state함수명)
     //  : store.js에 만들어 둔 전역 state함수명이 호출되도록, store.js에 요청을 보내는 redux 라이브라리의 react hooks 함수의 일종
     //     -> 요청을 보내는거지.. 실제 함수의 실행은 store.js에서 해줌
-
     let disPatch = useDispatch();
+
+    // (localStorage 숙제) 최근 본 상품 UI 기능 구현위해, 상세페이지 진입시 상품id를 localStorage에 순차적으로 저장되게 array형식으로 저장되게 해라
+    useEffect( () => {
+
+        if(id != null){
+            let watchHistory = JSON.parse(localStorage.getItem('watchHistory'));
+            watchHistory.push(id);
+            watchHistory = new Set(watchHistory);
+            watchHistory = Array.from(watchHistory);
+            localStorage.setItem('watchHistory', JSON.stringify(watchHistory) ); 
+        }
+
+    }, []);
 
     return (
         // (fade 숙제 구현) 
