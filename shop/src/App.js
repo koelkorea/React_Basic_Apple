@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { createContext, useEffect, useState } from 'react';
+import { Suspense, createContext, lazy, useEffect, useState } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
@@ -26,7 +26,19 @@ import './App.css';
 
 // (중요) data.js을 Module로서 간주하여 그 js파일의 data라는 object 객체 배열(유저 데이터로 간주)을 해당 js 영역에 존재하는 변수같이 사용할 수 있게 import 하겠다는 의미  
 import data from './data.js';
-import Detail from './pages/detail.js';
+// import Detail from './pages/Detail.js';
+// import Cart from './pages/Cart.js'
+
+// lazy import = lazy( () => import('파일 상대경로') ) 
+//  : (react 어플 성능개선 팁1) aplication 배포시 모든 component들을 통합하여, 하나의 html, js 파일로 합본해 퉁치는 react 특성 상, 초기 로딩 시간이 약점이 될 수 밖에 없는 구조인데..
+//     -> 그 약점을 일부 나중에 등장하는 컨포넌트들을 통합 js파일에서 제외시켜, 별도로 import하도록 조치하자는 데서 비롯된 방식
+//        (= 나중에 늦게 import해줘라는 개념으로 볼 수 있겠다)
+//     -> react에서는 lazy ( 무명함수 parameter) 형식으로 구현
+
+// (중요) Detail과 Cart 컴포넌트는 react aplication 배포시 통합되는 하나의 html, js 파일에 포함되지 않고, 별개의 파일로서 import되는 구조로 생성되게 하며, 해당 컴포넌트들이 로딩될 떄 비로소 Module로서 해당 파일들을 다운받도록 함
+//  -> 단점 : Detail과 Cart 컴포넌트 페이지 진입시, 당연히 시간이 오래걸림
+const Detail = lazy( () => import('./pages/Detail.js') )
+const Cart = lazy( () => import('./pages/Cart.js') )
 
 // (설명) react-bootstrap 라이브러리 사용에 필요한 css정보를 import
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -54,7 +66,8 @@ import { Routes, Route, Link, useNavigate, Outlet } from 'react-router-dom';
 // (설명) ajax를 통해 서버와 통신하게 하는 axios 라이브러리를 모듈로 가져와서, axios object를 사용할 수 있게 함
 import axios from 'axios'
 
-import Cart from './pages/Cart.js'
+// react기반 웹페이지에서 ajax요청 관련 상태값 및 값을 편하게 가져오고 개발에 쓰게 하기 위한 react-query 라이브러리를 모듈로 import하여 가져오는 코드
+import { useQuery } from '@tanstack/react-query' 
 
 // (중요) public 폴더의 존재 의의
 //  : 개발이 끝나고, bulid를 하여 소스코드를 압축할 때, src 폴더에 있던 코드와 파일은 다 압축이 되는데 public 폴더에 있는 것들은 그대로 보존
@@ -217,6 +230,63 @@ function App() {
 
   },[]) 
 
+  // (tanstack) react-query
+  //   : React Application에서 Hooks(use뭐시기 형식의 리엑트의 기능들을 함수형으로 사용가능하게 한 함수집합)형식의 함수를 통해 사용하여, component로부터 서버의 데이터 상태를 불러오고, 캐싱하며, 지속적으로 동기화하고 업데이트 하는 작업을 도와주는 라이브러리
+  //      -> 그러니까, 대충 실시간으로 ajax 관련 지속적인 데이터 요청을 받고 응답해야 하는 서비스(실시간 SNS, 거래소)를 구현하는데 편하기에 도움이 되는 라이브러리라 볼 수 있겠다...
+  //         (= redux 개량판인 toolkit도 RTK Query라고 비슷한걸 제공하니 참고)
+  //             -> 사실, Redux state 변경함수 안에선 ajax요청하면 안 된다는 불편함을 변수별 useSlice()를 통해 전역 state안에서 해결할 수 있도록 해소하고, Redux state와 관련있는 ajax들을 효율적으로 관리하는데 더 집중하는 라이브러리에 가까움
+
+  //    # react-query 사용법
+  //      1) import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query' 를 시작할 컴포넌트(= 사실상 최선조인 index.js)에 입력함
+  //      2) QueryClient(); 를 통해 QueryClient의 객체를 선언해주고, 이 객체를 <QueryClientProvider clinet={QueryClient()를 받은 변수}> 태그를 선언하는데 사용함.. 
+  //          -> <QueryClientProvider> 태그는 가장 react-query를 적용할 모든 컴포넌트 및 state를 감쌀수 있는 위치로 향한다
+  //      3) useQuery()라는 hook을 통해, 그 안에 서버로 API요청을 그대로 비동기로 보내고 난뒤, 이를 변수로 받으면..? 그 변수로 component에 추가적인 state 없이도 쉽게 요청에 대한 결과나 상태를 체크하고, 조건에 따른 HTML 출력을 짤 수 있음 
+  
+  //          ex) let 변수명 = useQuery('아무 이름이나', () => 
+  //                fetch('API url') or axios.get('API url')
+  //                .then( (성공parameter) => {  
+
+  //                  return 성공parameter.data;    -> 이후 result.멤버변수를 통해 ajax 요청에 대한 상태값 및 값을 state에 이식하지 않고도 받아올 수 있음
+  //                }), 
+  //                { 옵션명1 : 옵션값1 , ... , 옵션명n : 옵션값n }
+  //              );
+
+  //    # react-query 장점
+  //      1) (중요) state 배치없이도, 내가 보낸 ajax 요청 성공/실패/로딩중 상태를 ajax요청결과를 담은 변수의 속성값으로 손쉽게 알 수 있음
+  //          - result.isLoading : 현재 ajax요청이 로딩 중인지 여부를 true/false로 체크함
+  //          - result.error     : 현재 ajax요청이 실패했는지 여부를  true/false로 체크함
+  //          - result.data      : 현재 ajax요청이 성공했으면, 데이터가 들어오고, 이를 state 객체마냥 사용이 가능
+
+  //      2) 1)의 특성을 이용해, ajax 요청의 결과에 따른 HTML 영역 내용을 조건문으로 쉽게 짤 수 있음    
+  //      3) 자식 component에 props 객체의 멤버값으로 전송하지 않아도, 자식 또한 해당 값을 공유 가능함
+  //          -> 정확히는 자식 component에도 같은 ajax요청을 보낼 시, 이를 중복되지 않도록 1번만 실행 후, 그 이후에는 캐싱한 내용을 사용하는 알고리즘임
+
+  //      4) 주기적으로 ajax 요청을 날리고 내용을 최신화해줌
+  //          -> 옵션 부분에 { staleTime : 숫자/mms }로 조절가능
+
+  //      5) 실패시에도 마찬가지로 주기적으로 재시도 함
+  //          -> 옵션 부분에서 마찬가지로 제어 가능
+
+  // (설명) useQuery()를 통해 요청한 ajax의 결과나 상태값을 result라는 변수를 통해 알 수 있으며, 그 값들을 주기적으로 최신화하는 코드 (= state처리 안해도 ㅇㅋ)
+  let result = useQuery(['작명'], () => 
+    fetch('https://codingapple1.github.io/userdata.json')
+    .then( (response) => {  
+
+      // refetch(실시간으로 재요청) 확인용
+      console.log('요청됨');
+      return response.json();
+    })
+
+    // axios.get('https://codingapple1.github.io/userdata.json')
+    // .then((a)=>{ return a.data })
+    , { staleTime : 2000 }
+  );
+
+  // result.data;
+  // result.isLoading;
+  // result.error;
+
+
   return (
     <div className="App">
 
@@ -227,6 +297,14 @@ function App() {
             <Nav.Link onClick={ () => navigate('/') }>Home</Nav.Link>
             <Nav.Link onClick={ () => navigate('/cart') }>Cart</Nav.Link>
           </Nav>
+
+          {/* (설명) useQuery()로 받아온 ajax 상태값과 값들을 이용 하여, 어떤 화면을 내보낼지를 쉽게 결정 가능함*/}
+          <Nav className="ms-auto">
+            { result.isLoading && '로딩 중' }
+            { result.error && '에러남' }
+            { result.data && result.data.name }
+          </Nav>
+
           {/* (설명) public 폴더의 파일은 src속성에 경로를 아무 제한없이 넣어도 되며, react에서는 {process.env.PUBLIC_URL}를 사용하면 서브 도메인의 변경을 신경쓰지 않아도 된다고 공식적으로 권장함 */}
           <img src={process.env.PUBLIC_URL + '/logo192.png'} width="50vh" />
         </Container>
@@ -236,102 +314,107 @@ function App() {
       {/* <Link to = "/">홈</Link>
       <Link to = "/detail">상세페이지</Link> */}
 
-      {/* (설명)  container 역할인 Routes component를 호출하여, 해당 component에서 요청된 url에 따라 다른 component내용이 rendering 될 수 있는 정보를 가지고 있는 Route component들을 묶어서 선언 및 관리하고, 
-                  item 역할인 Route component는 호출하면, 요청된 url정보를 각 path 속성값과 비교한 뒤, 그에 해당하는 Route component의 element 내용을 rendering 함 */}
-      <Routes>
-        <Route path = "/" element = { 
-          <>
-            {/* <div className="main-bg" style = {{ backgroundImage : 'url('+ img + ')'}} > */}
-            <div className="main-bg"></div>
-            <Container>
-              <Row xs='3'>
-              {
-                // (숙제) object 배열인 data를 초기값으로 받는 반복되는 state 배열인 shoes는 그 state 배열크기 만큼, 반복되는 내용을 component로 구현하게 하는 코드
-                shoes.map(function(a, i){
-                  return(
-                    <Shoes shoes={shoes[i]} key={i}></Shoes>
-                  )
+      {/* (설명) (react 어플 성능개선 팁2) <Suspense> 태그 
+            : fallback 속성의 값으로 HTML 태그를 넣으면, 컴포넌트가 로딩되는 동안 이 녀석이 임시적으로 출력됨*/}
+      <Suspense fallback={ <div>로딩중임</div> }>
+
+        {/* (설명)  container 역할인 Routes component를 호출하여, 해당 component에서 요청된 url에 따라 다른 component내용이 rendering 될 수 있는 정보를 가지고 있는 Route component들을 묶어서 선언 및 관리하고, 
+                    item 역할인 Route component는 호출하면, 요청된 url정보를 각 path 속성값과 비교한 뒤, 그에 해당하는 Route component의 element 내용을 rendering 함 */}
+        <Routes>
+          <Route path = "/" element = { 
+            <>
+              {/* <div className="main-bg" style = {{ backgroundImage : 'url('+ img + ')'}} > */}
+              <div className="main-bg"></div>
+              <Container>
+                <Row xs='3'>
+                {
+                  // (숙제) object 배열인 data를 초기값으로 받는 반복되는 state 배열인 shoes는 그 state 배열크기 만큼, 반복되는 내용을 component로 구현하게 하는 코드
+                  shoes.map(function(a, i){
+                    return(
+                      <Shoes shoes={shoes[i]} key={i}></Shoes>
+                    )
+                  })
+                }
+                </Row>
+              </Container>
+
+              {/* (설명) axios 라이브러리를 통해 가져온 axios 객체의 멤버 함수 get 함수를 통해, 서버에 http 메서드 중 get방식으로 해당 url을 통해 요청을 보내는 버튼을 생성 */}
+              <button onClick={ () => {
+
+                // (설명) axios.get('url명')    <->      axios.post('url명', {name : 'kim'})   <- post는 요청자가 데이터를 보내면, 그걸 서버가 가공한 후 response를 보냄
+                //   : 해당 url명으로 get요청을 하게하는 axios 라이브러리의 멤버함수
+                //      -> .then( (결과값명) => {내용} )
+                //           : 서버를 향한 요청이 성공시 실행할 코드 
+                //              -> '결과값명'은 임의로 붙일수 있고, 서버가 보낸 모든 값(json이나 html)을 지칭함...
+                //                  -> (중요!) json으로 돌아온 응답값은 axios에서는 json -> object array 형태로 자동 변경해 줌..
+                //                      -> 사용자가 바라는 요청데이터 이외에, 어마어마한 상태값을 가지는 멤버변수도 많으니... 
+                //                         '결과값명.data'로 사용자가 원하는 object array 데이터 꾸러미를 받고, 가공할때는 array에서 멤버객체를 지정해 시작하자
+                //
+                //      -> .catch( () => {내용} )
+                //           : 요청 실패시 실행할 코드
+                //
+                //      -> finally( () => {내용})
+                //           : ajax 성공/실패랑 관계없이 무조건 실행하는 코드
+                axios.get('https://codingapple1.github.io/shop/data2.json')
+                .then((allResponse) => {
+                  console.log(allResponse.data);
+                  // (숙제) 서버로부터 받은 값으로 extraShoes state변수를 채우도록 setState함수 사용
+                  setExtraShoes(allResponse.data);
+                  
+                  let copy = [...shoes, ...allResponse.data];
+                  setShoes(copy);
                 })
-              }
-              </Row>
-            </Container>
+                .catch(() => {
+                  console.log('요청 실패...');
+                })
+              }}>더보기</button>
 
-            {/* (설명) axios 라이브러리를 통해 가져온 axios 객체의 멤버 함수 get 함수를 통해, 서버에 http 메서드 중 get방식으로 해당 url을 통해 요청을 보내는 버튼을 생성 */}
-            <button onClick={ () => {
+            </>
+          }/>
 
-              // (설명) axios.get('url명')    <->      axios.post('url명', {name : 'kim'})   <- post는 요청자가 데이터를 보내면, 그걸 서버가 가공한 후 response를 보냄
-              //   : 해당 url명으로 get요청을 하게하는 axios 라이브러리의 멤버함수
-              //      -> .then( (결과값명) => {내용} )
-              //           : 서버를 향한 요청이 성공시 실행할 코드 
-              //              -> '결과값명'은 임의로 붙일수 있고, 서버가 보낸 모든 값(json이나 html)을 지칭함...
-              //                  -> (중요!) json으로 돌아온 응답값은 axios에서는 json -> object array 형태로 자동 변경해 줌..
-              //                      -> 사용자가 바라는 요청데이터 이외에, 어마어마한 상태값을 가지는 멤버변수도 많으니... 
-              //                         '결과값명.data'로 사용자가 원하는 object array 데이터 꾸러미를 받고, 가공할때는 array에서 멤버객체를 지정해 시작하자
-              //
-              //      -> .catch( () => {내용} )
-              //           : 요청 실패시 실행할 코드
-              //
-              //      -> finally( () => {내용})
-              //           : ajax 성공/실패랑 관계없이 무조건 실행하는 코드
-              axios.get('https://codingapple1.github.io/shop/data2.json')
-              .then((allResponse) => {
-                console.log(allResponse.data);
-                // (숙제) 서버로부터 받은 값으로 extraShoes state변수를 채우도록 setState함수 사용
-                setExtraShoes(allResponse.data);
-                
-                let copy = [...shoes, ...allResponse.data];
-                setShoes(copy);
-              })
-              .catch(() => {
-                console.log('요청 실패...');
-              })
-            }}>더보기</button>
+          {/* (설명) 'id'라는 url 파라미터(:id로 표기함)를 가져서, 사용자가 url에 입력하는 id값에 따라 rendering 되는 component의 내용을 다르게 구성할 수 있도록 하는 Route component
+                -> 사용자가 넘긴 id값을 어떻게 전달받고 사용하는지는 element의 속성값으로 들어간 Detail 컴포넌트에서 useParam 함수에 대해 알아보면 됨 */}
+          <Route path = "/detail/:id" element = { 
+                                                  // (설명) <context명.Provider value={{ state1, ... , stateN}} >
+                                                  //   : 생성한 context에 접근하도록 허락하고 싶은 component를 표시해주고, 그 녀석과 후손들까지 접근가능한 state는 무엇인지 value 속성의 속성객체 멤버들을 통해 표기함
+                                                  //      -> 여기서는 Detail 컴포넌트로 하여금 context1이라는 context에 접근가능하게 함을 의미
+                                                  <Context1.Provider value={{ stock, shoes }}>
+                                                    <Detail shoes = {shoes} /> 
+                                                  </Context1.Provider>
+                                                } />
+          
 
-          </>
-        }/>
+          {/* (설명) Nested Route(중첩 라우트)라고 불리는 구조
+                : 쌩으로 url을 나열하는 것보다, 단계에 따른 깊이를 구별함으로서 해당 페이지 tree 구조에 대해 더 직관적으로 알 수 있음
+                    -> (주의!) Nested Route구조가 아니더라도, 하위 Route들의 내용 코드는 <Outlet></Outlet>을 통해 상위 Route 요소에 rendering 위치를 정해줄 수 있음 */}
+          <Route path = "/about" element = { <About /> } >
+            <Route path = "member" element = { <div>멤버</div> } />
+            <Route path = "location" element = { <div>위치</div> } />
+          </Route>
 
-        {/* (설명) 'id'라는 url 파라미터(:id로 표기함)를 가져서, 사용자가 url에 입력하는 id값에 따라 rendering 되는 component의 내용을 다르게 구성할 수 있도록 하는 Route component
-              -> 사용자가 넘긴 id값을 어떻게 전달받고 사용하는지는 element의 속성값으로 들어간 Detail 컴포넌트에서 useParam 함수에 대해 알아보면 됨 */}
-        <Route path = "/detail/:id" element = { 
-                                                // (설명) <context명.Provider value={{ state1, ... , stateN}} >
-                                                //   : 생성한 context에 접근하도록 허락하고 싶은 component를 표시해주고, 그 녀석과 후손들까지 접근가능한 state는 무엇인지 value 속성의 속성객체 멤버들을 통해 표기함
-                                                //      -> 여기서는 Detail 컴포넌트로 하여금 context1이라는 context에 접근가능하게 함을 의미
-                                                <Context1.Provider value={{ stock, shoes }}>
-                                                  <Detail shoes = {shoes} /> 
-                                                </Context1.Provider>
-                                              } />
-        
+          {/* (예시) Nested Route 구조 없이 쌩으로 나열된 Route들
+          <Route path = "/about" element = { <About /> } />
+          <Route path = "/about/member" element = { <div>멤버</div> } />
+          <Route path = "/about/location" element = { <div>위치</div> } />  */}
 
-        {/* (설명) Nested Route(중첩 라우트)라고 불리는 구조
-              : 쌩으로 url을 나열하는 것보다, 단계에 따른 깊이를 구별함으로서 해당 페이지 tree 구조에 대해 더 직관적으로 알 수 있음
-                  -> (주의!) Nested Route구조가 아니더라도, 하위 Route들의 내용 코드는 <Outlet></Outlet>을 통해 상위 Route 요소에 rendering 위치를 정해줄 수 있음 */}
-        <Route path = "/about" element = { <About /> } >
-          <Route path = "member" element = { <div>멤버</div> } />
-          <Route path = "location" element = { <div>위치</div> } />
-        </Route>
+          {/* (숙제) /event/one /event/two 페이지로 접속시 해당하는 페이지가 뜨게해봐라 */}
+          <Route path = "/event" element = { <div>
+                                              <h3>오늘의 이벤트</h3>
+                                              <Outlet></Outlet>
+                                            </div> } >
+            <Route path = "one" element = { <div>첫 주문시 양배추즙 서비스</div> } />
+            <Route path = "two" element = { <div>생일기념</div> } />
+          </Route>
 
-        {/* (예시) Nested Route 구조 없이 쌩으로 나열된 Route들
-        <Route path = "/about" element = { <About /> } />
-        <Route path = "/about/member" element = { <div>멤버</div> } />
-        <Route path = "/about/location" element = { <div>위치</div> } />  */}
+          <Route path="/cart" element={<Cart/>}>
 
-        {/* (숙제) /event/one /event/two 페이지로 접속시 해당하는 페이지가 뜨게해봐라 */}
-        <Route path = "/event" element = { <div>
-                                            <h3>오늘의 이벤트</h3>
-                                            <Outlet></Outlet>
-                                          </div> } >
-          <Route path = "one" element = { <div>첫 주문시 양배추즙 서비스</div> } />
-          <Route path = "two" element = { <div>생일기념</div> } />
-        </Route>
-
-        <Route path="/cart" element={<Cart/>}>
-
-        </Route>
+          </Route>
 
 
-        {/* (설명) path 속성값이 *인 경우 = 현재 지정된 url 외의 모든 url에 대해서 해당 element내용을 rendering 하라는 의미 */}
-        <Route path = "*" element = { <div>404! 없는 페이지 </div> } />
-      </Routes>
+          {/* (설명) path 속성값이 *인 경우 = 현재 지정된 url 외의 모든 url에 대해서 해당 element내용을 rendering 하라는 의미 */}
+          <Route path = "*" element = { <div>404! 없는 페이지 </div> } />
+        </Routes>
+      </Suspense>
 
 
     </div>

@@ -414,6 +414,20 @@
           (= Component render 기능의 인터페이스화는 이미 class component 시절부터 시작된 전통임)
               -> render 함수는 해당 html DOM요소를 브라우저에서 쉽게 랜더링이 가능하도록 react 차원에서 jsx형식을 우리가 아는 그 형식으로 푸는 함수로 interface화 되어있음
  
+ - memo(무명 함수형 컴포넌트 내용)
+   : 특정 component가 크고 무겁기에 부모로부터 받은 props 값이 변동되는 것을 제외하고, react의 재랜더링 조건을 회피하고 싶을 떄 사용하는 함수
+     (= 조건부로 재랜더링 원칙이 적용된 특수한 component lifeCycle을 가졌다 보자)
+        -> memo의 결과값은 let, const, var로 받으며, 그 변수명은 반드시 component명이 되어야 함 
+
+      ex) function MemoChild(){                                              let MemoChild = memo(function (){
+            console.log('부모 Conponent인 Cart가 랜더링 되면? );       ->         console.log('부모 Conponent인 Cart가 랜더링 되면? );
+            return <div></div>;                                                  return <div></div>;
+          }                                                                  })
+
+    # memo(무명 함수형 컴포넌트 내용)의 로직
+       : 재랜더링 대상으로 들어간 컴포넌트 내용에 기존 props와 바뀐 props를 비교하는 연산이 추가로 진행되고, 그것이 다르면 재랜더링 진행함
+         (= props가 크고 복잡하면 이거 자체로도 부담이 될 수도 있기에, 전가의 보도처럼 지르지 말고, 잘 판단해서 써야함) 
+
 
  - (종합) react를 통해 동적인 UI를 만들려면?
   1. class나 function component를 만들어서 html 구조를 만들고, 거기에 맞는 css로 디자인을 확정함

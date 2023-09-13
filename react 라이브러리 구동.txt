@@ -383,7 +383,7 @@
 
       # react-redux 설치법
         : (node js가 깔려 있어야함 + react 18버전 이상이 필요) 터미널 열고 프로젝트 폴더에서 npm install @reduxjs/toolkit react-redux 입력 
-               -> redux toolkit = 기존 redux의 개선버전
+               -> redux toolkit = 기존 redux의 시전코드(boilerplate code)가 많다는 컴플레인 개선버전
 
       # redux (주의사항)
         1) redux의 store안에 들어가는 건 전역변수로 사용할 필요가 있는 state들 뿐임
@@ -522,3 +522,53 @@
       # (중요) useDispatch를 통해 전역 state의 함수에 요청만 보내는 이유?
          1) 각 component에서 전역 state를 건들게 만드는 경우와 다른데, 전역 state에 영향을 미치는 경우를 store.js에만 한정하게 해서, 코드 관리나 디버깅이 쉬움
          2) 모든 전역 state 함수의 실행시, 무조건 store.js와 통신이 되어야 함으로.. 서비스 문제가 발생할떄도 원인찾기가 여러모도 수월함
+
+
+ 5. (tanstack) react-query
+     : React Application에서 Hooks(use뭐시기 형식의 리엑트의 기능들을 함수형으로 사용가능하게 한 함수집합)형식의 함수를 통해 사용하여, component로부터 서버의 데이터 상태를 불러오고, 캐싱하며, 지속적으로 동기화하고 업데이트 하는 작업을 도와주는 라이브러리
+        -> 그러니까, 대충 실시간으로 ajax 관련 지속적인 데이터 요청을 받고 응답해야 하는 서비스(실시간 SNS, 거래소)를 구현하는데 편하기에 도움이 되는 라이브러리라 볼 수 있겠다...
+           (= redux 개량판인 toolkit도 RTK Query라고 비슷한걸 제공하니 참고)
+               -> 사실, Redux state 변경함수 안에선 ajax요청하면 안 된다는 불편함을 변수별 useSlice()를 통해 전역 state안에서 해결할 수 있도록 해소하고, Redux state와 관련있는 ajax들을 효율적으로 관리하는데 더 집중하는 라이브러리에 가까움
+
+      # 실시간 데이터 교류에 필요한 기능 LIST 예시
+        - 몇초마다 자동으로 데이터 다시 가져오게 하려면?
+        - 요청실패시 몇초 간격으로 재시도?
+        - 다음 페이지 미리가져오기?
+        - ajax 성공/실패시 각각 다른 html을 보여주려면?
+
+      # (tanstack) react-query 설치법
+        : (node js가 깔려 있어야함 + react 18버전 이상이 필요) 터미널 열고 프로젝트 폴더에서 npm install @tanstack/react-query 
+
+      # react-query 사용법
+        1) import { QueryClient, QueryClientProvider, useQuery } from '@tanstack/react-query' 를 시작할 컴포넌트(= 사실상 최선조인 index.js)에 입력함
+        2) QueryClient(); 를 통해 QueryClient의 객체를 선언해주고, 이 객체를 <QueryClientProvider clinet={QueryClient()를 받은 변수}> 태그를 선언하는데 사용함.. 
+            -> <QueryClientProvider> 태그는 가장 react-query를 적용할 모든 컴포넌트 및 state를 감쌀수 있는 위치로 향한다
+        3) useQuery()라는 hook을 통해, 그 안에 서버로 API요청을 그대로 비동기로 보내고 난뒤, 이를 변수로 받으면..? 그 변수로 component에 추가적인 state 없이도 쉽게 요청에 대한 결과나 상태를 체크하고, 조건에 따른 HTML 출력을 짤 수 있음 
+            -> (중요) key에 해당하는 부분은 반드시 배열 형식으로 넣어야함
+
+            ex) let 변수명 = useQuery(['key값을 입력해야..'], () => 
+                  fetch('API url') or axios.get('API url')
+                  .then( (성공parameter) => {  
+
+                    return 성공parameter.data;    -> 이후 result.멤버변수를 통해 ajax 요청에 대한 상태값 및 값을 state에 이식하지 않고도 받아올 수 있음
+                  }), 
+                  { 옵션명1 : 옵션값1 , ... , 옵션명n : 옵션값n }
+                );
+
+
+      # react-query 장점
+        1) (중요) state 배치없이도, 내가 보낸 ajax 요청 성공/실패/로딩중 상태를 ajax요청결과를 담은 변수의 속성값으로 손쉽게 알 수 있음
+            - result.isLoading : 현재 ajax요청이 로딩 중인지 여부를 true/false로 체크함
+            - result.error     : 현재 ajax요청이 실패했는지 여부를  true/false로 체크함
+            - result.data      : 현재 ajax요청이 성공했으면, 데이터가 들어오고, 이를 state 객체마냥 사용이 가능
+
+        2) 1)의 특성을 이용해, ajax 요청의 결과에 따른 HTML 영역 내용을 조건문으로 쉽게 짤 수 있음    
+        3) 자식 component에 props 객체의 멤버값으로 전송하지 않아도, 자식 또한 해당 값을 공유 가능함
+            -> 정확히는 자식 component에도 같은 ajax요청을 보낼 시, 이를 중복되지 않도록 1번만 실행 후, 그 이후에는 캐싱한 내용을 사용하는 알고리즘임
+
+        4) 주기적으로 ajax 요청을 날리고 내용을 최신화해줌
+            -> 옵션 부분에 { staleTime : 숫자/mms }로 조절가능
+
+        5) 실패시에도 마찬가지로 주기적으로 재시도 함
+            -> 옵션 부분에서 마찬가지로 제어 가능
+
