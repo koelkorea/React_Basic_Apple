@@ -71,9 +71,15 @@ import React, { useState } from 'react';
 // state 
 //  : 해당 페이지 안에서만 쓸 지역변수로서의 목적을 가지고 선언한 get, set 로직이 적용된 변수 + state값의 변경이 감지시 해당 html 재rendering 
 //    (= 해당 component에서 값이 변경되었을때, html에 자동으로 내용이 반영되고 rendering되게하고 싶을 떄? state를 사용 ㅇㅋ) 
+//        -> (중요) setstate 함수는 비동기함수!!!!
 
 //  # (중요) state 과거사
 //     : state도 원래는 props와 마찬가지로 object 속성이며, functional component 기준으로 구조분해 할당과 useState 함수를 통해 만들어진 개별 state들은 state객체의 멤버속성임
+
+//  # (중요) batching 개념 
+//     : 만약? 1개 component에 state를 많이 썼는데? 일괄적으로 변경되면? 얘는 n번만큼 rerendering을 하나?
+//         -> 이런경우 react는 virtual dom의 이점을 적극활용하여 최종적 결과물에만 1번만 rendering을 함 + react 18부터는 ajax요청, setTimeout 안의 setstate 함수가 여러개 있더라도 이를 batching을 반영해 주어 최적화 수준을 더 올림
+//             -> 만약 의도한게 batching과 1도 연관이 없는거면, flushSync 함수를 사용하자..
 
 //  # state 사용법
 //     1. 변수타입 [getter함수의 별칭, setter함수의 별칭] = useState('변수가 담을 value값'); 작성

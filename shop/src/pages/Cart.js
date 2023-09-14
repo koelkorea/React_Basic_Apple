@@ -8,7 +8,7 @@ import { changeName, increaseAge } from "./../storeModule/userSlice.js";
 
 // (설명) store.js에서 만들어둔 전역 state함수 setCount를 사용할 수 있도록 모듈 import
 import { setCount } from "./../store.js";
-import { memo, useMemo, useState } from 'react';
+import { memo, useDeferredValue, useMemo, useState , useTransition} from 'react';
 
 // function MemoChild(){
 //     console.log('부모 Conponent인 Cart가 랜더링 되면? 자식인 MemoChild가 재렌더링 됨.. 근데 얘가 만약에 무거운 놈이면 어떻게하지?')
@@ -32,16 +32,7 @@ let MemoChild = memo(function (){
 });
 
 // (설명) useMemo() 함수를 설명하기 위한 복잡한 함수
-let example = (() => {
-    let result = 0;
-
-    for(let i = 0; i < 1e9; i++){
-        result += i;
-    }
-
-    console.log('무거운 작업을 랜더링 중 1번만 실행');
-    return result;
-});
+let example = new Array(2000).fill(0);
 
 function Cart(){
 
@@ -78,14 +69,54 @@ function Cart(){
     //         -> useEffect() : component들의 랜더링 이후 실행되는 '사이드이팩트'에 해당하는 내용들만 실행
     //         -> useMemo()   : component들의 랜더링과 동시에 실행되는 코드로.. 부득이하게 시간을 오래잡아먹는 코드라 랜더링과 함께 실행되서 성능 향상을 위한 목적으로 사용
 
-    // (설명) useMemo()를 통해 시간이 오래걸리는 함수 useMemoExample()의 실행을 랜더링과 함꼐하여, 시간단축과 성능향상을 동시에 목적으로 하기 위해 적용
-    let result = useMemo( () => { return example}, [] );
 
     // (설명) 자식 컴포넌트인 MemoChild에 props를 전달하기 위한 목적으로 만들어진 state  
     let [MemoChildState, setMemoChildState] = useState(0);
 
+    // useTransition( () => { component의 문제되는 실행코드들 } ) 함수
+    //  : (react18 에서 등장) rendering이 오래 걸리는 component의 주범이 되는 코드에 대해, 그 실행 순서를 나중으로 밀어두는 재배치를 통해, 전반적인 유저들의 웹페이지 체감속도를 빠르게 해주는 react-hooks 중 하나
+    //    (= lazy import와 유사하며, 대충 component의 코드 단위로 써먹는 노동 쪼개고 미루기 정도로 알아두면 되겠다..)
+
+    //   # useTransition() 함수 사용법
+    //      1. 구조분해 문법을 이용해서, useTransition()의 결과인 isPending이란 멤버변수와 startTransition( 무명함수 parameter )라는 함수를 각각 동명의 변수에 배정함
+
+    //          ex) let [isPending, startTransition] = useTransition();
+
+    //      2. 그렇게 배정된 변수 isPending와 함수 startTransition()을 사용해서, 실행시간 많이 잡아잡수는 특정 component의 특정 로직으로 인한 병목현상을 해소해서 웹페이지 체감 성능을 올려본다
+
+    //          - isPending
+    //             : react-query의 result.isLoading과 유사한 내용을 담는 변수로.. useTransition()를 통한 문제의 코드들의 실행시점이 다가옴에 따라 작업이 진행중인 경우를 true/false로 나타내는 변수
+    //                -> 사용법 역시 result.isLoading이 true일때, '로딩 중' 같은걸 출력하는 사례와 유사함
+
+    //          - startTransition( () => { component의 문제되는 실행코드들 })
+    //             : rendering이 오래 걸리는 component의 주범이 되는 코드를 rendering 시점이 아니라, 그 이후에 실행하라고 미뤄주는 의미와 기능을 가지는 함수..
+    //                -> 이를 통해, 먼저 처리되어야 할 기능들에 컴퓨터 자원과 시간을 먼저 투자할 수 있게 해주며, 반응속도의 체감이 좋아짐
+    //                   (= 단.. 결국 나중에 실행해주는 것이기에.. 정말 근본적인 성능개선이 필요하면, 걍 lazy import를 써라)
+
+    // (설명) useTransition, useDeferredValue 함수 설명을 위해 사용하는 state
+    let [testTransition, setTestTransition] = useState('');
+
+    // (설명) useTransition()의 사용을 위한 세팅 단계로.. 그 결과로 로딩여부 확인하는 멤버변수 ispending, 실질적으로 문제가 되는 느린 코드를 후순위로 미뤄주는 startTransition()를 구조분해
+    let [isPending, startTransition] = useTransition();
+
+    
+    // useDeferredValue(state명 or 변수명) 함수
+    //  : (react18 에서 등장) useTransition()와 유사하나... rendering이 오래 걸리는 component의 주범이 되는 코드가 대상이면.. 얘는 변수나, state를 대상 parmeter로 잡는 react-hooks 중 하나..
+    //    (= 근본적으로 하는 짓이 useTransition() 함수와 같으며, 지정된 state나 변수명에 해당하는 연산이나 render링의 처리 우선순서를 뒤로 미룸)
+
+    // (설명) useDeferredValue()의 사용을 위한 세팅 단계.. 특정 변수나 state를 중심으로 관련 내용 후순위로 미뤄줌
+    let state1 = useDeferredValue(testTransition)
+
     return(
         <div>
+            {/* (설명) useMemo()를 통해 시간이 오래걸리는 함수 useMemoExample()의 실행을 랜더링과 함꼐하여, 시간단축과 성능향상을 동시에 목적으로 하기 위해 적용 */}
+            {
+                useMemo( () => {
+                    return example.map((a, i) => {
+                        return console.log('useMemo 실행은 rendering 전이랑께?!');
+                    })
+                }, [])
+            }
             {/* (설명) 자식 컴포넌트인 MemoChild에 props 객체를 넘겨서, 이 경우에 지속적으로 props 객체로 넘겨준 MemoChildState이 바뀌어도 재랜더링이 되는지 확인 용도 */}
             <MemoChild MemoChildProps = {MemoChildState} />
             <button onClick={()=>{ setMemoChildState(MemoChildState + 1) }}> + </button>
@@ -119,12 +150,12 @@ function Cart(){
                                     <td>{cartdata[i].count}</td>
                                     <td>
                                         <button onClick={() => {
-                                                                    disPatch(changeName());
-                                                                    {/* (숙제2 최종실패) 해당 state 배열의 index에 맞는 id를 setCount() 함수의 action parameter로 보내면...
-                                                                        -> 그 id를 가진 data 객체의 index를 찾아내고, 이 index를 this역할의 state parameter를 통해 state[index].count 형식으로 원하는 녀석을 찾음..  */}
-                                                                    disPatch(setCount(cartdata[i].id));
-                                                                    
-                                                                }}>+</button>
+                                                        disPatch(changeName());
+                                                        {/* (숙제2 최종실패) 해당 state 배열의 index에 맞는 id를 setCount() 함수의 action parameter로 보내면...
+                                                            -> 그 id를 가진 data 객체의 index를 찾아내고, 이 index를 this역할의 state parameter를 통해 state[index].count 형식으로 원하는 녀석을 찾음..  */}
+                                                        disPatch(setCount(cartdata[i].id));
+                                                        
+                                                    }}>+</button>
                                     </td>
                                 </tr>
                         )
@@ -132,6 +163,37 @@ function Cart(){
                 }
                 </tbody>
             </Table> 
+            <div>
+                {/* (설명) useTransition()의 startTransition() 함수를 통해 시간이 오래걸리는 testTransition state에 값을 대입하는 코드의 우선순위를 후순위로 미뤄서 input창의 반응속도를 늘림 */}
+                <input onChange={ (e) => { 
+                    startTransition( () => {
+                        setTestTransition(e.target.value) 
+                    })
+                }} />
+
+                {/* (설명) useTransition()의 isPending을 통해 후순위로 미룬 시간이 오래걸리는 testTransition state에 값을 대입하는 코드가 실행 중일때, 시간벌이용 문구를 삽입함 */}
+                {
+                    isPending ? "로딩중 기다리셈" :
+                    example.map((a, i) => {
+                        return <div key={i}>{testTransition}</div>
+                    })
+                }
+
+                {/* (설명) useDeferredValue()를 사용하여 상단의 useTransition()과 똑같은 용도로 만든 코드 */}
+                <input onChange={ (e) => { 
+                        setTestTransition(e.target.value) 
+                }} />
+
+                {/* (설명) useDeferredValue(testTransition)를 받은 state1을 통해 상단의 useTransition()과 똑같은 용도로 만든 코드 */}
+                {
+                    example.map((a, i) => {
+                        return <div key={i}>{state1}</div>
+                    })
+                }
+
+
+
+            </div>
         </div>
     )
 }

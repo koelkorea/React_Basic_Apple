@@ -75,3 +75,49 @@
            : (중요!) 코드의 실행시점이 구체적으로 차이가 있으며, 의미적으로도 차이가 있음
               -> useEffect() : component들의 랜더링 이후 실행되는 '사이드이팩트'에 해당하는 내용들만 실행
               -> useMemo()   : component들의 랜더링과 동시에 실행되는 코드로.. 부득이하게 시간을 오래잡아먹는 코드라 랜더링과 함께 실행되서 성능 향상을 위한 목적으로 사용
+
+
+   5. useTransition( () => { component의 문제되는 실행코드들 } ) 함수
+       : (react18 에서 등장) rendering이 오래 걸리는 component의 주범이 되는 코드에 대해, 그 실행 순서를 나중으로 밀어두는 재배치를 통해, 전반적인 유저들의 웹페이지 체감속도를 빠르게 해주는 react-hooks 중 하나
+         (= lazy import와 유사하며, 대충 component의 코드 단위로 써먹는 노동 쪼개고 미루기 정도로 알아두면 되겠다..)
+
+        # useTransition() 함수 사용법
+           1. 구조분해 문법을 이용해서, useTransition()의 결과인 isPending이란 멤버변수와 startTransition( 무명함수 parameter )라는 함수를 각각 동명의 변수에 배정함
+
+               ex) let [isPending, startTransition] = useTransition();
+
+           2. 그렇게 배정된 변수 isPending와 함수 startTransition()을 사용해서, 실행시간 많이 잡아잡수는 특정 component의 특정 로직으로 인한 병목현상을 해소해서 웹페이지 체감 성능을 올려본다
+
+               - isPending
+                  : react-query의 result.isLoading과 유사한 내용을 담는 변수로.. useTransition()를 통한 문제의 코드들의 실행시점이 다가옴에 따라 작업이 진행중인 경우를 true/false로 나타내는 변수
+                     -> 사용법 역시 result.isLoading이 true일때, '로딩 중' 같은걸 출력하는 사례와 유사함
+
+               - startTransition( () => { component의 문제되는 실행코드들 })
+                  : rendering이 오래 걸리는 component의 주범이 되는 코드를 rendering 시점이 아니라, 그 이후에 실행하라고 미뤄주는 의미와 기능을 가지는 함수..
+                     -> 이를 통해, 먼저 처리되어야 할 기능들에 컴퓨터 자원과 시간을 먼저 투자할 수 있게 해주며, 반응속도의 체감이 좋아짐
+                        (= 단.. 결국 나중에 실행해주는 것이기에.. 정말 근본적인 성능개선이 필요하면, 걍 lazy import를 써라)
+
+   6. useDeferredValue(state명 or 변수명) 함수
+       : (react18 에서 등장) useTransition()와 유사하나... rendering이 오래 걸리는 component의 주범이 되는 코드가 대상이면.. 얘는 변수나, state를 대상 parmeter로 잡는 react-hooks 중 하나..
+         (= 근본적으로 하는 짓이 useTransition() 함수와 같으며, 지정된 state나 변수명에 해당하는 연산이나 render링의 처리 우선순서를 뒤로 미룸)
+
+
+- react DevTools
+   : react의 state나 component 기준으로 디버그를 하게 해주는 크롬 확장프로그램
+      -> 이걸 설치시, 크롬의 디버거에서 오른쪽 끝에 'component'라는 녀석이 추가되는데.. 그걸 누르면 react 버전 디버그에 진입가능
+
+      - component 항목
+         : 왼쪽의 트리구조는 component의 부모 자식관계를 보여주며, 클릭하면 해당 component 소속의 state와 props의 변동사항을 볼수 있음
+            -> 기존의 요소위치에 해당하는 소스를 보는 inspection기능도 component를 보는 식으로 여전히 사용가능
+                -> 소스 위치를 볼려면 '<>' 부호를 클릭해주면 됨
+                   (= 그게 아니라, 기존 방식대로 한다면, react를 complie한 html, js를 기준으로 소스를 보여줌..)
+
+      - Profiler 항목
+         : 현재 react기반 application의 실행속도(= 성능) 체크를 할 수 있도록 간트차트 마냥 각 component의 실행 시간을 보여줌
+            -> 실행법 : 녹화버튼 누르고, 웹 페이지 만져보고, 녹화를 끝낸 뒤, 이를 분석해보면 됨
+                -> 하지만..! 보통 component의 속도가 느린건 서버에서 ajax 요청결과가 늦게 도착해서 그런 경우가 많음
+
+- Redux Developer Tools
+   : 이건 redux 라이브러리를 사용하여, store.js에 전역 state들을 사용시 이를 디버깅에서 확인가능하게 해주는 크롬 확장프로그램
+      -> 이걸 설치시, 크롬의 디버거에서 오른쪽 끝에 'redux'라는 녀석이 추가되는데.. 그걸 누르면 react 버전 디버그에 진입가능
+         (= 비중이 커질수록 필요해질 수 있음)     
