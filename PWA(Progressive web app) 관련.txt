@@ -1,0 +1,100 @@
+- PWA(Progressive Web App)
+   : 웹사이트의 즐겨찾기를 스마트폰 홈화면에 만들어놔서, 마치 안드로이드/iOS 모바일 앱처럼 보이게 하여 사용할 수 있게 만드는 일종의 웹개발 기술
+     (= 그러니까, 앱개발 따로 할거 없이, 그냥 웹개발하고 조금만 손봐서 모바일 환경에서도 앱과 유사한 방식으로 사용하게 하면! 그게 앱 아니냐! 라는 취지에서 개발)
+         -> PWAbuilder를 이용하면, PWA는 구글 앱스토어에 올릴 수 있는 apk 파일로 변환할 수도 있긴 함
+
+   # PWA의 장점
+      1. 스마트폰, 태블릿 바탕화면에 여러분 웹사이트를 설치 가능
+          -> 상단 URL바가 제거된 크롬 브라우저가 뜨게 함... 일반 사용자는 앱이랑 구분을 못 함
+
+      2. 오프라인에서도 동작 가능 
+         (= JS로도 오프라인 동작 프로그램 개발이 가능하다 이 말..)
+             -> service-worker.js 라는 파일과 브라우저의 Cache storage 덕분 
+
+      3. 마케팅 유도 비용이 매우 적음
+          -> 그냥 웹사이트 접속하면, 간단한 팝업 하나만 띄워서 설치유도 가능
+
+      4. manifest.json, service-worker.js 이 2가지를 개발한 HTTPS 사이트 로컬경로에 넣으면 브라우저가 PWA로 인식하기에.. 만드는거도 어렵지 않음
+          -> 하지만.. npm build / yarn build 했을 경우 manifest.json 파일만 생성... 
+             (= service-worker.js까지 자동으로 생성을 원하면, npx create-react-app 프로젝트명 --template cra-template-pwa를 애초에 프로젝트 만들때 입력해야 함)
+
+
+   # 프로젝트 시작시 PWA 만들기 쉽게하는 명령어
+      : npx create-react-app 프로젝트명 --template cra-template-pwa
+         -> service-worker.js까지 생성해 줌... 
+
+   # 기존 프로젝트에 PWA 적용하는 방법
+      1. 생성한 PWA 프로젝트 폴더에, 기존 프로젝트의 App.js App.css index.js 이런 파일들을 새 프로젝트로 복붙
+      2. router, redux 이런 라이브러리를 설치했다면 다시 설치해주면 ok..
+      3. index.js 파일 하단의 serviceWorkerRegistration.unregister(); -> serviceWorkerRegistration.register();로 변경
+      4. yarn build / npm run build 했을 때 아까 그 manifest.json과 service-worker.js 파일이 자동으로 생성되면 완료..
+
+
+   # manifest.json / service-worker.js
+      1. manifest.json
+         : 만들어진 웹페이지의 아이콘, 이름, 테마색 이런걸 결정하는 부분
+            -> 이 파일은 웹앱에서 사용하는 모든 html 안에 <link rel="manifest" href="/manifest.webmanifest">으로 집어넣으셔야 하지만?
+                : react와 같은 라이브러리를 쓴다면, 알아서 해줌
+   
+         - 관련 JSON 객체 속성 
+            {
+              "version" : "여러분앱의 버전.. 예를 들면 1.12 이런거",
+              "short_name" : "설치후 앱런처나 바탕화면에 표시할 짧은 12자 이름",
+              "name" : "기본이름",
+              "icons" : { 여러가지 사이즈별 아이콘 이미지 경로 },
+              "start_url" : "앱아이콘 눌렀을 시 보여줄 메인페이지 경로",
+              "display" : "standalone 아니면 fullscreen",
+              "background_color" : "앱 처음 실행시 잠깐 뜨는 splashscreen의 배경색",
+              "theme_color" : "상단 탭색상 등 원하는 테마색상",
+            }
+      
+      2. service-worker.js
+         : 네이티브 앱이 하드에 설치되고, 이 로컬 파일들을 통해 실행되는 로직을 PWA에서도 비슷하게 적용될 수 있도록 흉내내는 역할을 하는 파일
+            -> service-worker.js의 설정에 따라 웹앱을 설치했을 때 어떤 CSS, JS, HTML, 이미지 파일이 하드에 설치될지 결정 + 앱을 켤 때마다 Cache Storage에 저장되어있던 CSS,JS,HTML 파일을 사용하여 앱을 구동
+               (= 얘 때문에 오프라인에서도 PWA를 돌릴수가 있는것이다!)
+   
+         - 참고사항
+            1) 웹사이트 업데이트할 때마다 유저들이 올드한 JS 파일을 사용하진 않는 이유
+                : build할 때마다 JS,CSS,HTML 파일의 이름과 경로가 무작위로 변함
+                   -> JS,CSS,HTML 파일명이 바뀌면 하드에 있는걸 쓰지 않고, 서버에 새로 요청
+                      (= 파일을 서버에 올려서 배포할 때 마다 유저는 새로운 파일을 보게 됨)
+
+            2) 사용자 하드에 설치할 파일 중에 특정 HTML을 제외하는 구조로 build하고 싶다면? 
+               (= 단.. 입장과 동시에 Ajax로 초기데이터들을 전부 받아오는 사이트를 쓴다면? 어차피 오프라인 실행 안할거라 의미 없음 +  HTML을 하드에 저장 안하면? 오프라인에서 앱실행시 아무것도 안뜨기에 모바일 앱의 장점이 사라짐)
+
+                -> node_modules/react-scripts/config/webpack.config.js 라는 웹팩의 환경설정 js파일을 찾음
+
+                    new WorkboxWebpackPlugin.InjectManifest({
+                        swSrc,
+                        dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
+                        exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/], 
+
+                -> 해당 파일에서 어떤 파일을 캐싱하지 않을건지 결정하는 exclude 항목에.. 정규식을 입력해서 원하는 html파일 잘 제거하면 됨
+
+                    new WorkboxWebpackPlugin.GenerateSW({
+                        swSrc,
+                        dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
+                        exclude: [/\.map$/, /asset-manifest\.json$/, /index\.html/],
+                    }) 
+
+
+   # PWA 커스터마이징 (= service-worker.js의 내용을 바꾸기)
+      : PWA의 쉬운 발행에는  create-react-app 설치할 때 함께 설치된 구글의 workbox 라는 라이브러리를 통해 이뤄지고, 이게 service-worker.js의 작성하는 도구... 이기에 정석적으로는 이걸 익혀야함
+
+       - 참고할 웹사이트 (설정 or 쌩으로 만들고 싶어 관련 문법을 보려면.. 참고)
+          : (공식 튜토리얼) https://developers.google.com/web/fundamentals/primers/service-workers
+            (샘플)         https://googlechrome.github.io/samples/service-worker/basic/
+
+ 
+   # PWA 디버깅하기
+      : 소스를 live server로 구동하고, 개발자도구를 켜서 Application 탭에 들어가서, 관련정보(Manifest, Service Worker, Cache Storage)가 있는지 보면 됨
+         -> flipkart.com 이런 PWA 사이트 들어가서 따라해보시면 됨
+
+       - Manifest
+          : manifest.json 내용들을 확인
+
+       - Service Worker
+          : service-worker 파일이 잘 있는지, 오프라인에선 잘 동작하는지 테스트 가능하고 푸시알림 기능을 개발해놨다면 푸시알림도 샘플로 전송 가능
+
+       - Cache Storage 
+          : service-worker 덕분에 하드에 설치된 CSS, JS, HTML 파일들을 확인가능 (= 캐시된 파일 제거 역시도 가능)
