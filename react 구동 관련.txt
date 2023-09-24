@@ -1,123 +1,123 @@
-- react À¥¶óÀÌºê·¯¸®¸¦ ½á¾ß ÇÏ´Â ÀÌÀ¯
- : DOM°´Ã¼¸¦ ÅëÇØ¼­, JS°¡ HTMLÀ» ÀÎ½ÄÇÏ°í µ¿ÀûÀ¸·Î º¯°æ°¡´ÉÇÏ°Ô ÇØÁÖ¾ú´ø JQueryÀÇ ºñÈ¿À²¼º ¶§¹®
-    -> ±âº»ÀûÀ¸·Î jQuery´Â JS°¡ HTMLÀ» Á÷Á¢ Á¶ÀÛÇÏ´Â DOM API¸¦ ´Ü¼øÈ÷ ¾²±â¸¸ ½±°Ô Á¶Á¤ÇÑ °á°ú¹°
-        (= ºñÀ¯ÇÏÀÚ¸é, Àü¹®°¡¿ë ¸Æ°¡ÀÌ¹ö Ä®À» ÀÏ¹ÝÀÎµµ ´Ù·ç±â ½¬¿ï Á¤µµ·Î ¸¶°³Á¶ÇÑ »óÅÂ...)
-            -> ±×·³¿¡µµ react ¶óÀÌºê·¯¸®°¡ µîÀåÇÏ±â Àü±îÁö´Â... ¤¸¤¤°Ô ÆíÇÏ´Ù´Â ÀåÁ¡ÀÌ ÀÖ¾î angular ÇÁ·¹ÀÓ¿öÅ©¿¡ ÀÌ¸£±â±îÁö ³Î¸® »ç¿ëµÇ¾úÀ½..
+- react ì›¹ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ì¨ì•¼ í•˜ëŠ” ì´ìœ 
+ : DOMê°ì²´ë¥¼ í†µí•´ì„œ, JSê°€ HTMLì„ ì¸ì‹í•˜ê³  ë™ì ìœ¼ë¡œ ë³€ê²½ê°€ëŠ¥í•˜ê²Œ í•´ì£¼ì—ˆë˜ JQueryì˜ ë¹„íš¨ìœ¨ì„± ë•Œë¬¸
+    -> ê¸°ë³¸ì ìœ¼ë¡œ jQueryëŠ” JSê°€ HTMLì„ ì§ì ‘ ì¡°ìž‘í•˜ëŠ” DOM APIë¥¼ ë‹¨ìˆœížˆ ì“°ê¸°ë§Œ ì‰½ê²Œ ì¡°ì •í•œ ê²°ê³¼ë¬¼
+        (= ë¹„ìœ í•˜ìžë©´, ì „ë¬¸ê°€ìš© ë§¥ê°€ì´ë²„ ì¹¼ì„ ì¼ë°˜ì¸ë„ ë‹¤ë£¨ê¸° ì‰¬ìš¸ ì •ë„ë¡œ ë§ˆê°œì¡°í•œ ìƒíƒœ...)
+            -> ê·¸ëŸ¼ì—ë„ react ë¼ì´ë¸ŒëŸ¬ë¦¬ê°€ ë“±ìž¥í•˜ê¸° ì „ê¹Œì§€ëŠ”... ã…ˆã„´ê²Œ íŽ¸í•˜ë‹¤ëŠ” ìž¥ì ì´ ìžˆì–´ angular í”„ë ˆìž„ì›Œí¬ì— ì´ë¥´ê¸°ê¹Œì§€ ë„ë¦¬ ì‚¬ìš©ë˜ì—ˆìŒ..
 
-- react ±¸µ¿¹ý Á¤¸®
-  1. node js¸¦ ¼³Ä¡ÇÔ
-     -> npm(node package manager)¸¦ ÀÌ¿ëÇØ¼­ ÆíÇÏ°Ô react ¶óÀÌºê·¯¸®¸¦ ÀÌ¿ëÇÑ ÇÁ·ÎÁ§Æ®¸¦ ÃÊ±âÈ­ ÇÏ±â À§ÇØ¼­ À§ÇØ¼­ ¹Ýµå½Ã ÇÊ¿äÇÔ
+- react êµ¬ë™ë²• ì •ë¦¬
+  1. node jsë¥¼ ì„¤ì¹˜í•¨
+     -> npm(node package manager)ë¥¼ ì´ìš©í•´ì„œ íŽ¸í•˜ê²Œ react ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ì´ìš©í•œ í”„ë¡œì íŠ¸ë¥¼ ì´ˆê¸°í™” í•˜ê¸° ìœ„í•´ì„œ ìœ„í•´ì„œ ë°˜ë“œì‹œ í•„ìš”í•¨
   
-  2. (mac, window µÑ ´Ù ÇØ´ç)¿øÇÏ´Â Æú´õ¸¦ »ý¼ºÇÑ µÚ, ÇØ´ç Æú´õ¿¡¼­ ÅÍ¹Ì³ÎÀ» ¿¬´Ù..
-     -> cmd¸¦ ¾²´ø, powershellÀ» ¾²°Ç, VSCODE¸¦ ¾²´ø °Á ÇØ´ç Æú´õ¿¡ ÅÍ¹Ì³ÎÀ» ÅëÇØ Á¢±ÙÇØ¼­ ´ÙÀ½ ¸í·É¾î¸¦ ½ÇÇàÇÒ ÁØºñ¸¦ ÇÏ¸é µÊ
+  2. (mac, window ë‘˜ ë‹¤ í•´ë‹¹)ì›í•˜ëŠ” í´ë”ë¥¼ ìƒì„±í•œ ë’¤, í•´ë‹¹ í´ë”ì—ì„œ í„°ë¯¸ë„ì„ ì—°ë‹¤..
+     -> cmdë¥¼ ì“°ë˜, powershellì„ ì“°ê±´, VSCODEë¥¼ ì“°ë˜ ê± í•´ë‹¹ í´ë”ì— í„°ë¯¸ë„ì„ í†µí•´ ì ‘ê·¼í•´ì„œ ë‹¤ìŒ ëª…ë ¹ì–´ë¥¼ ì‹¤í–‰í•  ì¤€ë¹„ë¥¼ í•˜ë©´ ë¨
   
-  3. 'npx create-react-app ÇÁ·ÎÁ§Æ®¸í' ÀÌ¶õ ¸í·É¾î¸¦ ÀÔ·ÂÇÏ¸é, ¾Ë¾Æ¼­ ÇØ´ç À§Ä¡¿¡¼­ ÃÊ±âÈ­ »óÅÂÀÇ react ¶óÀÌºê·¯¸® front-end bulid ÆÄÀÌÇÁ¶óÀÎ ÆÄÀÏÀ» ´Ù¿î·ÎµåÇÔ 
-     ->  (npm 5.2+ ÀÌÈÄ) ÆÐÅ°Áö ½ÇÇà µµ±¸ ¸í·É¾î npm -> npx
+  3. 'npx create-react-app í”„ë¡œì íŠ¸ëª…' ì´ëž€ ëª…ë ¹ì–´ë¥¼ ìž…ë ¥í•˜ë©´, ì•Œì•„ì„œ í•´ë‹¹ ìœ„ì¹˜ì—ì„œ ì´ˆê¸°í™” ìƒíƒœì˜ react ë¼ì´ë¸ŒëŸ¬ë¦¬ front-end bulid íŒŒì´í”„ë¼ì¸ íŒŒì¼ì„ ë‹¤ìš´ë¡œë“œí•¨ 
+     ->  (npm 5.2+ ì´í›„) íŒ¨í‚¤ì§€ ì‹¤í–‰ ë„êµ¬ ëª…ë ¹ì–´ npm -> npx
   
-  4. 'npm start' ¶õ ¸í·É¾î¸¦ ÀÔ·ÂÇÏ¸é, ÇØ´ç »óÅÂÀÇ react ¶óÀÌºê·¯¸®¸¦ »ç¿ëÇÑ front-end ½ºÅ©¸³Æ®¸¦ '·ÎÄÃ' ¼­¹ö¿¡¼­ live »óÅÂ·Î ½ÇÇàÇÔ
-     -> ÀÌ´Â react ¶óÀÌºê·¯¸®¿¡¼­ npm ¸í·É¾î¸¦ »çÀü¿¡ ¼³Á¤Çß±â ¶§¹®..
-        (= ÀÚ¼¼È÷ ¾Ë°í ½ÍÀ¸¸é, nodeJSÀÇ npm ¸í·É¾î¸¦ ÆÄ¾ßÇÔ)
+  4. 'npm start' ëž€ ëª…ë ¹ì–´ë¥¼ ìž…ë ¥í•˜ë©´, í•´ë‹¹ ìƒíƒœì˜ react ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ì‚¬ìš©í•œ front-end ìŠ¤í¬ë¦½íŠ¸ë¥¼ 'ë¡œì»¬' ì„œë²„ì—ì„œ live ìƒíƒœë¡œ ì‹¤í–‰í•¨
+     -> ì´ëŠ” react ë¼ì´ë¸ŒëŸ¬ë¦¬ì—ì„œ npm ëª…ë ¹ì–´ë¥¼ ì‚¬ì „ì— ì„¤ì •í–ˆê¸° ë•Œë¬¸..
+        (= ìžì„¸ížˆ ì•Œê³  ì‹¶ìœ¼ë©´, nodeJSì˜ npm ëª…ë ¹ì–´ë¥¼ íŒŒì•¼í•¨)
   
-  5. App.js ÆÄÀÏ¿¡¼­ Component ³»¿ëÀ» ¹Ù²Ù´Â °É·Î ½ÃÀÛÇÏ¸é µÊ
-     -> index.js¿¡¼­ ÇØ´ç App.js¸¦ ¸ðµâ Çü½ÄÀ¸·Î °¡Á®¿Í¼­, Rendering ÇÒ component·Î ¼³Á¤ÇÑ »óÅÂ
-        (= ¾ÕÀ¸·Î ÄÄÆ÷³ÍÆ®¸¦ Á¦ÀÛÇÏ¸é ÀÌ·±½ÄÀ¸·Î ¸ðµâ·Î ¸¸µé¾î °¡Á®¿À°í, component Çü½ÄÀ¸·Î root.Render ÇÔ¼öÀÇ return °ª¿¡ ºÙÀÌ¸é ±×¸¸)
+  5. App.js íŒŒì¼ì—ì„œ Component ë‚´ìš©ì„ ë°”ê¾¸ëŠ” ê±¸ë¡œ ì‹œìž‘í•˜ë©´ ë¨
+     -> index.jsì—ì„œ í•´ë‹¹ App.jsë¥¼ ëª¨ë“ˆ í˜•ì‹ìœ¼ë¡œ ê°€ì ¸ì™€ì„œ, Rendering í•  componentë¡œ ì„¤ì •í•œ ìƒíƒœ
+        (= ì•žìœ¼ë¡œ ì»´í¬ë„ŒíŠ¸ë¥¼ ì œìž‘í•˜ë©´ ì´ëŸ°ì‹ìœ¼ë¡œ ëª¨ë“ˆë¡œ ë§Œë“¤ì–´ ê°€ì ¸ì˜¤ê³ , component í˜•ì‹ìœ¼ë¡œ root.Render í•¨ìˆ˜ì˜ return ê°’ì— ë¶™ì´ë©´ ê·¸ë§Œ)
   
-        # htmlÀ» ÀÛ¼ºÇÏÁö ¾Ê°í, js·Î ÄÚµùÇØµµ htmlÀÌ ÀÛµ¿ÇÏ´Â ÀÌÀ¯?
-          : component Çü½ÄºÎÅÍ renderingÀÇ ÀÎÅÍÆäÀÌ½º È­¸¦ ±¸ÇöÇÑ react ¶óÀÌºê·¯¸®¿¡ ±×°ÍÀÌ °¡´ÉÇÏ°Ô ÄÚµùÀÌ µÇ¾îÀÖ°í ÇÁ·Î±×·¡¸Ó°¡ ÀÌ¸¦ ²ø¾îµé¿© ÇØ´ç ±â´ÉÀ» »ç¿ëÇÏ±â ¶§¹®
-            (= API¶ó´Â°Å ÀÚÃ¼°¡ »ç¿ëÇÏ´Â ÂÊÀº ±×³É °ø±ÞÀÚ°¡ ¸í½ÃÇÏ´Â Çü½Ä¸¸ ÁöÄÑ¼­ ¾²¸é µÇ°í, ³»ºÎ±¸Á¶´Â ¸ô¶óµµ µÇ´Â °ÍÀ» ÀÇ¹ÌÇÔ)
+        # htmlì„ ìž‘ì„±í•˜ì§€ ì•Šê³ , jsë¡œ ì½”ë”©í•´ë„ htmlì´ ìž‘ë™í•˜ëŠ” ì´ìœ ?
+          : component í˜•ì‹ë¶€í„° renderingì˜ ì¸í„°íŽ˜ì´ìŠ¤ í™”ë¥¼ êµ¬í˜„í•œ react ë¼ì´ë¸ŒëŸ¬ë¦¬ì— ê·¸ê²ƒì´ ê°€ëŠ¥í•˜ê²Œ ì½”ë”©ì´ ë˜ì–´ìžˆê³  í”„ë¡œê·¸ëž˜ë¨¸ê°€ ì´ë¥¼ ëŒì–´ë“¤ì—¬ í•´ë‹¹ ê¸°ëŠ¥ì„ ì‚¬ìš©í•˜ê¸° ë•Œë¬¸
+            (= APIë¼ëŠ”ê±° ìžì²´ê°€ ì‚¬ìš©í•˜ëŠ” ìª½ì€ ê·¸ëƒ¥ ê³µê¸‰ìžê°€ ëª…ì‹œí•˜ëŠ” í˜•ì‹ë§Œ ì§€ì¼œì„œ ì“°ë©´ ë˜ê³ , ë‚´ë¶€êµ¬ì¡°ëŠ” ëª°ë¼ë„ ë˜ëŠ” ê²ƒì„ ì˜ë¯¸í•¨)
 
-- react ¼º´É°³¼± ÆÁ
+- react ì„±ëŠ¥ê°œì„  íŒ
    1. lazy import
-       : aplication ¹èÆ÷½Ã ¸ðµç componentµéÀ» ÅëÇÕÇÏ¿©, ÇÏ³ªÀÇ html, js ÆÄÀÏ·Î ÇÕº»ÇØ ÅüÄ¡´Â react Æ¯¼º »ó, ÃÊ±â ·Îµù ½Ã°£ÀÌ ¾àÁ¡ÀÌ µÉ ¼ö ¹Û¿¡ ¾ø´Â ±¸Á¶ÀÎµ¥..
-          -> ±× ¾àÁ¡À» ÀÏºÎ ³ªÁß¿¡ µîÀåÇÏ´Â ÄÁÆ÷³ÍÆ®µéÀ» ÅëÇÕ jsÆÄÀÏ¿¡¼­ Á¦¿Ü½ÃÄÑ, º°µµ·Î importÇÏµµ·Ï Á¶Ä¡ÇÏÀÚ´Â µ¥¼­ ºñ·ÔµÈ ¹æ½Ä
-             (= ³ªÁß¿¡ ´Ê°Ô importÇØÁà¶ó´Â °³³äÀ¸·Î º¼ ¼ö ÀÖ°Ú´Ù)
+       : aplication ë°°í¬ì‹œ ëª¨ë“  componentë“¤ì„ í†µí•©í•˜ì—¬, í•˜ë‚˜ì˜ html, js íŒŒì¼ë¡œ í•©ë³¸í•´ í‰ì¹˜ëŠ” react íŠ¹ì„± ìƒ, ì´ˆê¸° ë¡œë”© ì‹œê°„ì´ ì•½ì ì´ ë  ìˆ˜ ë°–ì— ì—†ëŠ” êµ¬ì¡°ì¸ë°..
+          -> ê·¸ ì•½ì ì„ ì¼ë¶€ ë‚˜ì¤‘ì— ë“±ìž¥í•˜ëŠ” ì»¨í¬ë„ŒíŠ¸ë“¤ì„ í†µí•© jsíŒŒì¼ì—ì„œ ì œì™¸ì‹œì¼œ, ë³„ë„ë¡œ importí•˜ë„ë¡ ì¡°ì¹˜í•˜ìžëŠ” ë°ì„œ ë¹„ë¡¯ëœ ë°©ì‹
+             (= ë‚˜ì¤‘ì— ëŠ¦ê²Œ importí•´ì¤˜ë¼ëŠ” ê°œë…ìœ¼ë¡œ ë³¼ ìˆ˜ ìžˆê² ë‹¤)
 
-        # lazy() ÇÔ¼ö
-           : react¿¡¼­ component js¸¦ lazy import ÇÒ ‹š »ç¿ëÇÏ´Â ÇÔ¼ö
-              -> lazy( () => import('ÆÄÀÏ »ó´ë°æ·Î') ) 
+        # lazy() í•¨ìˆ˜
+           : reactì—ì„œ component jsë¥¼ lazy import í•  ë–„ ì‚¬ìš©í•˜ëŠ” í•¨ìˆ˜
+              -> lazy( () => import('íŒŒì¼ ìƒëŒ€ê²½ë¡œ') ) 
 
                  ex) const Detail = lazy( () => import('./pages/Detail.js') )
                
-        # Æ¯¼º
-          - ÀåÁ¡ : jsÀÇ °¹¼ö°¡ ´Ã°í, °³º° ¿ë·®Àº ÁÙ±â¿¡, ½ÃÀÛ js ´Ù¿î·Îµå ¼Óµµ°¡ ÁÙ¾îµë¿¡ µû¶ó ½ÃÀÛ ¼Óµµ°¡ »¡¶óÁü
-          - ´ÜÁ¡ : Detail°ú Cart ÄÄÆ÷³ÍÆ® ÆäÀÌÁö ÁøÀÔ½Ã, ´ç¿¬È÷ ½Ã°£ÀÌ ¿À·¡°É¸²
+        # íŠ¹ì„±
+          - ìž¥ì  : jsì˜ ê°¯ìˆ˜ê°€ ëŠ˜ê³ , ê°œë³„ ìš©ëŸ‰ì€ ì¤„ê¸°ì—, ì‹œìž‘ js ë‹¤ìš´ë¡œë“œ ì†ë„ê°€ ì¤„ì–´ë“¬ì— ë”°ë¼ ì‹œìž‘ ì†ë„ê°€ ë¹¨ë¼ì§
+          - ë‹¨ì  : Detailê³¼ Cart ì»´í¬ë„ŒíŠ¸ íŽ˜ì´ì§€ ì§„ìž…ì‹œ, ë‹¹ì—°ížˆ ì‹œê°„ì´ ì˜¤ëž˜ê±¸ë¦¼
 
-   2. <Suspense> ÅÂ±× 
-       : ÇØ´ç ÅÂ±×·Î °¨½Ñ componentÃâ·Â ¿µ¿ªÀº fallback ¼Ó¼ºÀÇ °ªÀ¸·Î HTML ÅÂ±×¸¦ ³ÖÀ¸¸é, ÄÄÆ÷³ÍÆ®°¡ ·ÎµùµÇ´Â µ¿¾È ÀÌ ³à¼®ÀÌ ÀÓ½ÃÀûÀ¸·Î Ãâ·ÂµÊ  
-          -> »ç¿ëÀÚ °æÇèÀÌ ÁÁ¾ÆÁü
+   2. <Suspense> íƒœê·¸ 
+       : í•´ë‹¹ íƒœê·¸ë¡œ ê°ì‹¼ componentì¶œë ¥ ì˜ì—­ì€ fallback ì†ì„±ì˜ ê°’ìœ¼ë¡œ HTML íƒœê·¸ë¥¼ ë„£ìœ¼ë©´, ì»´í¬ë„ŒíŠ¸ê°€ ë¡œë”©ë˜ëŠ” ë™ì•ˆ ì´ ë…€ì„ì´ ìž„ì‹œì ìœ¼ë¡œ ì¶œë ¥ë¨  
+          -> ì‚¬ìš©ìž ê²½í—˜ì´ ì¢‹ì•„ì§
 
-         ex) <Suspense fallback={ <div>·ÎµùÁßÀÓ</div> }>  .... </Suspense>
+         ex) <Suspense fallback={ <div>ë¡œë”©ì¤‘ìž„</div> }>  .... </Suspense>
 
-   3. memo(¹«¸í ÇÔ¼öÇü ÄÄÆ÷³ÍÆ® ³»¿ë)
-       : Æ¯Á¤ component°¡ Å©°í ¹«°Ì±â¿¡ ºÎ¸ð·ÎºÎÅÍ ¹ÞÀº props °ªÀÌ º¯µ¿µÇ´Â °ÍÀ» Á¦¿ÜÇÏ°í, reactÀÇ Àç·£´õ¸µ Á¶°ÇÀ» È¸ÇÇÇÏ°í ½ÍÀ» ‹š »ç¿ëÇÏ´Â ÇÔ¼ö
-         (= Á¶°ÇºÎ·Î Àç·£´õ¸µ ¿øÄ¢ÀÌ Àû¿ëµÈ Æ¯¼öÇÑ component lifeCycleÀ» °¡Á³´Ù º¸ÀÚ)
-            -> memoÀÇ °á°ú°ªÀº let, const, var·Î ¹ÞÀ¸¸ç, ±× º¯¼ö¸íÀº ¹Ýµå½Ã component¸íÀÌ µÇ¾î¾ß ÇÔ 
+   3. memo(ë¬´ëª… í•¨ìˆ˜í˜• ì»´í¬ë„ŒíŠ¸ ë‚´ìš©)
+       : íŠ¹ì • componentê°€ í¬ê³  ë¬´ê²ê¸°ì— ë¶€ëª¨ë¡œë¶€í„° ë°›ì€ props ê°’ì´ ë³€ë™ë˜ëŠ” ê²ƒì„ ì œì™¸í•˜ê³ , reactì˜ ìž¬ëžœë”ë§ ì¡°ê±´ì„ íšŒí”¼í•˜ê³  ì‹¶ì„ ë–„ ì‚¬ìš©í•˜ëŠ” í•¨ìˆ˜
+         (= ì¡°ê±´ë¶€ë¡œ ìž¬ëžœë”ë§ ì›ì¹™ì´ ì ìš©ëœ íŠ¹ìˆ˜í•œ component lifeCycleì„ ê°€ì¡Œë‹¤ ë³´ìž)
+            -> memoì˜ ê²°ê³¼ê°’ì€ let, const, varë¡œ ë°›ìœ¼ë©°, ê·¸ ë³€ìˆ˜ëª…ì€ ë°˜ë“œì‹œ componentëª…ì´ ë˜ì–´ì•¼ í•¨ 
     
           ex) function MemoChild(){                                              let MemoChild = memo(function (){
-                console.log('ºÎ¸ð ConponentÀÎ Cart°¡ ·£´õ¸µ µÇ¸é? );       ->         console.log('ºÎ¸ð ConponentÀÎ Cart°¡ ·£´õ¸µ µÇ¸é? );
+                console.log('ë¶€ëª¨ Conponentì¸ Cartê°€ ëžœë”ë§ ë˜ë©´? );       ->         console.log('ë¶€ëª¨ Conponentì¸ Cartê°€ ëžœë”ë§ ë˜ë©´? );
                 return <div></div>;                                                  return <div></div>;
               }                                                                  })
     
-        # memo(¹«¸í ÇÔ¼öÇü ÄÄÆ÷³ÍÆ® ³»¿ë)ÀÇ ·ÎÁ÷
-           : Àç·£´õ¸µ ´ë»óÀ¸·Î µé¾î°£ ÄÄÆ÷³ÍÆ® ³»¿ë¿¡ ±âÁ¸ props¿Í ¹Ù²ï props¸¦ ºñ±³ÇÏ´Â ¿¬»êÀÌ Ãß°¡·Î ÁøÇàµÇ°í, ±×°ÍÀÌ ´Ù¸£¸é Àç·£´õ¸µ ÁøÇàÇÔ
-             (= props°¡ Å©°í º¹ÀâÇÏ¸é ÀÌ°Å ÀÚÃ¼·Îµµ ºÎ´ãÀÌ µÉ ¼öµµ ÀÖ±â¿¡, Àü°¡ÀÇ º¸µµÃ³·³ Áö¸£Áö ¸»°í, Àß ÆÇ´ÜÇØ¼­ ½á¾ßÇÔ) 
+        # memo(ë¬´ëª… í•¨ìˆ˜í˜• ì»´í¬ë„ŒíŠ¸ ë‚´ìš©)ì˜ ë¡œì§
+           : ìž¬ëžœë”ë§ ëŒ€ìƒìœ¼ë¡œ ë“¤ì–´ê°„ ì»´í¬ë„ŒíŠ¸ ë‚´ìš©ì— ê¸°ì¡´ propsì™€ ë°”ë€ propsë¥¼ ë¹„êµí•˜ëŠ” ì—°ì‚°ì´ ì¶”ê°€ë¡œ ì§„í–‰ë˜ê³ , ê·¸ê²ƒì´ ë‹¤ë¥´ë©´ ìž¬ëžœë”ë§ ì§„í–‰í•¨
+             (= propsê°€ í¬ê³  ë³µìž¡í•˜ë©´ ì´ê±° ìžì²´ë¡œë„ ë¶€ë‹´ì´ ë  ìˆ˜ë„ ìžˆê¸°ì—, ì „ê°€ì˜ ë³´ë„ì²˜ëŸ¼ ì§€ë¥´ì§€ ë§ê³ , ìž˜ íŒë‹¨í•´ì„œ ì¨ì•¼í•¨) 
 
 
-   4. useMemo( ¹«¸íÇÔ¼ö, [state ¹× propsº¯¼ö¿¡ ´ëÇÑ ¹è¿­¿ä¼Ò])
-       : memo() ÇÔ¼ö¶û ºñ½ÁÇÏ°Ô, compoenent·Îµå¿Í µ¿½Ã¿¡ parameter·Î µé¾î°¡ ÀÖ´Â ÄÚµå(Æ¯Á¤ component³ª ÇÔ¼ö)¸¦ Æ¯º°ÇÑ ÀÌÀ¯ ¾øÀ¸¸é ´Ü! 1¹ø¸¸ ¼öÇàÇÏ¶ó´Â ÀÇ¹ÌÀÇ react-hooks Áß ÇÏ³ª
-         (= memo¶û ºñ½ÁÇÏ°Ô ÁÖ·Î ¹«°Å¿î ÄÚµå¶ó, Àç·£´õ¸µ ÇÒ ¶§ ¹Ýº¹¼öÇàµÇ±æ ¿øÁö ¾ÊÀ» °æ¿ì »ç¿ë)
-            -> [state ¹× propsº¯¼ö¿¡ ´ëÇÑ ¹è¿­¿ä¼Ò]¸¦ Ã¤¿ì¸é, memo() ÇÔ¼ö¿Í À¯»çÇÏ°Ô Æ¯Á¤ state³ª propsÀÇ °ªÀÇ º¯È­½Ã¿¡ µû¸¥ Àç·£´õ¸µ ½Ã¿¡´Â ¹Ýº¹À» Çã°¡ÇÔ
-               (= ÇØ´ç ¹è¿­ÀÌ ºñ¾îÀÖ´Ù¸é... Àç·£´õ¸µ ¶§¸¶´Ù, »õ·Î ½ÇÇà..)
+   4. useMemo( ë¬´ëª…í•¨ìˆ˜, [state ë° propsë³€ìˆ˜ì— ëŒ€í•œ ë°°ì—´ìš”ì†Œ])
+       : memo() í•¨ìˆ˜ëž‘ ë¹„ìŠ·í•˜ê²Œ, compoenentë¡œë“œì™€ ë™ì‹œì— parameterë¡œ ë“¤ì–´ê°€ ìžˆëŠ” ì½”ë“œ(íŠ¹ì • componentë‚˜ í•¨ìˆ˜)ë¥¼ íŠ¹ë³„í•œ ì´ìœ  ì—†ìœ¼ë©´ ë‹¨! 1ë²ˆë§Œ ìˆ˜í–‰í•˜ë¼ëŠ” ì˜ë¯¸ì˜ react-hooks ì¤‘ í•˜ë‚˜
+         (= memoëž‘ ë¹„ìŠ·í•˜ê²Œ ì£¼ë¡œ ë¬´ê±°ìš´ ì½”ë“œë¼, ìž¬ëžœë”ë§ í•  ë•Œ ë°˜ë³µìˆ˜í–‰ë˜ê¸¸ ì›ì§€ ì•Šì„ ê²½ìš° ì‚¬ìš©)
+            -> [state ë° propsë³€ìˆ˜ì— ëŒ€í•œ ë°°ì—´ìš”ì†Œ]ë¥¼ ì±„ìš°ë©´, memo() í•¨ìˆ˜ì™€ ìœ ì‚¬í•˜ê²Œ íŠ¹ì • stateë‚˜ propsì˜ ê°’ì˜ ë³€í™”ì‹œì— ë”°ë¥¸ ìž¬ëžœë”ë§ ì‹œì—ëŠ” ë°˜ë³µì„ í—ˆê°€í•¨
+               (= í•´ë‹¹ ë°°ì—´ì´ ë¹„ì–´ìžˆë‹¤ë©´... ìž¬ëžœë”ë§ ë•Œë§ˆë‹¤, ìƒˆë¡œ ì‹¤í–‰..)
 
           ex) let result = useMemo( () => { return setMemoChildState(useMemoExample()) }, [] );
 
         # useEffect()  VS  useMemo()
-           : (Áß¿ä!) ÄÚµåÀÇ ½ÇÇà½ÃÁ¡ÀÌ ±¸Ã¼ÀûÀ¸·Î Â÷ÀÌ°¡ ÀÖÀ¸¸ç, ÀÇ¹ÌÀûÀ¸·Îµµ Â÷ÀÌ°¡ ÀÖÀ½
-              -> useEffect() : componentµéÀÇ ·£´õ¸µ ÀÌÈÄ ½ÇÇàµÇ´Â '»çÀÌµåÀÌÆÑÆ®'¿¡ ÇØ´çÇÏ´Â ³»¿ëµé¸¸ ½ÇÇà
-              -> useMemo()   : componentµéÀÇ ·£´õ¸µ°ú µ¿½Ã¿¡ ½ÇÇàµÇ´Â ÄÚµå·Î.. ºÎµæÀÌÇÏ°Ô ½Ã°£À» ¿À·¡Àâ¾Æ¸Ô´Â ÄÚµå¶ó ·£´õ¸µ°ú ÇÔ²² ½ÇÇàµÇ¼­ ¼º´É Çâ»óÀ» À§ÇÑ ¸ñÀûÀ¸·Î »ç¿ë
+           : (ì¤‘ìš”!) ì½”ë“œì˜ ì‹¤í–‰ì‹œì ì´ êµ¬ì²´ì ìœ¼ë¡œ ì°¨ì´ê°€ ìžˆìœ¼ë©°, ì˜ë¯¸ì ìœ¼ë¡œë„ ì°¨ì´ê°€ ìžˆìŒ
+              -> useEffect() : componentë“¤ì˜ ëžœë”ë§ ì´í›„ ì‹¤í–‰ë˜ëŠ” 'ì‚¬ì´ë“œì´íŒ©íŠ¸'ì— í•´ë‹¹í•˜ëŠ” ë‚´ìš©ë“¤ë§Œ ì‹¤í–‰
+              -> useMemo()   : componentë“¤ì˜ ëžœë”ë§ê³¼ ë™ì‹œì— ì‹¤í–‰ë˜ëŠ” ì½”ë“œë¡œ.. ë¶€ë“ì´í•˜ê²Œ ì‹œê°„ì„ ì˜¤ëž˜ìž¡ì•„ë¨¹ëŠ” ì½”ë“œë¼ ëžœë”ë§ê³¼ í•¨ê»˜ ì‹¤í–‰ë˜ì„œ ì„±ëŠ¥ í–¥ìƒì„ ìœ„í•œ ëª©ì ìœ¼ë¡œ ì‚¬ìš©
 
 
-   5. useTransition( () => { componentÀÇ ¹®Á¦µÇ´Â ½ÇÇàÄÚµåµé } ) ÇÔ¼ö
-       : (react18 ¿¡¼­ µîÀå) renderingÀÌ ¿À·¡ °É¸®´Â componentÀÇ ÁÖ¹üÀÌ µÇ´Â ÄÚµå¿¡ ´ëÇØ, ±× ½ÇÇà ¼ø¼­¸¦ ³ªÁßÀ¸·Î ¹Ð¾îµÎ´Â Àç¹èÄ¡¸¦ ÅëÇØ, Àü¹ÝÀûÀÎ À¯ÀúµéÀÇ À¥ÆäÀÌÁö Ã¼°¨¼Óµµ¸¦ ºü¸£°Ô ÇØÁÖ´Â react-hooks Áß ÇÏ³ª
-         (= lazy import¿Í À¯»çÇÏ¸ç, ´ëÃæ componentÀÇ ÄÚµå ´ÜÀ§·Î ½á¸Ô´Â ³ëµ¿ ÂÉ°³°í ¹Ì·ç±â Á¤µµ·Î ¾Ë¾ÆµÎ¸é µÇ°Ú´Ù..)
+   5. useTransition( () => { componentì˜ ë¬¸ì œë˜ëŠ” ì‹¤í–‰ì½”ë“œë“¤ } ) í•¨ìˆ˜
+       : (react18 ì—ì„œ ë“±ìž¥) renderingì´ ì˜¤ëž˜ ê±¸ë¦¬ëŠ” componentì˜ ì£¼ë²”ì´ ë˜ëŠ” ì½”ë“œì— ëŒ€í•´, ê·¸ ì‹¤í–‰ ìˆœì„œë¥¼ ë‚˜ì¤‘ìœ¼ë¡œ ë°€ì–´ë‘ëŠ” ìž¬ë°°ì¹˜ë¥¼ í†µí•´, ì „ë°˜ì ì¸ ìœ ì €ë“¤ì˜ ì›¹íŽ˜ì´ì§€ ì²´ê°ì†ë„ë¥¼ ë¹ ë¥´ê²Œ í•´ì£¼ëŠ” react-hooks ì¤‘ í•˜ë‚˜
+         (= lazy importì™€ ìœ ì‚¬í•˜ë©°, ëŒ€ì¶© componentì˜ ì½”ë“œ ë‹¨ìœ„ë¡œ ì¨ë¨¹ëŠ” ë…¸ë™ ìª¼ê°œê³  ë¯¸ë£¨ê¸° ì •ë„ë¡œ ì•Œì•„ë‘ë©´ ë˜ê² ë‹¤..)
 
-        # useTransition() ÇÔ¼ö »ç¿ë¹ý
-           1. ±¸Á¶ºÐÇØ ¹®¹ýÀ» ÀÌ¿ëÇØ¼­, useTransition()ÀÇ °á°úÀÎ isPendingÀÌ¶õ ¸â¹öº¯¼ö¿Í startTransition( ¹«¸íÇÔ¼ö parameter )¶ó´Â ÇÔ¼ö¸¦ °¢°¢ µ¿¸íÀÇ º¯¼ö¿¡ ¹èÁ¤ÇÔ
+        # useTransition() í•¨ìˆ˜ ì‚¬ìš©ë²•
+           1. êµ¬ì¡°ë¶„í•´ ë¬¸ë²•ì„ ì´ìš©í•´ì„œ, useTransition()ì˜ ê²°ê³¼ì¸ isPendingì´ëž€ ë©¤ë²„ë³€ìˆ˜ì™€ startTransition( ë¬´ëª…í•¨ìˆ˜ parameter )ë¼ëŠ” í•¨ìˆ˜ë¥¼ ê°ê° ë™ëª…ì˜ ë³€ìˆ˜ì— ë°°ì •í•¨
 
                ex) let [isPending, startTransition] = useTransition();
 
-           2. ±×·¸°Ô ¹èÁ¤µÈ º¯¼ö isPending¿Í ÇÔ¼ö startTransition()À» »ç¿ëÇØ¼­, ½ÇÇà½Ã°£ ¸¹ÀÌ Àâ¾ÆÀâ¼ö´Â Æ¯Á¤ componentÀÇ Æ¯Á¤ ·ÎÁ÷À¸·Î ÀÎÇÑ º´¸ñÇö»óÀ» ÇØ¼ÒÇØ¼­ À¥ÆäÀÌÁö Ã¼°¨ ¼º´ÉÀ» ¿Ã·Áº»´Ù
+           2. ê·¸ë ‡ê²Œ ë°°ì •ëœ ë³€ìˆ˜ isPendingì™€ í•¨ìˆ˜ startTransition()ì„ ì‚¬ìš©í•´ì„œ, ì‹¤í–‰ì‹œê°„ ë§Žì´ ìž¡ì•„ìž¡ìˆ˜ëŠ” íŠ¹ì • componentì˜ íŠ¹ì • ë¡œì§ìœ¼ë¡œ ì¸í•œ ë³‘ëª©í˜„ìƒì„ í•´ì†Œí•´ì„œ ì›¹íŽ˜ì´ì§€ ì²´ê° ì„±ëŠ¥ì„ ì˜¬ë ¤ë³¸ë‹¤
 
                - isPending
-                  : react-queryÀÇ result.isLoading°ú À¯»çÇÑ ³»¿ëÀ» ´ã´Â º¯¼ö·Î.. useTransition()¸¦ ÅëÇÑ ¹®Á¦ÀÇ ÄÚµåµéÀÇ ½ÇÇà½ÃÁ¡ÀÌ ´Ù°¡¿È¿¡ µû¶ó ÀÛ¾÷ÀÌ ÁøÇàÁßÀÎ °æ¿ì¸¦ true/false·Î ³ªÅ¸³»´Â º¯¼ö
-                     -> »ç¿ë¹ý ¿ª½Ã result.isLoadingÀÌ trueÀÏ¶§, '·Îµù Áß' °°Àº°É Ãâ·ÂÇÏ´Â »ç·Ê¿Í À¯»çÇÔ
+                  : react-queryì˜ result.isLoadingê³¼ ìœ ì‚¬í•œ ë‚´ìš©ì„ ë‹´ëŠ” ë³€ìˆ˜ë¡œ.. useTransition()ë¥¼ í†µí•œ ë¬¸ì œì˜ ì½”ë“œë“¤ì˜ ì‹¤í–‰ì‹œì ì´ ë‹¤ê°€ì˜´ì— ë”°ë¼ ìž‘ì—…ì´ ì§„í–‰ì¤‘ì¸ ê²½ìš°ë¥¼ true/falseë¡œ ë‚˜íƒ€ë‚´ëŠ” ë³€ìˆ˜
+                     -> ì‚¬ìš©ë²• ì—­ì‹œ result.isLoadingì´ trueì¼ë•Œ, 'ë¡œë”© ì¤‘' ê°™ì€ê±¸ ì¶œë ¥í•˜ëŠ” ì‚¬ë¡€ì™€ ìœ ì‚¬í•¨
 
-               - startTransition( () => { componentÀÇ ¹®Á¦µÇ´Â ½ÇÇàÄÚµåµé })
-                  : renderingÀÌ ¿À·¡ °É¸®´Â componentÀÇ ÁÖ¹üÀÌ µÇ´Â ÄÚµå¸¦ rendering ½ÃÁ¡ÀÌ ¾Æ´Ï¶ó, ±× ÀÌÈÄ¿¡ ½ÇÇàÇÏ¶ó°í ¹Ì·ïÁÖ´Â ÀÇ¹Ì¿Í ±â´ÉÀ» °¡Áö´Â ÇÔ¼ö..
-                     -> ÀÌ¸¦ ÅëÇØ, ¸ÕÀú Ã³¸®µÇ¾î¾ß ÇÒ ±â´Éµé¿¡ ÄÄÇ»ÅÍ ÀÚ¿ø°ú ½Ã°£À» ¸ÕÀú ÅõÀÚÇÒ ¼ö ÀÖ°Ô ÇØÁÖ¸ç, ¹ÝÀÀ¼ÓµµÀÇ Ã¼°¨ÀÌ ÁÁ¾ÆÁü
-                        (= ´Ü.. °á±¹ ³ªÁß¿¡ ½ÇÇàÇØÁÖ´Â °ÍÀÌ±â¿¡.. Á¤¸» ±Ùº»ÀûÀÎ ¼º´É°³¼±ÀÌ ÇÊ¿äÇÏ¸é, °Á lazy import¸¦ ½á¶ó)
+               - startTransition( () => { componentì˜ ë¬¸ì œë˜ëŠ” ì‹¤í–‰ì½”ë“œë“¤ })
+                  : renderingì´ ì˜¤ëž˜ ê±¸ë¦¬ëŠ” componentì˜ ì£¼ë²”ì´ ë˜ëŠ” ì½”ë“œë¥¼ rendering ì‹œì ì´ ì•„ë‹ˆë¼, ê·¸ ì´í›„ì— ì‹¤í–‰í•˜ë¼ê³  ë¯¸ë¤„ì£¼ëŠ” ì˜ë¯¸ì™€ ê¸°ëŠ¥ì„ ê°€ì§€ëŠ” í•¨ìˆ˜..
+                     -> ì´ë¥¼ í†µí•´, ë¨¼ì € ì²˜ë¦¬ë˜ì–´ì•¼ í•  ê¸°ëŠ¥ë“¤ì— ì»´í“¨í„° ìžì›ê³¼ ì‹œê°„ì„ ë¨¼ì € íˆ¬ìží•  ìˆ˜ ìžˆê²Œ í•´ì£¼ë©°, ë°˜ì‘ì†ë„ì˜ ì²´ê°ì´ ì¢‹ì•„ì§
+                        (= ë‹¨.. ê²°êµ­ ë‚˜ì¤‘ì— ì‹¤í–‰í•´ì£¼ëŠ” ê²ƒì´ê¸°ì—.. ì •ë§ ê·¼ë³¸ì ì¸ ì„±ëŠ¥ê°œì„ ì´ í•„ìš”í•˜ë©´, ê± lazy importë¥¼ ì¨ë¼)
 
-   6. useDeferredValue(state¸í or º¯¼ö¸í) ÇÔ¼ö
-       : (react18 ¿¡¼­ µîÀå) useTransition()¿Í À¯»çÇÏ³ª... renderingÀÌ ¿À·¡ °É¸®´Â componentÀÇ ÁÖ¹üÀÌ µÇ´Â ÄÚµå°¡ ´ë»óÀÌ¸é.. ¾ê´Â º¯¼ö³ª, state¸¦ ´ë»ó parmeter·Î Àâ´Â react-hooks Áß ÇÏ³ª..
-         (= ±Ùº»ÀûÀ¸·Î ÇÏ´Â ÁþÀÌ useTransition() ÇÔ¼ö¿Í °°À¸¸ç, ÁöÁ¤µÈ state³ª º¯¼ö¸í¿¡ ÇØ´çÇÏ´Â ¿¬»êÀÌ³ª render¸µÀÇ Ã³¸® ¿ì¼±¼ø¼­¸¦ µÚ·Î ¹Ì·ë)
+   6. useDeferredValue(stateëª… or ë³€ìˆ˜ëª…) í•¨ìˆ˜
+       : (react18 ì—ì„œ ë“±ìž¥) useTransition()ì™€ ìœ ì‚¬í•˜ë‚˜... renderingì´ ì˜¤ëž˜ ê±¸ë¦¬ëŠ” componentì˜ ì£¼ë²”ì´ ë˜ëŠ” ì½”ë“œê°€ ëŒ€ìƒì´ë©´.. ì–˜ëŠ” ë³€ìˆ˜ë‚˜, stateë¥¼ ëŒ€ìƒ parmeterë¡œ ìž¡ëŠ” react-hooks ì¤‘ í•˜ë‚˜..
+         (= ê·¼ë³¸ì ìœ¼ë¡œ í•˜ëŠ” ì§“ì´ useTransition() í•¨ìˆ˜ì™€ ê°™ìœ¼ë©°, ì§€ì •ëœ stateë‚˜ ë³€ìˆ˜ëª…ì— í•´ë‹¹í•˜ëŠ” ì—°ì‚°ì´ë‚˜ renderë§ì˜ ì²˜ë¦¬ ìš°ì„ ìˆœì„œë¥¼ ë’¤ë¡œ ë¯¸ë£¸)
 
 
 - react DevTools
-   : reactÀÇ state³ª component ±âÁØÀ¸·Î µð¹ö±×¸¦ ÇÏ°Ô ÇØÁÖ´Â Å©·Ò È®ÀåÇÁ·Î±×·¥
-      -> ÀÌ°É ¼³Ä¡½Ã, Å©·ÒÀÇ µð¹ö°Å¿¡¼­ ¿À¸¥ÂÊ ³¡¿¡ 'component'¶ó´Â ³à¼®ÀÌ Ãß°¡µÇ´Âµ¥.. ±×°É ´©¸£¸é react ¹öÀü µð¹ö±×¿¡ ÁøÀÔ°¡´É
+   : reactì˜ stateë‚˜ component ê¸°ì¤€ìœ¼ë¡œ ë””ë²„ê·¸ë¥¼ í•˜ê²Œ í•´ì£¼ëŠ” í¬ë¡¬ í™•ìž¥í”„ë¡œê·¸ëž¨
+      -> ì´ê±¸ ì„¤ì¹˜ì‹œ, í¬ë¡¬ì˜ ë””ë²„ê±°ì—ì„œ ì˜¤ë¥¸ìª½ ëì— 'component'ë¼ëŠ” ë…€ì„ì´ ì¶”ê°€ë˜ëŠ”ë°.. ê·¸ê±¸ ëˆ„ë¥´ë©´ react ë²„ì „ ë””ë²„ê·¸ì— ì§„ìž…ê°€ëŠ¥
 
-      - component Ç×¸ñ
-         : ¿ÞÂÊÀÇ Æ®¸®±¸Á¶´Â componentÀÇ ºÎ¸ð ÀÚ½Ä°ü°è¸¦ º¸¿©ÁÖ¸ç, Å¬¸¯ÇÏ¸é ÇØ´ç component ¼Ò¼ÓÀÇ state¿Í propsÀÇ º¯µ¿»çÇ×À» º¼¼ö ÀÖÀ½
-            -> ±âÁ¸ÀÇ ¿ä¼ÒÀ§Ä¡¿¡ ÇØ´çÇÏ´Â ¼Ò½º¸¦ º¸´Â inspection±â´Éµµ component¸¦ º¸´Â ½ÄÀ¸·Î ¿©ÀüÈ÷ »ç¿ë°¡´É
-                -> ¼Ò½º À§Ä¡¸¦ º¼·Á¸é '<>' ºÎÈ£¸¦ Å¬¸¯ÇØÁÖ¸é µÊ
-                   (= ±×°Ô ¾Æ´Ï¶ó, ±âÁ¸ ¹æ½Ä´ë·Î ÇÑ´Ù¸é, react¸¦ complieÇÑ html, js¸¦ ±âÁØÀ¸·Î ¼Ò½º¸¦ º¸¿©ÁÜ..)
+      - component í•­ëª©
+         : ì™¼ìª½ì˜ íŠ¸ë¦¬êµ¬ì¡°ëŠ” componentì˜ ë¶€ëª¨ ìžì‹ê´€ê³„ë¥¼ ë³´ì—¬ì£¼ë©°, í´ë¦­í•˜ë©´ í•´ë‹¹ component ì†Œì†ì˜ stateì™€ propsì˜ ë³€ë™ì‚¬í•­ì„ ë³¼ìˆ˜ ìžˆìŒ
+            -> ê¸°ì¡´ì˜ ìš”ì†Œìœ„ì¹˜ì— í•´ë‹¹í•˜ëŠ” ì†ŒìŠ¤ë¥¼ ë³´ëŠ” inspectionê¸°ëŠ¥ë„ componentë¥¼ ë³´ëŠ” ì‹ìœ¼ë¡œ ì—¬ì „ížˆ ì‚¬ìš©ê°€ëŠ¥
+                -> ì†ŒìŠ¤ ìœ„ì¹˜ë¥¼ ë³¼ë ¤ë©´ '<>' ë¶€í˜¸ë¥¼ í´ë¦­í•´ì£¼ë©´ ë¨
+                   (= ê·¸ê²Œ ì•„ë‹ˆë¼, ê¸°ì¡´ ë°©ì‹ëŒ€ë¡œ í•œë‹¤ë©´, reactë¥¼ complieí•œ html, jsë¥¼ ê¸°ì¤€ìœ¼ë¡œ ì†ŒìŠ¤ë¥¼ ë³´ì—¬ì¤Œ..)
 
-      - Profiler Ç×¸ñ
-         : ÇöÀç react±â¹Ý applicationÀÇ ½ÇÇà¼Óµµ(= ¼º´É) Ã¼Å©¸¦ ÇÒ ¼ö ÀÖµµ·Ï °£Æ®Â÷Æ® ¸¶³É °¢ componentÀÇ ½ÇÇà ½Ã°£À» º¸¿©ÁÜ
-            -> ½ÇÇà¹ý : ³ìÈ­¹öÆ° ´©¸£°í, À¥ ÆäÀÌÁö ¸¸Á®º¸°í, ³ìÈ­¸¦ ³¡³½ µÚ, ÀÌ¸¦ ºÐ¼®ÇØº¸¸é µÊ
-                -> ÇÏÁö¸¸..! º¸Åë componentÀÇ ¼Óµµ°¡ ´À¸°°Ç ¼­¹ö¿¡¼­ ajax ¿äÃ»°á°ú°¡ ´Ê°Ô µµÂøÇØ¼­ ±×·± °æ¿ì°¡ ¸¹À½
+      - Profiler í•­ëª©
+         : í˜„ìž¬ reactê¸°ë°˜ applicationì˜ ì‹¤í–‰ì†ë„(= ì„±ëŠ¥) ì²´í¬ë¥¼ í•  ìˆ˜ ìžˆë„ë¡ ê°„íŠ¸ì°¨íŠ¸ ë§ˆëƒ¥ ê° componentì˜ ì‹¤í–‰ ì‹œê°„ì„ ë³´ì—¬ì¤Œ
+            -> ì‹¤í–‰ë²• : ë…¹í™”ë²„íŠ¼ ëˆ„ë¥´ê³ , ì›¹ íŽ˜ì´ì§€ ë§Œì ¸ë³´ê³ , ë…¹í™”ë¥¼ ëë‚¸ ë’¤, ì´ë¥¼ ë¶„ì„í•´ë³´ë©´ ë¨
+                -> í•˜ì§€ë§Œ..! ë³´í†µ componentì˜ ì†ë„ê°€ ëŠë¦°ê±´ ì„œë²„ì—ì„œ ajax ìš”ì²­ê²°ê³¼ê°€ ëŠ¦ê²Œ ë„ì°©í•´ì„œ ê·¸ëŸ° ê²½ìš°ê°€ ë§ŽìŒ
 
 - Redux Developer Tools
-   : ÀÌ°Ç redux ¶óÀÌºê·¯¸®¸¦ »ç¿ëÇÏ¿©, store.js¿¡ Àü¿ª stateµéÀ» »ç¿ë½Ã ÀÌ¸¦ µð¹ö±ë¿¡¼­ È®ÀÎ°¡´ÉÇÏ°Ô ÇØÁÖ´Â Å©·Ò È®ÀåÇÁ·Î±×·¥
-      -> ÀÌ°É ¼³Ä¡½Ã, Å©·ÒÀÇ µð¹ö°Å¿¡¼­ ¿À¸¥ÂÊ ³¡¿¡ 'redux'¶ó´Â ³à¼®ÀÌ Ãß°¡µÇ´Âµ¥.. ±×°É ´©¸£¸é react ¹öÀü µð¹ö±×¿¡ ÁøÀÔ°¡´É
-         (= ºñÁßÀÌ Ä¿Áú¼ö·Ï ÇÊ¿äÇØÁú ¼ö ÀÖÀ½)     
+   : ì´ê±´ redux ë¼ì´ë¸ŒëŸ¬ë¦¬ë¥¼ ì‚¬ìš©í•˜ì—¬, store.jsì— ì „ì—­ stateë“¤ì„ ì‚¬ìš©ì‹œ ì´ë¥¼ ë””ë²„ê¹…ì—ì„œ í™•ì¸ê°€ëŠ¥í•˜ê²Œ í•´ì£¼ëŠ” í¬ë¡¬ í™•ìž¥í”„ë¡œê·¸ëž¨
+      -> ì´ê±¸ ì„¤ì¹˜ì‹œ, í¬ë¡¬ì˜ ë””ë²„ê±°ì—ì„œ ì˜¤ë¥¸ìª½ ëì— 'redux'ë¼ëŠ” ë…€ì„ì´ ì¶”ê°€ë˜ëŠ”ë°.. ê·¸ê±¸ ëˆ„ë¥´ë©´ react ë²„ì „ ë””ë²„ê·¸ì— ì§„ìž…ê°€ëŠ¥
+         (= ë¹„ì¤‘ì´ ì»¤ì§ˆìˆ˜ë¡ í•„ìš”í•´ì§ˆ ìˆ˜ ìžˆìŒ)     
