@@ -27,6 +27,7 @@
       1. 생성한 PWA 프로젝트 폴더에, 기존 프로젝트의 App.js App.css index.js 이런 파일들을 새 프로젝트로 복붙
       2. router, redux 이런 라이브러리를 설치했다면 다시 설치해주면 ok..
       3. index.js 파일 하단의 serviceWorkerRegistration.unregister(); -> serviceWorkerRegistration.register();로 변경
+          -> (중요) 반드시 상단에 import * as ServiceWorkerRegistration from './serviceWorkerRegistration'; 이 나와 있어서 모듈이 추가되어 있어야 함
       4. yarn build / npm run build 했을 때 아까 그 manifest.json과 service-worker.js 파일이 자동으로 생성되면 완료..
 
 
@@ -43,7 +44,7 @@
               "name" : "기본이름",
               "icons" : { 여러가지 사이즈별 아이콘 이미지 경로 },
               "start_url" : "앱아이콘 눌렀을 시 보여줄 메인페이지 경로",
-              "display" : "standalone 아니면 fullscreen",
+              "display" : "standalone(브라우저 상단바를 제거) 아니면 fullscreen",
               "background_color" : "앱 처음 실행시 잠깐 뜨는 splashscreen의 배경색",
               "theme_color" : "상단 탭색상 등 원하는 테마색상",
             }

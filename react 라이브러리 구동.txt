@@ -16,7 +16,8 @@
 
       # react-bootstrap 설치법
         1) 설치 명령어
-           : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install react-bootstrap 입력 
+           : (node js가 깔려 있어야함) 터미널 열고 프로젝트 폴더에서 npm install react-bootstrap bootstrap 입력 
+               -> react-bootstrap, bootstrap 을 다 깔아야 한다는 거 잊지 말아야 함
 
         2) 특정 스타일을 기입시, 오류 발생에 대비해서 react-bootstrap 실행에 필요한 style 전부 모여있는 Bootstrap CSS을 연결시킴
             -> (방법1) index.html 파일의 <head> 태그 안에 <link> 태그로 되어 있는 다음의 Bootstrap CSS를 끼워서 넣음
