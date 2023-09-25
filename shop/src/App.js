@@ -44,7 +44,7 @@ const Cart = lazy( () => import('./pages/Cart.js') )
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // (설명) react-bootstrap 웹사이트에 예시로 올라온 component 사용을 위해서, 각 component 명을 {}안에 import해서 해당 jsx에 가져다 줌
-import { Container, Row, Col, Navbar, Nav }  from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Nav, ListGroup }  from 'react-bootstrap';
 
 // (설명) js의 import 예약어를 통한 모듈시스템은 이미지를 가져온 뒤 alias(별칭인 변수)처리해서 바로 사용이 가능함
 //  -> (중요!) 단! react에서는 모든 js파일이나 image같은 걸 모듈화시켜 import로 가져올 때, src안에 반드시 있어야 에러가 발생 안 함 
@@ -310,6 +310,27 @@ function App() {
         </Container>
       </Navbar>
 
+      <div className='historyContainer'>
+        <div>
+          <b>최근 본 상품목록</b>
+        </div>
+        {
+          // (숙제) object 배열인 data를 초기값으로 받는 반복되는 state 배열인 shoes는 그 state 배열크기 만큼, 반복되는 내용을 component로 구현하게 하는 코드
+          JSON.parse(localStorage.getItem('watchHistory') ).map(function(b, j){
+
+            const propsItem = Number(JSON.parse(localStorage.getItem('watchHistory') )[j]);
+            const item = shoes[j];
+
+            return(
+              <WatchedHistory item={item} propsItem={propsItem} key={j}></WatchedHistory>
+            )
+          })
+
+        }
+        <div>
+        </div>
+      </div>
+
       {/* (설명) react-router-dom에서 a태그와 같은 하이퍼링크 역할을 수행하는 Link component를 통해, to 속성의 url주소를 바탕으로 원하는 Route component의 component내용이 rendering 될 수 있도록 함 */}
       {/* <Link to = "/">홈</Link>
       <Link to = "/detail">상세페이지</Link> */}
@@ -455,6 +476,22 @@ function About(){
       {/* (설명) Routes구조에서 해당 component에 해당하는 url의 하위 url를 가지는 Nested Routes로 작성된 내용들이 어디로 위치할지 지정함  */}
       <Outlet></Outlet>
     </div>
+  )
+}
+
+function WatchedHistory(props){
+
+  let navigate = useNavigate();
+  
+  return(
+    <>
+      {/* (설명) 목록의 그림을 클릭하면, 상세조회 화면으로 이동 */}
+      <div className='eachHistoryItem' onClick={ () => navigate('/detail/' + props.propsItem ) }>
+        <h6></h6>
+        <img src={'https://codingapple1.github.io/shop/shoes' + (props.propsItem + 1) + '.jpg'} width="80%" height="80%"/>
+        {/* <p>{props.item.title}</p> */}
+      </div>
+    </>
   )
 }
 

@@ -1,3 +1,25 @@
+.historyContainer{
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  top : 8%;
+  left : 88%;
+  width : 10vw;
+  background-color: bisque;
+  padding: 1% 0% 0.5% 0%;
+}
+
+
+.eachHistoryItem{
+  border-color: rgba(202, 195, 195, 0.918);
+  background-color: beige;
+  width : 80%;
+  margin : 5% 5%;
+  
+}
+
 .start2{
   opacity: 0;
 }

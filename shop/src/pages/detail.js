@@ -190,11 +190,13 @@ function Detail(props){
     useEffect( () => {
 
         if(id != null){
+
             let watchHistory = JSON.parse(localStorage.getItem('watchHistory'));
-            watchHistory.push(id);
+            watchHistory.unshift(id);
             watchHistory = new Set(watchHistory);
             watchHistory = Array.from(watchHistory);
             localStorage.setItem('watchHistory', JSON.stringify(watchHistory) ); 
+
         }
 
     }, []);
