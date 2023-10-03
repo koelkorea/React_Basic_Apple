@@ -44,7 +44,7 @@ const Cart = lazy( () => import('./pages/Cart.js') )
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 // (설명) react-bootstrap 웹사이트에 예시로 올라온 component 사용을 위해서, 각 component 명을 {}안에 import해서 해당 jsx에 가져다 줌
-import { Container, Row, Col, Navbar, Nav, ListGroup }  from 'react-bootstrap';
+import { Container, Row, Col, Navbar, Nav}  from 'react-bootstrap';
 
 // (설명) js의 import 예약어를 통한 모듈시스템은 이미지를 가져온 뒤 alias(별칭인 변수)처리해서 바로 사용이 가능함
 //  -> (중요!) 단! react에서는 모든 js파일이나 image같은 걸 모듈화시켜 import로 가져올 때, src안에 반드시 있어야 에러가 발생 안 함 
@@ -310,21 +310,31 @@ function App() {
         </Container>
       </Navbar>
 
+      {/* (숙제) localStrage에 저장된 최근 본 상품들의 순서에 맞게 정렬된 id들을 이용해서, 최근 본 상품 컴포넌트를 제작해라*/}
+      {/* (설명) 최근 본 상품의 container 컴포넌트 역할을 맡을 태그로, historyContainer라는 class속성을 통해 css에서 style을 줄 예정*/}
       <div className='historyContainer'>
         <div>
           <b>최근 본 상품목록</b>
         </div>
         {
-          // (숙제) object 배열인 data를 초기값으로 받는 반복되는 state 배열인 shoes는 그 state 배열크기 만큼, 반복되는 내용을 component로 구현하게 하는 코드
-          JSON.parse(localStorage.getItem('watchHistory') ).map(function(b, j){
 
-            const propsItem = Number(JSON.parse(localStorage.getItem('watchHistory') )[j]);
-            const item = shoes[j];
+          JSON.parse(localStorage.getItem('watchHistory') ) != null ?
+
+          // (설명) watchHistory로 저장되어 있는 최근 본 상품들 id들을 반복하여, 이를 WatchedHistory라는 해당 id에 맞는 상품의 image를 담은 item컴포넌트로 출력할 예정 
+          JSON.parse(localStorage.getItem('watchHistory') ).map(function(a, j){
+
+            // (설명) 루프에 맞는 해당 index의 localStrage 객체의 watchHistory 속성의 배열형식의 멤버속성값을 json형식으로 파싱 
+            const propsItem = Number(JSON.parse( localStorage.getItem('watchHistory') )[j]);
+
+            // (설명) 그렇게 뽑힌 id를 index로 활용하여, item 컴포넌트로 전달할 상품객체 정보를 지정 (props 객체의 멤버로 보낼 예정)
+            const item = shoes[propsItem];
 
             return(
               <WatchedHistory item={item} propsItem={propsItem} key={j}></WatchedHistory>
             )
           })
+
+          : null
 
         }
         <div>
@@ -479,8 +489,18 @@ function About(){
   )
 }
 
+// (설명) 숙제인 최근 본 상품 화면에 item 컴포넌트로 사용할 컴포넌트 WatchedHistory
 function WatchedHistory(props){
 
+  // url를 통한 라이팅을 사용할 예정이기에 useNavigate() 훅스 사용
+
+  // useNavigate 함수
+  //  : Link component와 유사하면서도, 확장기능을 수행하는 react hooks와 유사한 react router에 존재하는 react hooks 함수의 일종
+  //     - useNavigate('url주소')
+  //        : <Link to = "url주소" /> 와 유사
+
+  //     - useNavigate(+ or -)
+  //        : +는 횟수만큼 브라우저의 앞페이지로 돌아가기, -는 횟수만큼 브라우저의 뒤로가기 실행과 같음
   let navigate = useNavigate();
   
   return(

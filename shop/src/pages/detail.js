@@ -187,6 +187,7 @@ function Detail(props){
     let disPatch = useDispatch();
 
     // (localStorage 숙제) 최근 본 상품 UI 기능 구현위해, 상세페이지 진입시 상품id를 localStorage에 순차적으로 저장되게 array형식으로 저장되게 해라
+    //   -> (최근 본 화면 구현 숙제) 구현에도 필요하기에 일부 메서드를 set 자료구조를 사용하도록 수정
     useEffect( () => {
 
         if(id != null){

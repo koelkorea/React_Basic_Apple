@@ -1,3 +1,32 @@
+// service-worker.js
+//  : 네이티브 앱이 하드에 설치되고, 이 로컬 파일들을 통해 실행되는 로직을 PWA에서도 비슷하게 적용될 수 있도록 흉내내는 역할을 하는 파일
+//     -> service-worker.js의 설정에 따라 웹앱을 설치했을 때 어떤 CSS, JS, HTML, 이미지 파일이 하드에 설치될지 결정 + 앱을 켤 때마다 Cache Storage에 저장되어있던 CSS,JS,HTML 파일을 사용하여 앱을 구동
+//        (= 얘 때문에 오프라인에서도 PWA를 돌릴수가 있는것이다!)
+
+// - 참고사항
+//    1) 웹사이트 업데이트할 때마다 유저들이 올드한 JS 파일을 사용하진 않는 이유
+//        : build할 때마다 JS,CSS,HTML 파일의 이름과 경로가 무작위로 변함
+//           -> JS,CSS,HTML 파일명이 바뀌면 하드에 있는걸 쓰지 않고, 서버에 새로 요청
+//              (= 파일을 서버에 올려서 배포할 때 마다 유저는 새로운 파일을 보게 됨)
+
+//    2) 사용자 하드에 설치할 파일 중에 특정 HTML을 제외하는 구조로 build하고 싶다면? 
+//       (= 단.. 입장과 동시에 Ajax로 초기데이터들을 전부 받아오는 사이트를 쓴다면? 어차피 오프라인 실행 안할거라 의미 없음 +  HTML을 하드에 저장 안하면? 오프라인에서 앱실행시 아무것도 안뜨기에 모바일 앱의 장점이 사라짐)
+
+//        -> node_modules/react-scripts/config/webpack.config.js 라는 웹팩의 환경설정 js파일을 찾음
+
+//            new WorkboxWebpackPlugin.InjectManifest({
+//                swSrc,
+//                dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
+//                exclude: [/\.map$/, /asset-manifest\.json$/, /LICENSE/], 
+
+//        -> 해당 파일에서 어떤 파일을 캐싱하지 않을건지 결정하는 exclude 항목에.. 정규식을 입력해서 원하는 html파일 잘 제거하면 됨
+
+//            new WorkboxWebpackPlugin.GenerateSW({
+//                swSrc,
+//                dontCacheBustURLsMatching: /\.[0-9a-f]{8}\./,
+//                exclude: [/\.map$/, /asset-manifest\.json$/, /index\.html/],
+//            }) 
+
 /* eslint-disable no-restricted-globals */
 
 // This service worker can be customized!

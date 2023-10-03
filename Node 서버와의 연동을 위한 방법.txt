@@ -61,12 +61,12 @@
       4. 그 html 파일이 담긴 프로젝트를 server.js가 있는 프로젝트에 두고, API요청을 받을때 서버에서 유저에게 보내주면 끝
          (= 사실 react-router-dom을 설치하여 react 안의 코드로도 라우팅 가능하기에, 굳이 서버가 이 역할을 반드시 수행할 필요는 없음)
 
-          - server.js에 보내고 싶은 파일의 위치를 'JS명.use()' API로 다음과 같이 추가 + 'JS명.HTML메서드()'를 통해 서베에서 요청이 들어오면 보내주는 것도 가능
+          - server.js에 보내고 싶은 파일의 위치를 'JS명.use()' API로 다음과 같이 추가 + 'JS명.HTML메서드()'를 통해 서버에서 요청이 들어오면 보내주는 것도 가능
             (= /list 로 접속하면 글목록 보여주고 /mypage 접속하면 마이페이지도 보여줌)
                -> (참고) express.static이라는걸 쓰시면, 특정 폴더안의 파일들을 static 파일로 고객들에게 잘 보내줄 수 있음
 
             # server.js 문법 예시 
-              : app.use(express.static(path.join(__dirname, '목표 stativ 폴더 경로')));  
+              : app.use(express.static(path.join(__dirname, '목표 static 폴더 경로')));  
 
                 app.get('/', function (요청, 응답) {
                   응답.sendFile(path.join(__dirname, '파일 경로'));
