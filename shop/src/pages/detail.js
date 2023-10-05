@@ -16,7 +16,7 @@ import { Context1 } from '../App.js';
 import { useDispatch } from 'react-redux';
 
 // (설명) store.js에서 만들어둔 전역 state함수 setCount를 사용할 수 있도록 모듈 import
-import { addCart } from "./../store.js";
+import { addCart } from "../store.js";
 
 // (설명) styled-components 라이브러리를 통해 button형식의 style component를 만들고 백틱(`)을 통해 style 속성과 속성값을 입력 후, js변수 ColoredButton에 대입하여 component처럼 사용가능하게 조치
 //   -> background, color 속성은 props 객체를 통해 color라는 값을 전달 받을 수 있게 코드가 짜여있고, color 속성은 삼항연산자를 적용하여 속성값을 다르게 주게 코드가 짜여있음
@@ -187,7 +187,9 @@ function Detail(props){
     let disPatch = useDispatch();
 
     // (localStorage 숙제) 최근 본 상품 UI 기능 구현위해, 상세페이지 진입시 상품id를 localStorage에 순차적으로 저장되게 array형식으로 저장되게 해라
-    //   -> (최근 본 화면 구현 숙제) 구현에도 필요하기에 일부 메서드를 set 자료구조를 사용하도록 수정
+    //   -> (최근 본 화면 구현 숙제) 구현에도 필요하기에 일부 메서드를 set 자료구조를 사용 + props객체를 통해 가져온 setstate변수 수행
+    //        => detail 진입 > useEffect 실행 > localStorage 변경 > 부모 state인 history 변경 > 그로 인한 최근 본 상품목록 rerendering
+    //            > 또 상품 클릭으로 detail 진입 > props를 통해 확인한 부모 state인 history값이 다름 확인 > useEffect 또 실행 > localstrage변화 ~ rerendering 까지 다시 반복
     useEffect( () => {
 
         if(id != null){
@@ -198,9 +200,11 @@ function Detail(props){
             watchHistory = Array.from(watchHistory);
             localStorage.setItem('watchHistory', JSON.stringify(watchHistory) ); 
 
+            // (최근 본 상품 숙제) (설명) localStorage의 배열순서 변경시 부모 컨포넌트인 app의 state변수인 history도 반응하게 하여, 그와 연동된 최근 본 상품이 자동으로 재랜더링 되게 함
+            props.setHistory( JSON.parse(localStorage.getItem('watchHistory')) );
         }
 
-    }, []);
+    }, [props.history]);    // (최근 본 상품 숙제) (설명) 최초 실행 뒤에도 부모 컨포넌트인 app의 state변수인 history가 바뀌는 바람에 재랜더링이 수행된다면, 해당 작업은 그 재랜더링 후 실행됨
 
     return (
         // (fade 숙제 구현) 

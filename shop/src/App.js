@@ -144,11 +144,16 @@ function App() {
   //        : +는 횟수만큼 브라우저의 앞페이지로 돌아가기, -는 횟수만큼 브라우저의 뒤로가기 실행과 같음
   let navigate = useNavigate();
 
-  // (숙제) 버튼을 누르면 서버에서 상품데이터 3개를 가져와서 메인페이지에 상품카드 3개 더 생성시, 서버로부터 받은 데이터를 저장할 state변수 extraShoes
+  // (숙제) 버튼을 누르면 서버에서 각각 다른 상품데이터 3개를 가져와서 화면에 뿌려라
+  
+  // (설명) 더보기 클릭시, url의 json번호를 저장할 state변수 moreView, 메인페이지에 상품카드 3개 더 생성시 서버로부터 받은 데이터를 저장할 state변수 extraShoes
+  let [moreView, setMoreview] = useState(2);
   let [extraShoes, setExtraShoes] = useState(null);
 
   // (설명) 도메인 당 5mb의 문자열만 넣을 수 있는 localStorage & sessionStorage에 array/object를 저장하기 위한 변수
   let obj = {name : 'kim'};
+
+
 
   // localStorage & sessionStorage
   //  : 웹 브라우저에서 데이터를 저장하는 데 사용되는 옵션들
@@ -230,6 +235,9 @@ function App() {
 
   },[]) 
 
+    // (최근 본 상품 숙제) state변수 shoes는 data.js를 모듈로 삼아 상품정보를 담은 object형식의 자료형을 배열로 담은 data를 초기값으로 입력받음
+    let [history, setHistory] = useState( JSON.parse( localStorage.getItem('watchHistory') ) );
+
   // (tanstack) react-query
   //   : React Application에서 Hooks(use뭐시기 형식의 리엑트의 기능들을 함수형으로 사용가능하게 한 함수집합)형식의 함수를 통해 사용하여, component로부터 서버의 데이터 상태를 불러오고, 캐싱하며, 지속적으로 동기화하고 업데이트 하는 작업을 도와주는 라이브러리
   //      -> 그러니까, 대충 실시간으로 ajax 관련 지속적인 데이터 요청을 받고 응답해야 하는 서비스(실시간 SNS, 거래소)를 구현하는데 편하기에 도움이 되는 라이브러리라 볼 수 있겠다...
@@ -310,36 +318,7 @@ function App() {
         </Container>
       </Navbar>
 
-      {/* (숙제) localStrage에 저장된 최근 본 상품들의 순서에 맞게 정렬된 id들을 이용해서, 최근 본 상품 컴포넌트를 제작해라*/}
-      {/* (설명) 최근 본 상품의 container 컴포넌트 역할을 맡을 태그로, historyContainer라는 class속성을 통해 css에서 style을 줄 예정*/}
-      <div className='historyContainer'>
-        <div>
-          <b>최근 본 상품목록</b>
-        </div>
-        {
-
-          JSON.parse(localStorage.getItem('watchHistory') ) != null ?
-
-          // (설명) watchHistory로 저장되어 있는 최근 본 상품들 id들을 반복하여, 이를 WatchedHistory라는 해당 id에 맞는 상품의 image를 담은 item컴포넌트로 출력할 예정 
-          JSON.parse(localStorage.getItem('watchHistory') ).map(function(a, j){
-
-            // (설명) 루프에 맞는 해당 index의 localStrage 객체의 watchHistory 속성의 배열형식의 멤버속성값을 json형식으로 파싱 
-            const propsItem = Number(JSON.parse( localStorage.getItem('watchHistory') )[j]);
-
-            // (설명) 그렇게 뽑힌 id를 index로 활용하여, item 컴포넌트로 전달할 상품객체 정보를 지정 (props 객체의 멤버로 보낼 예정)
-            const item = shoes[propsItem];
-
-            return(
-              <WatchedHistory item={item} propsItem={propsItem} key={j}></WatchedHistory>
-            )
-          })
-
-          : null
-
-        }
-        <div>
-        </div>
-      </div>
+      <WatchedHistoryContainer shoes={shoes} history={history}></WatchedHistoryContainer>
 
       {/* (설명) react-router-dom에서 a태그와 같은 하이퍼링크 역할을 수행하는 Link component를 통해, to 속성의 url주소를 바탕으로 원하는 Route component의 component내용이 rendering 될 수 있도록 함 */}
       {/* <Link to = "/">홈</Link>
@@ -372,6 +351,9 @@ function App() {
               {/* (설명) axios 라이브러리를 통해 가져온 axios 객체의 멤버 함수 get 함수를 통해, 서버에 http 메서드 중 get방식으로 해당 url을 통해 요청을 보내는 버튼을 생성 */}
               <button onClick={ () => {
 
+                // 더 보기 누를 떄마다 요청할 url의 json번호가 달라짐
+                setMoreview(moreView + 1);
+
                 // (설명) axios.get('url명')    <->      axios.post('url명', {name : 'kim'})   <- post는 요청자가 데이터를 보내면, 그걸 서버가 가공한 후 response를 보냄
                 //   : 해당 url명으로 get요청을 하게하는 axios 라이브러리의 멤버함수
                 //      -> .then( (결과값명) => {내용} )
@@ -386,7 +368,7 @@ function App() {
                 //
                 //      -> finally( () => {내용})
                 //           : ajax 성공/실패랑 관계없이 무조건 실행하는 코드
-                axios.get('https://codingapple1.github.io/shop/data2.json')
+                axios.get('https://codingapple1.github.io/shop/data' + moreView + '.json')
                 .then((allResponse) => {
                   console.log(allResponse.data);
                   // (숙제) 서버로부터 받은 값으로 extraShoes state변수를 채우도록 setState함수 사용
@@ -409,8 +391,9 @@ function App() {
                                                   // (설명) <context명.Provider value={{ state1, ... , stateN}} >
                                                   //   : 생성한 context에 접근하도록 허락하고 싶은 component를 표시해주고, 그 녀석과 후손들까지 접근가능한 state는 무엇인지 value 속성의 속성객체 멤버들을 통해 표기함
                                                   //      -> 여기서는 Detail 컴포넌트로 하여금 context1이라는 context에 접근가능하게 함을 의미
-                                                  <Context1.Provider value={{ stock, shoes }}>
-                                                    <Detail shoes = {shoes} /> 
+                                                  <Context1.Provider value={{ stock, shoes, history, setHistory }}>
+                                                    {/* (최근 본 화면 숙제) (설명) 최근 본 화면이 자유롭게 반응하도록 하기 위해, history state변수들을 props 객체의 멤버변수로 실어 보내서 화면이 변해도 최근 본 상품목록이 반응하게 함*/}
+                                                    <Detail shoes = {shoes} history={history} setHistory={setHistory}/> 
                                                   </Context1.Provider>
                                                 } />
           
@@ -489,8 +472,43 @@ function About(){
   )
 }
 
-// (설명) 숙제인 최근 본 상품 화면에 item 컴포넌트로 사용할 컴포넌트 WatchedHistory
-function WatchedHistory(props){
+// (최근 본 상품 숙제) localStrage에 저장된 최근 본 상품들의 순서에 맞게 정렬된 id들을 이용해서, 최근 본 상품 컴포넌트를 제작해라
+// (설명) 숙제인 최근 본 상품 화면에 container 컴포넌트로 사용할 컴포넌트 WatchedHistoryContainer
+function WatchedHistoryContainer(props){
+
+  // (설명) 최근 본 상품의 container 컴포넌트 역할을 맡을 태그로, historyContainer라는 class속성을 통해 css에서 style을 줄 예정
+  return(
+
+    <div className='historyContainer'>
+      <div>
+        <b>최근 본 상품목록</b>
+      </div>
+      {
+        // (설명) props 객체에 있는 멤버변수 history null여부에 따라 화면 출력을 달리함
+        props.history == null ? null :
+
+        // (설명) watchHistory로 저장되어 있는 최근 본 상품들 id들을 반복하여, 이를 WatchedHistory라는 해당 id에 맞는 상품의 image를 담은 item컴포넌트로 출력할 예정 
+        props.history.map(function(a, j){
+
+          // (설명) 루프에 맞는 해당 index의 localStrage 객체의 watchHistory 속성의 배열형식의 멤버속성값을 json형식으로 파싱 
+          const propsId = Number(props.history[j]);
+
+          // 최근 본 상품 컨포넌트의 item에 해당하는 WatchedHistoryItem 컨포넌트가 제대로 된 이미지를 출력하도록 props로 propsId를 던져줌
+          return(
+            <WatchedHistoryItem propsId={propsId} key={j} ></WatchedHistoryItem>
+          )
+        })
+
+      }
+      <div>
+      </div>
+    </div>
+  )
+
+}
+
+// (최근 본 상품 숙제) (설명) 숙제인 최근 본 상품 화면에 item 컴포넌트로 사용할 컴포넌트 WatchedHistory
+function WatchedHistoryItem(props){
 
   // url를 통한 라이팅을 사용할 예정이기에 useNavigate() 훅스 사용
 
@@ -502,14 +520,14 @@ function WatchedHistory(props){
   //     - useNavigate(+ or -)
   //        : +는 횟수만큼 브라우저의 앞페이지로 돌아가기, -는 횟수만큼 브라우저의 뒤로가기 실행과 같음
   let navigate = useNavigate();
-  
+
   return(
     <>
-      {/* (설명) 목록의 그림을 클릭하면, 상세조회 화면으로 이동 */}
-      <div className='eachHistoryItem' onClick={ () => navigate('/detail/' + props.propsItem ) }>
+      {/* (설명) 목록의 그림을 클릭하면, 상세조회 화면으로 이동 
+            -> 그러면 navigate 함수를 통한 url을 통해 출력하는 상세조회 컴포넌트에서 넘겨받은 props객체의 history state멤버객체와 set함수를 이용해서, localstrage의 watchHistory 배열을 갱신하고, 이를 state에 새로 덮어씌워서 재렌더링 시도 */}
+      <div className='eachHistoryItem' onClick={ () => { navigate( '/detail/' + props.propsId ) } }>
         <h6></h6>
-        <img src={'https://codingapple1.github.io/shop/shoes' + (props.propsItem + 1) + '.jpg'} width="80%" height="80%"/>
-        {/* <p>{props.item.title}</p> */}
+        <img src={'https://codingapple1.github.io/shop/shoes' + (props.propsId + 1) + '.jpg'} width="80%" height="80%"/>
       </div>
     </>
   )
