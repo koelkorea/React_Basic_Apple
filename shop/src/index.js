@@ -38,7 +38,7 @@ root.render(
     <QueryClientProvider client={queryClient}>
       {/* (설명) App 컴포넌트의 후손들까지 store.js에 저장된 state들을 redux 라이브러리를 통해 접근할 수 있음을 Provider 컴포넌트와 store 속성이 규정함 */}
       <Provider store={store} >
-        <BrowserRouter>
+        <BrowserRouter basename="/githubPagesTest1">
           <App />
         </BrowserRouter>
       </Provider>
