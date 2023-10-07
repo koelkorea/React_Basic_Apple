@@ -17,7 +17,7 @@ import reportWebVitals from './reportWebVitals';
 // REDUX의 전역 state변수들을 모아놓은 store.js를 모듈로 import하여 가져오는 코드
 import store from './store.js';
 
-// react기반 웹페이지에서 routing 기능을 구현하기 위한, BrowserRouter component를 react-router-dom 라이브러리를 모듈로 import하여 가져오는 코드
+// react기반 웹페이지에서 History API를 사용하는 페이지 routing 기능을 구현하기 위한, BrowserRouter component를 react-router-dom 라이브러리를 모듈로 import하여 가져오는 코드
 import { BrowserRouter } from 'react-router-dom';
 
 // redux를 통해 store.js를 통해 state들에 접근할 component와 그 후손들을 규정해줄 provider component를 쓰기위해 이를 모듈로서 redux라이브러리에서 가져오는 코드
@@ -38,7 +38,15 @@ root.render(
     <QueryClientProvider client={queryClient}>
       {/* (설명) App 컴포넌트의 후손들까지 store.js에 저장된 state들을 redux 라이브러리를 통해 접근할 수 있음을 Provider 컴포넌트와 store 속성이 규정함 */}
       <Provider store={store} >
-        <BrowserRouter basename="/githubPagesTest1">
+        {/* (설명) 
+            - basename
+              : History API를 사용하기 위한, 시작 url을 설정해 주는 BrowserRouter 태그의 속성
+
+            - process.env.PUBLIC_URL 
+              : create-react-app 을 통해 시작한 프로젝트에서 빌드를 할 시, JS가 index.html의 %PUBLIC_URL%에 올바른 URL을 가져다 대입할 수 있도록 도와주는 일종의 환경변수
+                  -> 이를 통해 페이지 호스팅 시작 URL이 root가 아니라던가, 클라이언트 측에서 라우팅을 할 떄에도 프로젝트가 작동하게 도와줌
+                     (= 서버없어서 클라이언트 라우팅 쓰는 react router 사용 + root 아닌 repository 기준 url 사용하게 되는 깃허브 페이지에서는 꼭 설정을..) */}
+        <BrowserRouter basename={process.env.PUBLIC_URL}>
           <App />
         </BrowserRouter>
       </Provider>
