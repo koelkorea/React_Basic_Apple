@@ -4,7 +4,7 @@
     1) node js를 설치함
         -> npm(node package manager)를 이용해서 편하게 react 라이브러리를 이용한 프로젝트를 초기화 하기 위해서 위해서 반드시 필요함
   
-    2) (mac, window 둘 다 해당)원하는 폴더를 생성한 뒤, 해당 폴더에서 터미널을 연다..
+    2) (mac, window 둘 다 해당) 원하는 폴더를 생성한 뒤, 해당 폴더에서 터미널을 연다..
          -> cmd를 쓰던, powershell을 쓰건, VSCODE를 쓰던 걍 해당 폴더에 터미널을 통해 접근해서 다음 명령어를 실행할 준비를 하면 됨
 
   1. 처음부터 typescript 셋팅이 완료된 react 프로젝트 세팅하기 (이쪽을 추천)
@@ -15,228 +15,376 @@
       : npm install --save typescript @types/node @types/react @types/react-dom @types/jest
          -> 이렇게 하면 nodemudules/@types에 여러가지 react 라이브러리들이 사용하거나 해당하는 '자료형'들을 담은 d.ts파일이 저장됨
 
-
-- react에서 typescript문법을 쓰는 위치
-
-
-일반 프로젝트와 다른 점은 컴포넌트 파일은 js가 아니라 tsx로 확장자를 사용하셔야한다는 점입니다. ts랑 똑같은데 jsx 문법을 지원합니다.
-
-코드짜는 것은 일반 리액트와 큰 다른점이 없습니다. 있는게 이상함 
-
-다만 함수, 컴포넌트, state, props 타입체크를 잘 해줘야 에러가 나지 않습니다. 
-
-그래서 리액트에선 TS 문법을 어디에 써야하는지 4개로 정리해드리겠습니다.
-
-그냥 타입관련 버그가 생길 것 같은 곳에 타입지정하면 끝입니다. 
+  3. 기존 component파일을 작성한 것을 'jsx 확장자 -> tsx 확장자'로 변경
+      : react의 컴포넌트를 typescript 라이브러리와 함께 쓰려면, jsx확장자 또한 tsx확장자로 바꿔줘야 typescript 컴퍼일러가 인식하고 컴파일 해줌
 
 
-1. 일반 변수, 함수 타입지정
+- react에서 typescript문법을 쓰는 방식
+   : react에서는 사용자가 작성한 component를 HTML 구조의 최소단위로서 사용하여, 이를 블록처럼 조립하여 원하는 식으로 웹페이지를 구성하는 방식을 사용
+     (= 간단하게 말해서, react에서 쓰는 특수한 '컴포넌트', 'state', 'props' 객체에 대한 자료형 지정을 잘 해주면 됨)
+         -> (중요!) 일반 JS변수, function의 자료형 지정은 그냥 JS에서 typescript를 쓰던데로 잘 지정해주면 됨
+
+      1. jsx.Element 자료형(= react component 자료형) 지정법
+          : 사용자가 입력한 component를 받는 JS변수를 typescript에서는 'JSX.Element' 라는 자료형으로 작성하고 구분함
+            (= component를 사용자가 작성하고 JS변수에 넣는다면, 그건 JSX.Element 자료형으로 지정해주면 됨)
+
+            ex) let 박스 : JSX.Element = <div></div>
+                let 버튼 : JSX.Element = <button></button>
+
+      2. function component 자료형 지정법
+          : react 18버전부터 component가 function을 기반으로 작성할 수 있게 되었는데, 이를 function component로 명명함
+            (= function component도 결국 함수 = parameter와 return에 자료형을 지정하면 됨)
+
+              @ return의 자료형
+                 : 항상 component로 들어옴 = JSX.Element을 자료형으로 지정 (생략해도 알아서 지정)
+
+              @ parameter props객체의 자료형
+                 : 항상 props로 들어옴 = props 객체에 들어오는 프로퍼티 개별들의 자료형을 조사해서 자료형으로 지정
+                    -> (주의) 어떤 props 객체는 내부 프로퍼티의 자료형이 component인 경우도 존재함
+
+                    1) props객체 내부 프로퍼티의 자료형이 일반 자료형인 경우
+                        : Container에 해당하는 자료형을 설계할 때, 내부 프로퍼티들의 자료형을 일반 자료형으로 지정함
+
+                          ex) AppProps라는 Type Ailies는 string 자료형으로 구성된 값을 가지는 name이라는 프로퍼티를 갖는 JS객체 자료형
+                               -> APP이라는 function component는 해당 JS객체 형식의 데이터를 부모 component로부터 props로 받음
+                   
+                                  type AppProps = {
+                                    name: string;
+                                  }; 
+                                  
+                                  function App (props: AppProps) :JSX.Element {
+                                    return (
+                                      <div>{message}</div>
+                                    )
+                                  }
+
+                    2) (중요!) props객체 내부 프로퍼티의 자료형이 component에 해당하는 자료형인 경우
+                        : Container에 해당하는 자료형을 설계할 때, component를 받는 내부 프로퍼티들을 JSX.IntrinsicElements['HTML태그명']라는 자료형으로 지정함
+                           -> (참고) react 18버전부터는 JSX.IntrinsicElements는 props 타입넣을 때만 사용가능
+
+                           ex) ContainerProps라는 Type Ailies는 H4태그가 가장 상단으로 구성된 component를 자료형으로 구성된 값을 가지는 a라는 프로퍼티를 갖는 JS객체 자료형
+                                -> Container이라는 function component는 해당 JS객체 형식의 데이터를 부모 component로부터 props로 받음
+ 
+                                   type ContainerProps = {
+                                     a: JSX.IntrinsicElements['h4'];
+                                   }; 
+                                   
+                                   function Container (props: ContainerProps) {
+                                     return (
+                                       <div>{props.a}</div>
+                                     )
+                                   }
+
+      3. state 객체의 자료형 지정 
+          : 제너릭(Generic) 문법을 이용해서, 의도하는 자료형을 useState함수에 집어넣는 식으로 state 객체 내부의 프로퍼티(= state변수)의 자료형을 설정
+             -> (참고) state 만들 땐 그냥 자동으로 타입이 할당되어서 걱정할 필요는 없긴 하지만, 나중에 자료형이 변할걸 염두에 두는 경우 사용하는 문법
+
+                 ex) const [user, setUser] = useState<string | null>('kim');
+
+
+      4. (참고) 자료형 단언(type assertion) 문법 사용시.. 주의사항?
+          : 오직 'as 자료형' 키워드 통해서만, assertion 문법을 통해서만 typescript 컴파일러에게 특정 변수의자료형에 대한 가스라이팅이 가능함 
+             -> (중요!) 예전 제너릭(Generic) 문법의 assertion은 react 라이브러리 측에서 conponent 선언으로 오해할 수 있기에 사용 X
+
+                 ex) <자료형>을 통한 assertion은 error의 원인
+                      -> as 키워드는 타입스크립트 보안해제기 때문에 타입이 100% 확실할 때만 사용하도록..
+                 
+                         let code : any = 123; 
+                         let employeeCode = <number> code;  (X)
+                         let employeeCode as number = code;  (X)
+
+
+- redux도 typescript와 함께 사용시
+
+  # redux를 쓰는 이유?
+     1. 전역변수에 해당하는 state를 다룰 수 있기에, 한 곳에서 전역 state에 해당하는 변수들을 관리할 수 있음
+     2. 따라서, component간들이 개별적인 props 객체가 없어도, state들을 비교적 쉽게 다루기 가능 
+     3. 전역 state변수들의 수정방법을 미리 reducer라는 함수로 정의해놓았기에, 지역변수에 해당하는 state들과 이원적인 관리로 버그를 줄이기도 쉬움
+
+  # redux를 설치법
+    : npm install redux react-redux 이 명령어로 설치
+       -> type 정의가 미리 잘 되어있어서, 그냥 설치해도 typescript 활용에 전혀 문제없음
+
+  # redux에서 typescript문법을 쓰는 방식
+
+     1. 전통방식 redux 
+         : 과거방식의 if문 switch문을 사용할 시, typescript를 쓰는 법
+
+            @ 전역 state 작성시
+
+적은 코드 설명을 하자면 
+
+1. 지금 initialState = { count: 0 } 이렇게 생긴 state 초기값을 만들었고
+
+2. function reducer를 만들어서 state가 변경되는 방법을 미리 정의해뒀습니다. 변경방법은 1. 증가 2. 감소 두 개 입니다. 
+
+3. createStore 이런 나머지는 자잘한 기본 셋팅 문법입니다. 이해 필요없음 
 
  
 
-그냥 타입스크립트 배웠던 대로 똑같이 하면 됩니다. 
+지금 딱 봐도 변수와 함수 보이죠? 타입지정 하고 싶으면 하십시오 
+
+그래서 redux 쓸 때는 똑같이 state 초기값과 reducer 함수의 타입지정 잘하면 됩니다. 
 
  
 
- 
+(1) 초기값 변수 오른쪽에 타입지정 잘 해주십시오.
+
+(2) reducer 함수는 state, action 이 이름의 파라미터 2개 타입지정 잘 해주십시오.
+
+실은 state는 타입지정 필요없습니다 초기값 넣으면 타입지정 잘 됩니다
+
+action은 님들이 나중에 dispatch 날릴 때 object 자료 집어넣죠? 그거랑 똑같이 생겨야합니다.
+
+그래서 그거 그대로 타입지정해주면 되는데 대부분 { type : string, payload : number } 이런 식으로 생겼을 겁니다.
+
+위에선 any라고 대충 써넣음 님들이 채워보셈 
 
  
 
- 
+(3) 마지막으로 심심하면 reducer 함수의 return 타입도 타입지정 잘 해보십시오.
 
- 
-
- 
-
-2. JSX 타입지정
-
- 
-
-리액트에선 변수나 자료에 <div></div> 이런걸 쌩으로 담아서 쓸 수 있습니다. 
-
-왜냐면 리액트에서 <div></div> 이렇게 쓰면 HTML이 아니라 JSX라고 부르는 자료가 됩니다. 
-
-이런 자료를 타입지정하고 싶으면 JSX.Element 라는 타입을 쓰시면 됩니다.
-
-let 박스 :JSX.Element = <div></div>
-let 버튼 :JSX.Element = <button></button>
-이러면 끝입니다.
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-3. function component 타입지정
-
- 
-
-function App () {
-  return (
-    <div>안녕하세요</div>
-  )
-}
-리액트의 컴포넌트는 이렇게 생겼습니다.
-
-컴포넌트 타입지정은 어떻게 하게요
-
-당연히 함수니까 파라미터와 return 타입지정하면 됩니다. 
-
-파라미터는 항상 props기 때문에 props가 어떻게 생겼는지 조사해서 타입지정하시면 되고 
-
-근데 컴포넌트는 JSX를 return 한다는게 문제입니다. return 타입에 대체 뭘 기입해야하죠 
-
- 
-
- 
-
- 
-
-type AppProps = {
-  name: string;
-}; 
-
-function App (props: AppProps) :JSX.Element {
-  return (
-    <div>{message}</div>
-  )
-}
-props 파라미터는 어떻게 생겼는지 조사해서 알아서 타입지정해주면 되고
-
-컴포넌트는 return으로 JSX를 뱉으니 당연히 return 타입으로 JSX.Element 써주면 됩니다.
-
-근데 생략해도 자동으로 타입지정됩니다. 
-
- 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-<Container a={<h4>안녕</h4>} />
-
-function Container (props) {
-  return (
-    <div>{props.a}</div>
-  )
-}
-참고로 props로 JSX를 입력할 수 있게 코드를 짜는 경우도 있습니다. 
-
-그럴 땐 JSX.IntrinsicElements 라는 이름의 타입을 사용가능합니다. 
-
-<div> <a> <h4> 같은 기본 태그들을 표현해주는 타입인데
-
-그래서 위 컴포넌트에 타입을 넣고 싶으면 
-
- 
-
- 
-
-type ContainerProps = {
-  a: JSX.IntrinsicElements['h4'];
-}; 
-
-function Container (props: ContainerProps) {
-  return (
-    <div>{props.a}</div>
-  )
-}
-이런 식으로 넣을 수도 있습니다. 
-
-이제 a라는 props자리에 <h4>만 넣을 수 있게 타입쉴드를 씌워놓은 것임 
-
- 
-
-(참고) 아마 리액트 18버전부터는 JSX.IntrinsicElements는 props 타입넣을 때만 사용가능
+어떤걸 return 해줘야할지 적어두시면 됩니다. 딱봐도 초기값이랑 유사하게 생기면 될 듯 
 
  
 
  
 
+그리고 간혹 오해하시는 것들이 있는데
+
+reducer 타입지정은 전부 reducer 안의 코드들을 잘못 짜서 생기는 버그를 약간 방지하는 용도입니다. 
+
+App.tsx 이런 곳에서 dispatch() 를 잘쓰냐 못쓰냐는 캐치해주지 않습니다. 
+
+              ex) import { Provider } from 'react-redux';
+                  import { createStore } from 'redux';
+                  
+                  interface Counter {
+                    count : number
+                  }
+                  
+                  const 초기값 :Counter  = { count: 0 };
+                  
+                  function reducer(state = 초기값, action :any) {
+                    if (action.type === '증가') {
+                      return { count : state.count + 1 }
+                    } else if (action.type === '감소'){
+                      return { count : state.count - 1 }
+                    } else {
+                      return initialState
+                    }
+                  }
+                  
+                  const store = createStore(reducer);
+                  
+                  // store의 타입 미리 export 해두기 
+                  export type RootState = ReturnType<typeof store.getState>
+                  
+                  ReactDOM.render(
+                    <React.StrictMode>
+                      <Provider store={store}>
+                        <App />
+                      </Provider>
+                    </React.StrictMode>,
+                    document.getElementById('root')
+                  ) 
+
+
+            @ 전역 state 꺼내서 사용시
+
+            redux에 있던 state를 가져오려면
+
+mapStateToProps도 있지만 useSelector 훅을 쓰시면 간단한걸 쉽게 가져올 수 있습니다.
+
+그리고 state를 변경하려면 useDispatch 훅을 쓰면 dispatch를 간단히 날릴 수 있습니다. 
+
+1. useSelector를 쓰면 redux에 있던 state 빼오기 쉽습니다. 안에 콜백함수 넣으면 거기 있던 파라미터가 그대로 state임
+
+2. useDispatch를 쓰면 redux로 수정요청을 날릴 수 있습니다. type을 잘 기입하시면 미리 정의해뒀던 수정방법이 동작함 
+
+위에선 버튼 누르면 증가하라고 해놨네요 
+
+ 
+
+타입지정은 그냥 
+
+(1) useSelector() 안에 파라미터 있는데 거기 하십쇼
+
+state가 어떻게 생겼는지 파악한 다음 타입알아서 손수 지정해주시거나 아니면 
+
+귀찮으면 index.ts에서 타입을 export 해서 가져와도 됩니다. 
+
+index.ts 에 있던 export type RootState = ReturnType<typeof store.getState> 이 코드가
+
+store의 타입을 미리 export 해두는 방법입니다. 
+
+ 
+
+(2) useDispatch도 타입지정하면 좋은데 
+
+import {Dispatch} from 'redux' 이렇게 타입을 가져오셔서 
+
+const dispatch :Dispatch 이렇게 쓰면 됩니다. 
+
+그럼 dispatch 날릴 때 안에 파라미터 안쓰면 에러내줌 
+
+ 
+
+              ex) import React from 'react';
+                  import { useDispatch, useSelector } from 'react-redux'
+                  import { Dispatch } from 'redux'
+                  import {RootState} from './index'
+                  
+                  function App() {
+                    const 꺼내온거 = useSelector( (state :RootState) => state );
+                    const dispatch :Dispatch = useDispatch();
+                  
+                    return (
+                      <div className="App">
+                        { 꺼내온거.count }
+                        <button onClick={()=>{dispatch({type : '증가'})}}>버튼</button>
+                        <Profile name="kim"></Profile>
+                      </div>
+                    );
+                  } 
+         
+     2. 신규방식 redux 
+         : redux 공식 toolkit 라이브러리를 사용할 때, typescript를 쓰는 법
+            -> (중요) npm install @reduxjs/toolkit 를 통한, toolkit 라이브러리 추가 설치 필수
+
+            @ 전역 state 작성시
+
+적은 코드 설명을 하자면 
+
+1. createSlice() 로 slice 라는걸 만들어줍니다. slice는 state와 reducer를 합쳐놓은 새로운 뭉텅이라고 보시면 됩니다.
+
+2. slice 안에는 slice 이름, state초기값, reducer가 정확한 이름으로 들어가야합니다. 맘대로 작명 불가 
+
+3. state는 그냥 맘대로 만드시면 되고 reducer는 함수 형태로 만들어주면 됩니다. 첫 파라미터는 state, 둘째는 actions가 자동으로 부여됩니다. 
+
+4. 다 만든 것들은 configureStore 안에 등록하면 됩니다. 
+
+5. 내가 만들어둔 reducer를 쓰고 싶으면 reducer 안의 함수명을 export 해주시면 됩니다. 
+
+6. 나머지는 필요없는 셋팅문법임 
+
  
 
  
 
- 
+타입지정은
+
+(1) state 초기값 타입지정 알아서 해주십시오
+
+(2) reducer 안의 action 파라미터의 타입지정 해주십시오 
+
+(3) 나머지는 타입지정 필요없습니다. 자동임 
+
+action 타입지정은 방법이 따로 있는데 
+
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+
+(상단 생략)
+  incrementByAmount (state, action: PayloadAction<number>){
+      state.value += action.payload
+  },
+  
+이렇게 타입지정하라고 권장합니다.
+
+나중에 dispatch할 때 보내는 데이터가 있으면 그걸 payload 라고 부르는데 
+
+그 자료의 타입을 <> 안에 집어넣어서 타입지정하라는 소리입니다. 
+
+문자를 payload로 보낼거면 string 집어넣으시고 그런 식입니다.
+
+              ex) import { createSlice, configureStore } from '@reduxjs/toolkit';
+                  import { Provider } from 'react-redux';
+                  
+                  const 초기값 = { count: 0, user : 'kim' };
+                  
+                  const counterSlice = createSlice({
+                    name: 'counter',
+                    initialState : 초기값,
+                    reducers: {
+                      increment (state){
+                        state.count += 1
+                      },
+                      decrement (state){
+                        state.count -= 1
+                      },
+                      incrementByAmount (state, action : PayloadAction<number>){
+                        state.count += action.payload
+                      }
+                    }
+                  })
+                  
+                  let store = configureStore({
+                    reducer: {
+                      counter1 : counterSlice.reducer
+                    }
+                  })
+                  
+                  //state 타입을 export 해두는건데 나중에 쓸 데가 있음
+                  export type RootState = ReturnType<typeof store.getState>
+                  
+                  //수정방법 만든거 export
+                  export let {increment, decrement, incrementByAmount} = counterSlice.actions
+
+                  ReactDOM.render(
+                    <React.StrictMode>
+                      <Provider store={store}>
+                        <App />
+                      </Provider>
+                    </React.StrictMode>,
+                    document.getElementById('root')
+                  ) 
+
+
+
+            @ 전역 state 꺼내서 사용시
+
+1. useSelector 함수를 쓰면 state를 쉽게 꺼낼 수 있습니다.
+
+쓰는 법은 안에 콜백함수 ()=>{} 하나를 집어넣으면 되는데 그 함수의 첫 파라미터는 항상 state가 됩니다.
+
+2. useDispatch 함수를 쓰면 쉽게 수정요청을 날릴 수 있습니다.
 
  
 
- 
+타입지정은 state와 dispatch에 해주시면 됩니다.
 
-4. state 문법 사용시 타입지정 
+(1) useSelector() 안의 파라미터에 타입지정해주십시오.
 
- 
+state가 어떻게 생겼는지 파악한 다음 타입알아서 지정해주시거나 아니면 
 
-state 만들 땐 그냥 자동으로 타입이 할당되어서 걱정할 필요는 없습니다.
-
-state 타입이 나중에 변화할 수 있다고요? 그런 경우는 흔치 않겠지만 그러면 미리 지정하십시오. 
-
- const [user, setUser] = useState<string | null>('kim');
-그냥 <> 열고 타입넣으시면 됩니다.
-
-Generic 문법을 이용해서 타입을 useState함수에 집어넣는 식으로 설정하면 됩니다. 
+타입을 index.ts 이런 리듀서 만든 곳에서 미리 RootState라는 타입을 export 해두시면 저렇게 저처럼 import 해서 쉽게 타입지정이 가능합니다.
 
  
 
- 
+(2) useDispatch() 사용할 때 타입지정 가능한데 그냥 예전 방식처럼 하든가 
+
+아니면 공식 문서에서는 
+
+index.ts에서 export type AppDispatch = typeof store.dispatch 해두고
+
+App.tsx에서 import 해와서 useDispatch<AppDispatch>() 이렇게 타입지정하라고 되어있는데
+
+저는 귀찮아서 이전 방식으로 씁니다. 
 
  
 
- 
-
- 
-
- 
-
- 
-
- 
-
-5. type assertion 문법 사용할 때 
-
- 
-
-let code: any = 123; 
-let employeeCode = <number> code; //안됩니다
-assertion 하고 싶으면 as 또는 <> 쓰면 되는데
-
-리액트에서 컴포넌트로 오해할 수 있어서 꺾쇠 괄호는 리액트에서 쓰지않습니다.
-
-as 키워드만 씁시다.
-
-하지만 as 키워드는 타입스크립트 보안해제기 때문에 타입이 100% 확실할 때만 사용하도록 합시다. 
-
- 
-
- 
-
- 
-
- 
-
- 
-
-결론은 타입스크립트 쓴다고 뭔가 리액트 개발방식이 달라지는게 아니라
-
-함수 변수 정의부분 타입지정을 할 수 있다는 것만 달라집니다. 
-
-"props엔 무조건 { name : string }만 들어올 수 있습니다"
-
-이런 문법을 작성하는게 끝이고 그냥 에디터 부가기능 수준일 뿐임 
-
-여러분이 변수 함수 class 타입지정 하는 법을 잘 배우셨으면 누구나 응용가능합니다.
+              ex) import { useDispatch, useSelector } from 'react-redux'
+                  import {RootState, increment} from './index'
+                  
+                  function App() {
+                  
+                    const 꺼내온거 = useSelector( (state :RootState) => state);
+                    const dispatch = useDispatch();
+                  
+                    return (
+                      <div className="App">
+                        {꺼내온거.counter1.count}
+                        <button onClick={()=>{dispatch(increment())}}>버튼</button>
+                      </div>
+                    );
+                  } 
