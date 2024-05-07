@@ -97,156 +97,155 @@
 - redux도 typescript와 함께 사용시
 
   # redux를 쓰는 이유?
-     1. 전역변수에 해당하는 state를 다룰 수 있기에, 한 곳에서 전역 state에 해당하는 변수들을 관리할 수 있음
-     2. 따라서, component간들이 개별적인 props 객체가 없어도, state들을 비교적 쉽게 다루기 가능 
-     3. 전역 state변수들의 수정방법을 미리 reducer라는 함수로 정의해놓았기에, 지역변수에 해당하는 state들과 이원적인 관리로 버그를 줄이기도 쉬움
+     1. 파일 1개에서, 모든 component가 공유가능한 전역 객체에 해당하는 state객체를 다룰 수 있음
+     2. 따라서 component간 개별적인 props 객체가 없어도, state객체 내부의 요소들을 비교적 쉽게 다루기 가능 
+     4. 전역 state객체 내부의 요소들의 수정방법을 미리 reducer라는 함수로 정의해두고, 타 component에서 dispatch함수로 접근가능해게 함
+        (= 지역변수에 해당하는 state들과 이원적인 관리로 버그를 줄이기도 쉬움)
 
   # redux를 설치법
     : npm install redux react-redux 이 명령어로 설치
        -> type 정의가 미리 잘 되어있어서, 그냥 설치해도 typescript 활용에 전혀 문제없음
 
   # redux에서 typescript문법을 쓰는 방식
+     : 결론은 여전히 같은데, 전역 state요소나 객체의 자료형과, reducer 함수의 parameter 중 action에 해당하는 부분과 return의 자료형을 잘 지정하면 됨
 
-     1. 전통방식 redux 
-         : 과거방식의 if문 switch문을 사용할 시, typescript를 쓰는 법
+     1. 전통방식 redux에서의 typescript
+         : 전역 state의 요소값을 변경하는 reducer 함수의 결과가 action으로 들어온 parameter의 값에 따라 if문 switch문을 통해 좌지우지 되는 방식
 
-            @ 전역 state 작성시
+           A. 전통방식 redux에서의 전역 state 객체 작성
 
-적은 코드 설명을 하자면 
+              @ 전통방식 redux에서의 전역 state 객체 작성 과정방법 및 로직   
+                1) 어떤 전역 state 객체의 내부 프로퍼티들의 초기값을 정의 및 선언
+                2) 해당 전역 state 객체 내부 프로퍼티들의 값을 변경할 수 있는 함수인 reducer를 작성하여, state가 변경되는 방법을 미리 정의
+                3) createStore(reducer) 함수를 통해, 해당 reduce 함수를 통해 1)에서 선언한 전역 state를 다른 JSX 모듈에서 통제할 수 있도록 함
+                4) typescript를 함께 쓸거면, 여기서 state 객체 내부 요소들의 자료형과 reducer 함수들의 parameter인 state와 action 그리고 return값에 대한 자료형을 잘 지정하면 됨
+                    -> (참고) reducer 함수의 parameter
+                        : 해당 함수 내부의 자료형 지정의 목적 = reducer 안의 코드들을 잘못 짜서 생기는 버그를 약간 방지하는 용도
+                          (= 외부 component에서 dispatch()함수에 필요한 parameter들을 잘못 넣어도 컴파일러가 1도 보고해주지 않음 )
+ 
+                           [1] state = state요소
+                                : 해당 reducer 함수로 조작할 state요소를 지정
+                                   -> (참고) state는 이미 대입하는 상단에 선언된 state요소에 자료형이 지정되어 있으니, 굳이 자료형을 지정하지 않아도 에러없이 잘 돌아감
+                           
+                           [2] action
+                                : 타 component에서 dispatch 날릴 때, 보내는 JS객체 자료형을 의미
+                                  (= 해당 JS객체의 프로퍼티값을 기준으로 narrowing을 하여 return값을 분기처리하고 state요소를 바꾸는게 핵심)
+                                      -> 보통 action으로 들어오는 JS객체의 구조는 { type : 자료형, payload : 자료형 } 이런 내부 구조를 가짐 
+ 
+                5) 그렇게 createStore(reducer)를 작성하면, 앞서 작성한 전역 state 프로퍼티들과 이를 수정가능한 reducer 함수를 메서드로 가지는 전역 state 객체가 생성됨
+                    -> (참고) 타 component에서 useSelector(무명콜백함수) 함수 형태의 hooks를 통해, 전역 state 객체에 접근하는 코드를 구성할 때, 콜백함수의 parameter인 state의 자료형을 쉽게 쓰는 법
+                        : 전역 state객체를 받을 JS변수를 선언해 대입하고, 해당 state의 자료형을 typeof와 getState함수를 통해 export하여 다른 component에서 전역 state객체의 자료형을 쉽게 사용할 수 있도록 하는 요령이 존재함
 
-1. 지금 initialState = { count: 0 } 이렇게 생긴 state 초기값을 만들었고
-
-2. function reducer를 만들어서 state가 변경되는 방법을 미리 정의해뒀습니다. 변경방법은 1. 증가 2. 감소 두 개 입니다. 
-
-3. createStore 이런 나머지는 자잘한 기본 셋팅 문법입니다. 이해 필요없음 
-
+                          ex) export type RootState = ReturnType<typeof store.getState>
  
 
-지금 딱 봐도 변수와 함수 보이죠? 타입지정 하고 싶으면 하십시오 
+              @ 전통방식 redux에서의 전역 state 객체 내부 프로퍼티 및 reducer 메서드 작성 과정 예시
 
-그래서 redux 쓸 때는 똑같이 state 초기값과 reducer 함수의 타입지정 잘하면 됩니다. 
+                ex) <button> 버튼을 누르면 state가 +1, -1 되는 예제 작성
+                
+                    Counter라는 interface 자료형은 count라는 number 자료형 값을 가지는 프로퍼티로 구성되어 있으며, 초기값이라는 전역 state요소는 해당 JS객체 구조를 자료형으로 따름
+                     -> 그리고, 해당 전역 state요소는 reducer라는 함수를 통해, action이란 JS객체의 type값에 따라 결과적으로 값이 변할수 있으며, 이를 타 component에서 마음것 활용이 가능
+                        (React에서 DOM랜더링을 할 때, Provider라는 component가 )
+   
+                        import { Provider } from 'react-redux';
+                        import { createStore } from 'redux';
+                        
+                        interface Counter {
+                          count : number
+                        }
+                        
+                        // 전역 state 객체 (초기값은 각 프로퍼티 별로 줌)
+                        const 초기값 : Counter  = { count: 0 };
+                        
+                        function reducer(state = 초기값, action :any) {
+                          if (action.type === '증가') {
+                            return { count : state.count + 1 }
+                          } else if (action.type === '감소'){
+                            return { count : state.count - 1 }
+                          } else {
+                            return initialState
+                          }
+                        }
+                        
+                        const store = createStore(reducer);
+                        
+                        // store의 타입 미리 export 해두기 
+                        export type RootState = ReturnType<typeof store.getState>
+                        
+                        ReactDOM.render(
+                          <React.StrictMode>
+                            <Provider store={store}>
+                              <App />
+                            </Provider>
+                          </React.StrictMode>,
+                          document.getElementById('root')
+                        ) 
 
+
+           B. 전통방식 redux에서의 전역 state 객체 참조 및 reducer 함수를 통해 state 객체 내부 프로퍼티들의 값 수정하기
+
+              @ 전통방식 redux에서의 전역 state 객체를 특정 component에 가져오기 + 수정을 이해하는데 필요한 개념
+                 1) State , Props
+                     : 전역 state 객체와 그 내부 프로퍼티들을 component가 다룰 수 있도록, props객체를 통해 전역 state 객체를 parameter로 전달하여 가져옴
+                       (이를 통해 component는 전역 state요소를 가져오고 수정하는 reducer 함수에 접근이 가능해짐)
+                         -> (중요) 과거에는 mapStateToProps라는 함수로 이를 수행했지만, reactHooks의 도입 이후 useSelector() 함수라는 hook 1개로 바로 전역 state 객체를 불러올 수 있게 됨 
+
+                 2) dispatch
+                     : component에서 전역 state 객체 내부 프로퍼티들의 값을 변경하기 위해 reducer 함수를 호출하는 과정에 해당하는 개념
+                        -> reactHooks의 도입 이후 useDispatch( action객체 ) 함수라는 hook으로 쉽게 reducer함수를 호출하는 dispatch를 간단히 날릴 수 있게 됨
+
+              @ 전통방식 redux에서의 전역 state 객체를 특정 component에 가져오기 + 내부 프로퍼티들을 수정하는 과정
+                1) 원하는 component에서 useSelector에 콜백함수( (state : state요소의 자료형) => state )를 parameter로 쓰고 JS변수에 대입
+                    -> (중요!) 해당 JS변수는 redux에 열심히 작성된 전역 state 객체에 쉽게 접근이 가능함
+                        -> 'useSelector를 받은 JS변수.전역state요소명'을 component에 작성하여, 원하는 전역 state 객체 내부 프로퍼티의 값을 component에 사용
+
+                            ex) const 꺼내온state = useSelector( (state : RootState) => state );
+                                  -> useSelector()의 결과를 대입한 꺼내온state라는 변수는 전역 state객체 그 자체를 담게 됨
  
+                2) useSelector() 내부의 무명콜백함수 (state : state요소의 자료형) => state 에 대한 자료형 지정 방법은 다음 2가지가 존재
+                    a. 전역 state 객체의 구조가 어떻게 생겼는지 파악하여 알아서 손수 작성
+                    b. 전역 state 객체에 관해 작성한 index.ts에서 state객체의 자료형을 export 해서 가져오기
 
-(1) 초기값 변수 오른쪽에 타입지정 잘 해주십시오.
+                       ex) export type RootState = ReturnType<typeof store.getState>
+                            -> store라는 변수에 createStore함수를 통해 state객체(프로퍼티 + 메서드)가 생성되고, getState 메서드를 통해 state객체의 프로퍼티만 빼내서 typeof로 해당 state객체의 자료형이 무엇인지 구하고 export
 
-(2) reducer 함수는 state, action 이 이름의 파라미터 2개 타입지정 잘 해주십시오.
+                3) useDispatch() hooks를 JS변수에 대입하여, 해당 dispatch변수명 그 자체로 redux에 작성한 reducer 함수들을 실행이 가능함
+                    -> dispatch변수( { type : '값' } )을 통해, redux에 작성한 수많은 전역 state요소 수정 함수를 실행가능하며, action 객체 내부의 type 프로퍼티로 보낸 값에 narrowing 대응하는 함수가 작동되게 됨
+                
+                       ex) <button onClick={ () => { useDispatch( {type : '증가'} ) } } >버튼</button>
+                             -> useDispatch()의 결과를 받은 const dispatch : Dispatch = useDispatch();라는 코드가 있다면, <button onClick={ () => { dispatch( {type : '증가'} ) } } >버튼</button>로 변환도 가능
+                       
+                4) useDispatch() hooks를 받는 JS변수의 자료형 지정은 다음과 같이 redux에서 가져온 Dispatch 객체로 지정
+                    -> import {Dispatch} from 'redux'
+                       const dispatch : Dispatch =  useDispatch();
 
-실은 state는 타입지정 필요없습니다 초기값 넣으면 타입지정 잘 됩니다
+                5) (주의) component 내부에서 전역 state 객체 내부의 프로퍼티들을 수정하는 reducer 함수를 호출하기 위해서는? useDispatch()를 호출해야하나
+                     -> useDispatch()를 쓰는 과정에서 parameter로 action객체를 빼먹으면 에러 호출
+                        (= useDispatch()를 담은 dispatch변수로 호출해도 마찬가지로 action객체를 parameter로 꼭 넣어줘야 함)
+                            -> (주의) action객체를 parameter로 작성하더라도, type 프로퍼티를 빼먹으면, 전역 state 수정 함수에서 narrowing이 작동하지 않음
 
-action은 님들이 나중에 dispatch 날릴 때 object 자료 집어넣죠? 그거랑 똑같이 생겨야합니다.
+              @ 전통방식 redux에서의 전역 state 객체를 특정 component에 가져오기 + 내부 프로퍼티들 수정하는 예시
 
-그래서 그거 그대로 타입지정해주면 되는데 대부분 { type : string, payload : number } 이런 식으로 생겼을 겁니다.
-
-위에선 any라고 대충 써넣음 님들이 채워보셈 
-
- 
-
-(3) 마지막으로 심심하면 reducer 함수의 return 타입도 타입지정 잘 해보십시오.
-
-어떤걸 return 해줘야할지 적어두시면 됩니다. 딱봐도 초기값이랑 유사하게 생기면 될 듯 
-
- 
-
- 
-
-그리고 간혹 오해하시는 것들이 있는데
-
-reducer 타입지정은 전부 reducer 안의 코드들을 잘못 짜서 생기는 버그를 약간 방지하는 용도입니다. 
-
-App.tsx 이런 곳에서 dispatch() 를 잘쓰냐 못쓰냐는 캐치해주지 않습니다. 
-
-              ex) import { Provider } from 'react-redux';
-                  import { createStore } from 'redux';
-                  
-                  interface Counter {
-                    count : number
-                  }
-                  
-                  const 초기값 :Counter  = { count: 0 };
-                  
-                  function reducer(state = 초기값, action :any) {
-                    if (action.type === '증가') {
-                      return { count : state.count + 1 }
-                    } else if (action.type === '감소'){
-                      return { count : state.count - 1 }
-                    } else {
-                      return initialState
-                    }
-                  }
-                  
-                  const store = createStore(reducer);
-                  
-                  // store의 타입 미리 export 해두기 
-                  export type RootState = ReturnType<typeof store.getState>
-                  
-                  ReactDOM.render(
-                    <React.StrictMode>
-                      <Provider store={store}>
-                        <App />
-                      </Provider>
-                    </React.StrictMode>,
-                    document.getElementById('root')
-                  ) 
-
-
-            @ 전역 state 꺼내서 사용시
-
-            redux에 있던 state를 가져오려면
-
-mapStateToProps도 있지만 useSelector 훅을 쓰시면 간단한걸 쉽게 가져올 수 있습니다.
-
-그리고 state를 변경하려면 useDispatch 훅을 쓰면 dispatch를 간단히 날릴 수 있습니다. 
-
-1. useSelector를 쓰면 redux에 있던 state 빼오기 쉽습니다. 안에 콜백함수 넣으면 거기 있던 파라미터가 그대로 state임
-
-2. useDispatch를 쓰면 redux로 수정요청을 날릴 수 있습니다. type을 잘 기입하시면 미리 정의해뒀던 수정방법이 동작함 
-
-위에선 버튼 누르면 증가하라고 해놨네요 
-
- 
-
-타입지정은 그냥 
-
-(1) useSelector() 안에 파라미터 있는데 거기 하십쇼
-
-state가 어떻게 생겼는지 파악한 다음 타입알아서 손수 지정해주시거나 아니면 
-
-귀찮으면 index.ts에서 타입을 export 해서 가져와도 됩니다. 
-
-index.ts 에 있던 export type RootState = ReturnType<typeof store.getState> 이 코드가
-
-store의 타입을 미리 export 해두는 방법입니다. 
-
- 
-
-(2) useDispatch도 타입지정하면 좋은데 
-
-import {Dispatch} from 'redux' 이렇게 타입을 가져오셔서 
-
-const dispatch :Dispatch 이렇게 쓰면 됩니다. 
-
-그럼 dispatch 날릴 때 안에 파라미터 안쓰면 에러내줌 
-
- 
-
-              ex) import React from 'react';
-                  import { useDispatch, useSelector } from 'react-redux'
-                  import { Dispatch } from 'redux'
-                  import {RootState} from './index'
-                  
-                  function App() {
-                    const 꺼내온거 = useSelector( (state :RootState) => state );
-                    const dispatch :Dispatch = useDispatch();
-                  
-                    return (
-                      <div className="App">
-                        { 꺼내온거.count }
-                        <button onClick={()=>{dispatch({type : '증가'})}}>버튼</button>
-                        <Profile name="kim"></Profile>
-                      </div>
-                    );
-                  } 
+                ex) 상단에 제시된 전역 state요소 중 count라는 프로퍼티를 무명함수를 parameter로 받는 useSelector hook함수를 통해 쉽게 가져와서, APP이라는 conponent가 쓰게 하며
+                     -> useDispatch라는 hook함수를 통해, dispatch 변수를 호출하여 parameter로 action객체를 보낼 때, reducer에서 narrowing하는 대상인 type이란 프로퍼티를 담아 보내서 useSelector가 참고 중인 전역 state요소의 값이 변하게 하고 이를 바로 반영하게 함 
+                
+                        import React from 'react';
+                        import { useDispatch, useSelector } from 'react-redux'
+                        import { Dispatch } from 'redux'
+                        import { RootState } from './index'
+                        
+                        function App() {
+                          const 꺼내온거 = useSelector( (state : RootState) => state );
+                          const dispatch : Dispatch = useDispatch();
+                        
+                          return (
+                            <div className="App">
+                              { 꺼내온거.count }
+                              <button onClick={ () => { dispatch( {type : '증가'} ) } } >버튼</button>
+                              <Profile name="kim"></Profile>
+                            </div>
+                          );
+                        } 
          
      2. 신규방식 redux 
          : redux 공식 toolkit 라이브러리를 사용할 때, typescript를 쓰는 법
