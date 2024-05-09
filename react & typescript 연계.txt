@@ -184,28 +184,18 @@
 
            B. 전통방식 redux에서의 전역 state 객체 참조 및 reducer 함수를 통해 state 객체 내부 프로퍼티들의 값 수정하기
 
-              @ (참고) redux에서의 전역 state 객체를 특정 component에 가져오기 + 수정을 이해하는데 필요한 개념
-                 1) State , Props
-                     : 전역 state 객체와 그 내부 프로퍼티들을 component가 다룰 수 있도록, props객체를 통해 전역 state 객체를 parameter로 전달하여 가져옴
-                       (이를 통해 component는 전역 state요소를 가져오고 수정하는 reducer 함수에 접근이 가능해짐)
-                         -> (중요) 과거에는 mapStateToProps라는 함수로 이를 수행했지만, reactHooks의 도입 이후 클로저 패턴을 사용하는 useSelector() 함수라는 hook을 통해, 전역 state객체에 해당하는 자신의 내부 변수를 사용하고 이를 가공하는 무명 콜백함수를 parameter로 사용하여 전역 state객체를 해체 가능
-
-                 2) dispatch
-                     : component에서 전역 state 객체 내부 프로퍼티들의 값을 변경하기 위해 reducer 함수를 호출하는 과정에 해당하는 개념
-                        -> reactHooks의 도입 이후 클로저 패턴을 사용하는 useDispatch() 함수라는 hook을 통해, 해당 hook 내부에 있는 함수인 dispatch( action객체 ) 함수를 간단히 호출할 수 있게 되어, 특정한 action 객체의 프로퍼티의 경우에만 작동하는 reducer함수를 쉽게 사용가능해짐
-
               @ (참고) 클로저 패턴 (react hooks의 useSelector() 함수, useDispatch() 함수가 사용하는 패턴)
-                 : 클로저는 고차 함수를 사용 가능한 언어에서 사용가능한 개념으로 함수 안에 함수가 있는 함수의 경우, 함수를 통해 내부 함수를 반환하여 실행 대기 상태로 둘수 있음
-                    -> 그 함수를 반환받은 변수에 parameter를 넣고 호출하여 실행이 가능하며, 그렇게 실행되는 내부 함수가 속한 외부 함수의 {}안의 내부 변수가 있다면 그 값은 갱신되고 초기화되지 않으며, 해당 내부함수를 담은 변수로 인해 접근가능함
+                 : 클로저는 고차 함수를 사용 가능한 언어에서 사용가능한 개념으로, 어떤 함수 내부에 중첩함수(Nested function)가 존재한다면? 외부 함수만을 통해 호출 가능하게 캡슐화 된 중첩함수를 반환하여 실행 대기 상태로 둘수 있음
+                    -> 외부 함수만으로 호출 가능하게 설계된 중첩함수(Nested function)를 반환받은 변수에 parameter를 넣고 호출하여 실행이 가능하며, 그렇게 실행되는 중첩함수가 속한 함수 {}안의 내부 변수가 있다면 그 값은 갱신되고 초기화되지 않으며, 해당 중첩함수를 담은 변수로 인해 접근가능함
 
-                       ex) 클로저 패턴을 사용한 예시
+                       ex) 클로저 패턴을 사용한 예시 (사실상 함수만으로 객체지향언어의 캡슐화-접근제어자 개념을 구축하기 위해 사용한 테크닉이라 보면 됨)
                        
                            function createCounter() {
-                             let count = 0; // This variable is "closed over" by the returned function
+                             let count = 0;
                              
                              function plus(){
-                               count += 1; // Increment the internal count
-                               return count; // Return the updated count
+                               count += 1;
+                               return count;
                              };
 
                              return plus;
@@ -218,18 +208,35 @@
                            console.log(increment()); // 2
                            console.log(increment()); // 3  
 
-                       ex) useSelector()의 구조 추상코드
+              @ (참고) redux에서의 전역 state 객체를 특정 component에 가져오기 + 수정을 이해하는데 필요한 개념
+                 1) State , Props
+                     : 전역 state 객체와 그 내부 프로퍼티들을 component가 다룰 수 있도록, props객체를 통해 전역 state 객체를 parameter로 전달하여 가져옴
+                       (이를 통해 component는 전역 state요소를 가져오고 수정하는 reducer 함수에 접근이 가능해짐)
+                         -> (중요) 과거에는 mapStateToProps라는 함수로 이를 수행했지만, reactHooks의 도입 이후 클로저 패턴을 사용하는 useSelector() 함수라는 hook을 통해, 전역 state객체에 해당하는 해당 함수의 지역변수를 사용하고 이를 가공하는 무명 콜백함수를 parameter로 사용하여 전역 state객체를 해체 가능
 
-                           function useSelector() {
-                             let state = 전역 state객체 
-                             
-                             function() plus{
-                               count += 1; // Increment the internal count
-                               return count; // Return the updated count
-                             };
+                            ex) useSelector()의 구조 추상코드
 
-                             return plus;
-                           }                                        
+                                function useSelector( (state) => state객체멤버 ) {
+                                  let state = 전역 state객체 
+                                  const fun = (state) => state객체 ~ 멤버
+
+                                  return fun;
+                                }  
+
+                 2) dispatch
+                     : component에서 전역 state 객체 내부 프로퍼티들의 값을 변경하기 위해 reducer 함수를 호출하는 과정에 해당하는 개념
+                        -> reactHooks의 도입 이후 클로저 패턴을 사용하는 useDispatch() 함수라는 hook을 통해, 해당 hook 내부에 있는 중첩함수인 dispatch( action객체 ) 함수를 간단히 호출할 수 있게 되어, 특정한 action 객체의 프로퍼티의 경우에만 작동하는 reducer함수를 쉽게 사용가능해짐
+
+                           ex) useDispatch()의 구조 추상코드
+    
+                               function useDispatch() {
+                                 
+                                 function dispatch( action객체 ) {
+                                    redux의 전역 state객체 수정하는 reducer 함수 호출
+                                 }
+    
+                                 return dispatch;
+                               }
 
               @ 전통방식 redux에서의 전역 state 객체를 특정 component에 가져오기 + 내부 프로퍼티들을 수정하는 과정
                 1) 원하는 component에서 useSelector에 콜백함수( (state : state요소의 자료형) => state )를 parameter로 쓰고 JS변수에 대입
