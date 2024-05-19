@@ -382,6 +382,44 @@
       # redux 구동 원리
         : 전역 변수 state들을 보관한 store역할의 js 파일을 생성하고 나면... REDUX 라이브러리의 함수들을 통해, 모든 component가 그렇게 만들어진 store에 놓은 state들을 사용 가능함
 
+  # redux와 store개념
+     : 모든 component가 공유가능한 전역 객체에 해당하는 state객체의 각 요소들을 저장(store)하고 관리하는 중앙 저장소적인 redux의 개념
+        -> store라는 전역 state객체를 관리하는 개념이 있기에, action을 받으면 그 값에 대응하는 state 개별 요소를 수정하는 reducer를 호출할 수 있는 것
+
+       @ store 주요 기능
+          1) state 저장
+              : 애플리케이션의 전체 state를 JS객체 형태로 저장
+
+          2) action dispatch
+              : action은 상태 변경의 의도를 나타내는 객체로 이를 dispatch해야 state 변경이 가능
+
+          3) reducer 호출
+              : dispatch된 action을 입력으로 받아 새로운 상태를 반환하는 순수 함수인 reducer에 전달하여, 새로운 state를 계산하여 수정함
+
+          4) 구독 관리
+             : state 변화에 반응하기 위해 리스너(listener)를 구독(subscribe)할 수 있는 기능을 제공, state가 변경되면 스토어는 구독된 리스너들에게 알림
+
+
+       @ store 주요 구성 요소
+          1) state
+              : 애플리케이션의 현재 전역 state를 나타내는 객체
+
+          2) actions
+              : 전역 state의 변경의 의도를 나타내는 객체로, 일반적으로 type 속성을 포함하며 추가적인 데이터를 포함할 수 있음
+                 -> 이를 reducer에 전달하여 state를 번경
+
+          3) reducers
+              : actions 에 따라 상태를 변경하는 함수들
+                (= 각각의 reducers는 특정 state에 대한 조각(slice)을 관리)
+                    -> slice가 모이면, reducers가 된다고 보면 됨
+
+          4) dispatch(action)
+              : action을 store에 전달하는 함수
+                 -> 이후 reducers를 통해 상태를 업데이트하도록 트리거됨
+
+          5) subscribe(listener)
+              : state 변화 시 호출될 listener 함수를 등록하는 함수
+              
       # react-redux 설치법
         : (node js가 깔려 있어야함 + react 18버전 이상이 필요) 터미널 열고 프로젝트 폴더에서 npm install @reduxjs/toolkit react-redux 입력 
                -> redux toolkit = 기존 redux의 시전코드(boilerplate code)가 많다는 컴플레인 개선버전
