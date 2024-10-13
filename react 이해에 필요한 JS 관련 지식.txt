@@ -264,34 +264,65 @@
               - ES Module 사용법
                 : (from 사용할 모듈) export 구문을 입력 -> (to 가져오는 파일) import구문을 통해 불러옴
 
-                1) ES Module 내보내기 : export 구문
+                  A. ES Module 내보내기 : export 구문
+  
+                      a. export 내보내고 싶은 변수명;
+                          : 모듈에서 변수 하나만 내보내는 방법
+  
+                      b. export { 내보내고 싶은 변수명(여러개도 가능) };
+                          : 모듈에서 여러개의 변수들을 내보내는 방법
 
-                    a. export default 내보내고 싶은 변수명;
-                        : import시 특별한 변수명을 적지 않으면(= 보통 import a구문 사용시), 이 때 지명한 변수를 가져옴
-                          (단! 한번 사용 가능함.. 기본으로 출력할 변수를 부르기 때문)
+                      c. export * 
+                          : 모듈에서 모든 변수들을 내보내는 방법
 
-                    b. export default { 내보내고 싶은 변수명(여러개도 가능) };
-                        : import시 특별한 변수명을 적지 않으면(= 보통 import a구문 사용시), 이 때 지명한 변수들을 가져옴
-                          (a와 마찬가지로 한번 사용 가능함.. 기본으로 출력할 변수를 부르기 때문)
+                      d. export let(const, class 등 다 허용) 내보내고 싶은 변수명;
+                          : 어떤 변수를 선언하자 마자 export시키고 싶을 때 사용하는 방법
+                              -> 그나마 가장 범용성이 좋은 방법 
 
-                    c. export let(const) 내보내고 싶은 변수명;
-                        : 이를 통해 여러개의 변수들을 직관적으로 지명 가능
-                            -> 그나마 가장 범용성이 좋은 방법 
+                    - (중요) export와 함께 사용이 가능한 키워드
 
-                2) ES Module 불러오기 : import 구문
+                       a. export default
+                           : import시 특별한 변수명을 없다면, default를 붙인 export문에서 지명한 변수를 가져오게 하는 역할 수행
+                              -> (참고사항)
+                                   1) export 사용 횟수에는 제약이 없는데, default가 붙은 경우는 오직! 단! 한번 사용 가능함
+                                   2) 보통 import 구문을 사용시에는 가져올 변수를 직접 기입함
+                                   3) (중요) 해당 파일에 변수가 1개 뿐이면, 반드시 default까지 써야함
+                           
+                       b. export 내보내고 싶은 변수명 as 대체변수명
+                           : 다른 모듈에서 import시 대체변수명이란 이름으로 가져오게 하는 역할 수행
 
-                    a. import 지은 변수명 from '불러오는 모듈 경로'
-                        : 모듈에서 변수 하나만 가져오는 방법  
-                            -> export defalut {여려변수들} 을 사용한다면, b구문처럼 '지은 변수명'을 객체명처럼 사용 가능 
+                  B. ES Module 불러오기 : import 구문
+  
+                      a. import 지은 변수명 from '불러오는 모듈 경로'
+                          : 모듈에서 변수 하나만 가져오는 방법  
+                              -> export default {여려변수들} 을 사용한다면, b구문처럼 '지은 변수명'을 객체명처럼 사용 가능 
+  
+                      b. import * as 지은 변수명 from '불러오는 모듈 경로';
+                          : 모듈에서 모든 변수를 가져오는 방법 
+                            (*의 의미 : SQL에서 모든 변수 가져오는것 의미.. -> 이걸 '지은 변수명'으로 통칭해 객체명화 하는 것)
+                              -> '별칭.프로퍼티' or '별칭.메서드명(파라미터....)'' 를 통해 값을 지칭해서 불러옴
+  
+                      c. import { 가져올 변수명(여러개도 가능) } from '불러오는 모듈 경로';
+                          : 모듈에서 1개 ~ 여러개 변수를 가져오는 방법
+                              -> 그나마 가장 범용성이 좋은 방법 
 
-                    b. import * as 지은 변수명 from '불러오는 모듈 경로';
-                        : 모듈에서 모든 변수를 가져오는 방법 
-                          (*의 의미 : SQL에서 모든 변수 가져오는것 의미.. -> 이걸 '지은 변수명'으로 통칭해 객체명화 하는 것)
-                            -> '별칭.프로퍼티' or '별칭.메서드명(파라미터....)'' 를 통해 값을 지칭해서 불러옴
+                  C. ES Module 불러오기와 동시에 다른 모듈로 내보내기 : export 변수명 from "module" 구문을
+                      : 어떤 모듈을 import 하자마자, 그 모듈의 특정 변수를 다른 모듈로 보낼때 사용
 
-                    c. import { 가져올 변수명(여러개도 가능) } from '불러오는 모듈 경로';
-                        : 모듈에서 1개 ~ 여러개 변수를 가져오는 방법
-                            -> 그나마 가장 범용성이 좋은 방법 
+                        ex) import {login, logout} from './helpers.js';    ==    export {login, logout} from './helpers.js';
+                            export {login, logout};
+
+                            a. export 내보내고 싶은 변수명 from "대상 모듈 위치경로";
+                                : 모듈에서 변수 하나만 가져오자 마자 다른 모듈로 내보내는 방법
+        
+                            b. export { 내보내고 싶은 변수명(여러개도 가능) } from "대상 모듈 위치경로";
+                                : 모듈에서 여러개의 변수들을 가져오자 마자 다른 모듈로 내보내는 방법
+    
+                            c. export *  from "대상 모듈 위치경로";
+                                : 모듈에서 default로 지정된 변수를 제외하고 모든 변수들을 다른 모듈로 내보내는 방법
+    
+                            d. export { default }  from "대상 모듈 위치경로";
+                                : 모듈에서 default로 지정된 변수들을 다른 모듈로 내보내는 방법
 
          2. CommonJs
              : NodeJS 환경에서 자바스크립트 모듈을 사용하기 위해 만들어진 모듈 시스템 
@@ -300,7 +331,7 @@
               - CommonJs 사용법
                  : (from 사용할 모듈) 사용할 변수 앞에 export.변수명 입력 or module.export { } 구문 입력- > (to 가져오는 파일) require('파일경로'); 구문을 통해 불러옴
 
-                 1) CommonJs 모듈 내보내기 : export.변수명 및 module.export 구문
+                 A. CommonJs 모듈 내보내기 : export.변수명 및 module.export 구문
 
                      a. export.내보내고 싶은 변수명;
                          : 내보내고 싶은 js 변수 앞에 'export.' 를 일일히 붙여서 모듈의 변수로서 블록 스코프에 넣는 것으로 판정 
@@ -309,7 +340,7 @@
                          : 이를 통해 여러개의 변수들을 직관적으로 지명 가능
                              -> 그나마 가장 범용성이 좋은 방법 
 
-                 2) CommonJs 모듈 불러오기 : require 구문
+                 B. CommonJs 모듈 불러오기 : require 구문
 
                      a. let or const { 불러오고 싶은 변수명(여러개도 가능) } = require('파일경로');
                          : 모듈에서 1개 ~ 여러개 변수를 가져오는 방법
@@ -1007,7 +1038,6 @@
 
         2) 단점 : 외부 js 라이브러리이기에 어쩄든 개발자가 조금이라도 번거로워지고, 서비스에서 로딩시간 증가에 영향을 줄 소지는 있음
 
-   
       # axios로 http 메서드 요청을 보내는 문법
          1) axios.get('url명')  
              : 해당 url명으로 get요청을 하게하는 axios 라이브러리의 멤버함수
@@ -1018,6 +1048,20 @@
          3) 요청에 대한 리턴이 등장하면.. promise 객체의 상태값에 따라 후속 처리를 하면 됨
              -> 상단의 then(), catch(), finally()나 async, await 구문 참고
 
+                1) then, catch, finally 구문을 쓰던가
+       
+                   ex) axios.get('도메인')
+                       .then( (result) => { 성공시 실행할코드})
+                       .catch( (error) => { 인터넷문제 등으로 실패시 실행할코드 })
+       
+                2) async await를 사용하여 비동기 코드 진행을 일부 동기적으로 통제
+                    -> (중요!) await가 붙으면, 해당 함수 {}안의 해당 비동기코드가 응답이 돌아올떄까지 이를 기다려줌
+                     -> 그런 의미에서 axios 통한 API 호출은 async await를 사용시 반드시 await를 붙여줘야함.. 그래야 axios http메서드 함수가 끝날떄까지 기다려 줌 
+       
+                   ex) document.querySelectorAll('.data1').addEventListener('click', async function(e){
+                         let result = await axios.get('도메인');
+                         await (result) => { 성공시 실행할코드 };
+                       });
 
       # axios 사용시 주의사항
          1) json으로 돌아온 응답값은 axios에서는 json -> object array 형태로 자동 변경해 줌..
